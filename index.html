@@ -30,7 +30,6 @@
 
         .app-container { width: 100%; max-width: 450px; position: relative; z-index: 1; }
 
-        /* O ONCLICK NA LOGO É O GATILHO DO PAINEL SECRETO */
         header { text-align: center; margin-bottom: 25px; }
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; cursor: pointer; }
         h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; letter-spacing: 1px; }
@@ -104,7 +103,7 @@
         .preco-extra { color: #d35400 !important; font-weight: bold; font-size: 13px; }
         textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; font-family: sans-serif; resize: none; margin-top: 5px; background: #fff !important; color: #000 !important; }
 
-        /* CARRINHO */
+        /* CARRINHO E FORMULÁRIOS */
         .lista-itens { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: #555 !important; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
         .item-info { font-weight: bold; flex: 1; }
@@ -113,10 +112,14 @@
         .subtotal-texto { font-weight: 900; color: #27ae60 !important; font-size: 18px; text-align: right; margin-bottom: 15px; }
         
         .campo-grupo { margin-bottom: 12px; } .campo-grupo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555 !important; }
-        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; }
+        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; font-family: sans-serif; }
         .btn-acao-modal { width: 100%; padding: 14px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; cursor: pointer; color: white !important; }
         .btn-confirmar { background-color: #ff6b00 !important; } .btn-enviar-whats { background-color: #25d366 !important; } .btn-fechar { background-color: #95a5a6 !important; margin-top: 8px; }
         .btn-gps { width: 100%; background-color: #f39c12 !important; color: white !important; padding: 10px; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; margin-bottom: 5px; cursor: pointer; font-size: 13px; }
+        
+        /* BOTÕES DE AUTOMAÇÃO NO PAINEL */
+        .btn-copiar { background-color: #2980b9 !important; }
+        .alerta-copiado { display: none; color: #27ae60; font-weight: bold; font-size: 13px; text-align: center; margin-top: 10px; }
 
         .tela-animacao { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff !important; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .tela-animacao.ativo { display: flex; }
@@ -145,7 +148,6 @@
     <div class="app-container">
         
         <header>
-            <!-- SEGREDO: CLICAR 3 VEZES NA LOGO ABRE O PAINEL DE CONTROLE -->
             <img src="logo.png" alt="Logo da Hamburgueria" class="logo-header" onclick="cliqueLogoSecreto()">
             <h1>JJ_BURGUER</h1>
         </header>
@@ -200,9 +202,7 @@
         </div>
 
         <div id="secao-bebidas">
-            <div id="container-titulo-bebidas">
-                <h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2>
-            </div>
+            <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
             
             <div class="card-bebida">
                 <div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida">R$ 6,00</span></div>
@@ -223,68 +223,63 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
-    <!-- PAINEL SECRETO DO DONO -->
     <div id="modalAdmin" class="modal-overlay">
         <div class="modal-card" style="border: 4px solid #f39c12;">
             <h2 style="color: #f39c12 !important; border-bottom: none; margin-bottom: 5px;">🔐 Painel do Dono</h2>
-            <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Mude o status do pedido do cliente e avise-o automaticamente no WhatsApp.</p>
             
-            <div class="campo-grupo">
-                <label>Nº WhatsApp do Cliente (com DDD):</label>
-                <input type="number" id="admin-telefone" placeholder="Ex: 68999999999">
+            <div id="area-senha">
+                <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Acesso restrito. Por favor, digite a senha.</p>
+                <input type="password" id="admin-senha-input" placeholder="Digite a senha...">
+                <button class="btn-acao-modal" style="background-color: #f39c12 !important;" onclick="verificarSenha()">Desbloquear 🔓</button>
+                <button class="btn-acao-modal btn-fechar" onclick="fecharPainelDono()">Cancelar</button>
             </div>
-            
-            <div class="campo-grupo">
-                <label>Novo Status do Pedido:</label>
-                <select id="admin-status">
-                    <option value="2">🍔 Em Preparo na Cozinha</option>
-                    <option value="3">🛵 Saiu para Entrega / Retirada</option>
-                </select>
+
+            <div id="area-painel" style="display: none;">
+                <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Gere o link automático e mande no WhatsApp do cliente.</p>
+                
+                <div class="campo-grupo">
+                    <label>Novo Status do Pedido:</label>
+                    <select id="admin-status">
+                        <option value="2">🍔 Em Preparo na Cozinha</option>
+                        <option value="3">🛵 Saiu para Entrega / Retirada</option>
+                    </select>
+                </div>
+                
+                <button class="btn-acao-modal btn-copiar" onclick="copiarLinkMagico()">📋 Copiar Mensagem Pronta</button>
+                <div id="msg-copiado" class="alerta-copiado">✅ Mensagem copiada! É só colar no WhatsApp do cliente.</div>
+                
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                
+                <div class="campo-grupo">
+                    <label>Ou enviar direto (Digite o Whats com DDD):</label>
+                    <input type="number" id="admin-telefone" placeholder="Ex: 68999999999">
+                </div>
+                <button class="btn-acao-modal" style="background-color: #25d366 !important;" onclick="enviarStatusCliente()">Enviar no WhatsApp 💬</button>
+                
+                <button class="btn-acao-modal btn-fechar" onclick="fecharPainelDono()">Sair do Painel</button>
             </div>
-            
-            <button class="btn-acao-modal" style="background-color: #f39c12 !important;" onclick="enviarStatusCliente()">Atualizar e Avisar Cliente no Whats</button>
-            <button class="btn-acao-modal btn-fechar" onclick="document.getElementById('modalAdmin').classList.remove('ativo')">Esconder Painel</button>
         </div>
     </div>
 
-    <!-- MODAL DE PERSONALIZAÇÃO -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza">
                 <h2 id="tituloCustomLanche">Nome do Lanche</h2>
                 <span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span>
             </div>
-            
             <p style="font-weight: bold; margin-bottom: 10px; color: #555;">Deseja adicionar algum extra?</p>
-            
-            <div class="item-extra">
-                <label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label>
-                <span class="preco-extra">+ R$ 4,00</span>
-            </div>
-            <div class="item-extra">
-                <label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label>
-                <span class="preco-extra">+ R$ 3,50</span>
-            </div>
-            <div class="item-extra">
-                <label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label>
-                <span class="preco-extra">+ R$ 8,00</span>
-            </div>
-            <div class="item-extra">
-                <label><input type="checkbox" class="check-extra" value="2.50" data-nome="Cebola" onchange="atualizarPrecoCustom()"> Cebola Caramelizada</label>
-                <span class="preco-extra">+ R$ 2,50</span>
-            </div>
+            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label><span class="preco-extra">+ R$ 4,00</span></div>
+            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label><span class="preco-extra">+ R$ 3,50</span></div>
+            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label><span class="preco-extra">+ R$ 8,00</span></div>
+            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="2.50" data-nome="Cebola" onchange="atualizarPrecoCustom()"> Cebola Caramelizada</label><span class="preco-extra">+ R$ 2,50</span></div>
 
-            <div class="campo-grupo" style="margin-top: 15px;">
-                <label>Alguma observação?</label>
-                <textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles, pão bem tostado..."></textarea>
-            </div>
+            <div class="campo-grupo" style="margin-top: 15px;"><label>Alguma observação?</label><textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles..."></textarea></div>
 
             <button id="btnConfirmarCustom" class="btn-acao-modal btn-confirmar" onclick="confirmarPersonalizacao()">Adicionar ao Carrinho</button>
             <button class="btn-acao-modal btn-fechar" onclick="fecharPersonalizacao()">Cancelar</button>
         </div>
     </div>
 
-    <!-- MODAL DO CARRINHO COMPLETO -->
     <div id="modalPedido" class="modal-overlay">
         <div class="modal-card">
             <h2>Seu Pedido 🛒</h2>
@@ -294,10 +289,7 @@
             <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
             <div class="campo-grupo">
                 <label>Como deseja receber?</label>
-                <select id="select-entrega" onchange="mudarOpcaoEntrega()">
-                    <option value="Entrega">Delivery (Entrega em Casa)</option>
-                    <option value="Retirada">Retirar na Hamburgueria</option>
-                </select>
+                <select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select>
             </div>
             
             <div class="campo-grupo" id="box-endereco">
@@ -312,7 +304,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ACOMPANHAMENTO DO PEDIDO (COM IDs PARA ATUALIZAR STATUS) -->
     <div id="modalRastreio" class="modal-overlay">
         <div class="modal-card">
             <h2>Status do Pedido 🛵</h2>
@@ -326,7 +317,6 @@
         </div>
     </div>
 
-    <!-- TELA DE ANIMAÇÃO DO MASCOTE -->
     <div id="telaAnimacao" class="tela-animacao">
         <div class="animacao-carrinho"><img src="logo.png" id="img-mascote" class="logo-empurrando" alt="Mascote"><div class="icone-carrinho">🛒</div></div>
         <div class="texto-buscando">Buscando seu pedido...</div>
@@ -334,81 +324,102 @@
 
     <script>
         // ==========================================
-        // 1. LÓGICA DE CARREGAMENTO E ATUALIZAÇÃO DO STATUS
+        // LÓGICA DO PAINEL DE CONTROLE (SENHA E AUTOMAÇÃO)
+        // ==========================================
+        let cliquesLogo = 0;
+        
+        function cliqueLogoSecreto() {
+            cliquesLogo++;
+            if (cliquesLogo === 3) {
+                document.getElementById('modalAdmin').classList.add('ativo');
+                document.getElementById('area-senha').style.display = 'block';
+                document.getElementById('area-painel').style.display = 'none';
+                document.getElementById('admin-senha-input').value = ""; // Limpa a senha
+                cliquesLogo = 0; 
+            }
+            setTimeout(() => { cliquesLogo = 0; }, 1500); 
+        }
+
+        function verificarSenha() {
+            const senhaDigitada = document.getElementById('admin-senha-input').value;
+            
+            // ==============================================
+            // AQUI VOCÊ PODE MUDAR A SUA SENHA DE ACESSO
+            // ==============================================
+            const senhaCorreta = "jj123"; 
+
+            if (senhaDigitada === senhaCorreta) {
+                document.getElementById('area-senha').style.display = 'none';
+                document.getElementById('area-painel').style.display = 'block';
+            } else {
+                alert("❌ Senha incorreta!");
+            }
+        }
+
+        function fecharPainelDono() {
+            document.getElementById('modalAdmin').classList.remove('ativo');
+        }
+
+        // Gera a mensagem inteira para enviar ao cliente
+        function gerarMensagemPronta() {
+            const statusSelecionado = document.getElementById('admin-status').value;
+            const linkMagico = window.location.origin + window.location.pathname + "?rastreio=true&status=" + statusSelecionado;
+            let nomeStatus = statusSelecionado === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
+            return `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nClique no link abaixo para acompanhar pelo site:\n${linkMagico}`;
+        }
+
+        // Função de automação: Copia para a área de transferência do celular
+        function copiarLinkMagico() {
+            const texto = gerarMensagemPronta();
+            
+            // Cria um campo de texto temporário invisível para copiar o texto (funciona em todos os celulares)
+            const tempInput = document.createElement("textarea");
+            tempInput.value = texto;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            // Mostra o aviso que copiou
+            document.getElementById('msg-copiado').style.display = 'block';
+            setTimeout(() => { document.getElementById('msg-copiado').style.display = 'none'; }, 3000);
+        }
+
+        function enviarStatusCliente() {
+            const tel = document.getElementById('admin-telefone').value.trim();
+            if(!tel) { alert("Digite o número do cliente!"); return; }
+            const textoWhats = gerarMensagemPronta();
+            window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            fecharPainelDono();
+        }
+
+        // ==========================================
+        // LÓGICA DO CLIENTE (MANTIDA)
         // ==========================================
         window.addEventListener('load', () => {
             const parametrosURL = new URLSearchParams(window.location.search);
-            
             if (parametrosURL.get('rastreio') === 'true') {
-                // Pega o nível do status na URL (se não tiver, é status 1)
                 const statusPedido = parseInt(parametrosURL.get('status')) || 1;
-
-                // Pinta as etapas de verde conforme o status que o Dono enviou
                 document.getElementById('passo-1').classList.add('ativo');
-                
-                if (statusPedido >= 1) {
-                    document.getElementById('passo-2').classList.add('ativo');
-                    document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp";
-                }
-                if (statusPedido >= 2) {
-                    document.getElementById('passo-3').classList.add('ativo');
-                }
-                if (statusPedido >= 3) {
-                    document.getElementById('passo-4').classList.add('ativo');
-                }
-
+                if (statusPedido >= 1) { document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp"; }
+                if (statusPedido >= 2) { document.getElementById('passo-3').classList.add('ativo'); }
+                if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
                 document.getElementById('btnRastreio').style.display = 'block';
                 iniciarAnimacaoRastreio();
             }
         });
 
-        // ==========================================
-        // 2. PAINEL SECRETO DO DONO (3 CLIQUES NA LOGO)
-        // ==========================================
-        let cliquesLogo = 0;
-        function cliqueLogoSecreto() {
-            cliquesLogo++;
-            if (cliquesLogo === 3) {
-                document.getElementById('modalAdmin').classList.add('ativo');
-                cliquesLogo = 0; // Zera para próxima vez
-            }
-            // Se demorar muito para clicar, zera a contagem
-            setTimeout(() => { cliquesLogo = 0; }, 1500); 
-        }
-
-        // Função que o dono usa para mandar a atualização pro cliente
-        function enviarStatusCliente() {
-            const tel = document.getElementById('admin-telefone').value.trim();
-            const statusSelecionado = document.getElementById('admin-status').value;
-            
-            if(!tel) { alert("Digite o número do cliente!"); return; }
-
-            // Gera o link mágico com o novo Status
-            const linkMagico = window.location.origin + window.location.pathname + "?rastreio=true&status=" + statusSelecionado;
-            
-            let nomeStatus = statusSelecionado === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
-            let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nClique no link abaixo para acompanhar pelo site:\n${linkMagico}`;
-            
-            window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(textoWhats)}`, '_blank');
-            document.getElementById('modalAdmin').classList.remove('ativo');
-        }
-
-        // ==========================================
-        // 3. CARRINHO, PERSONALIZAÇÃO E GPS MANTIDOS
-        // ==========================================
         let carrinho = [];
         let linkMapaGoogle = ""; 
         let lancheSendoPersonalizado = "";
         let precoBaseSendoPersonalizado = 0;
 
         function abrirPersonalizacao(nomeLanche, precoBase) {
-            lancheSendoPersonalizado = nomeLanche;
-            precoBaseSendoPersonalizado = precoBase;
+            lancheSendoPersonalizado = nomeLanche; precoBaseSendoPersonalizado = precoBase;
             document.getElementById('tituloCustomLanche').innerText = nomeLanche;
             document.getElementById('txt-observacao').value = "";
             document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
-            atualizarPrecoCustom();
-            document.getElementById('modalPersonalizar').classList.add('ativo');
+            atualizarPrecoCustom(); document.getElementById('modalPersonalizar').classList.add('ativo');
         }
 
         function atualizarPrecoCustom() {
@@ -419,67 +430,38 @@
         }
 
         function confirmarPersonalizacao() {
-            let precoTotalItem = precoBaseSendoPersonalizado;
-            let extrasEscolhidos = [];
-            document.querySelectorAll('.check-extra:checked').forEach(cb => {
-                precoTotalItem += parseFloat(cb.value);
-                extrasEscolhidos.push(cb.getAttribute('data-nome'));
-            });
+            let precoTotalItem = precoBaseSendoPersonalizado; let extrasEscolhidos = [];
+            document.querySelectorAll('.check-extra:checked').forEach(cb => { precoTotalItem += parseFloat(cb.value); extrasEscolhidos.push(cb.getAttribute('data-nome')); });
             let observacao = document.getElementById('txt-observacao').value.trim();
             let nomeFinalCarrinho = lancheSendoPersonalizado;
             if (extrasEscolhidos.length > 0) { nomeFinalCarrinho += ` (+ ${extrasEscolhidos.join(', ')})`; }
-
             adicionarItemCardapio(nomeFinalCarrinho, precoTotalItem, observacao);
             fecharPersonalizacao();
         }
 
         function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
 
-        function adicionarItemCardapio(nome, preco, obs) {
-            carrinho.push({ nome: nome, preco: preco, obs: obs });
-            atualizarCarrinhoUI();
-        }
+        function adicionarItemCardapio(nome, preco, obs) { carrinho.push({ nome: nome, preco: preco, obs: obs }); atualizarCarrinhoUI(); }
 
-        function removerItem(index) {
-            carrinho.splice(index, 1);
-            atualizarCarrinhoUI();
-            if(carrinho.length === 0) fecharModalCarrinho();
-        }
+        function removerItem(index) { carrinho.splice(index, 1); atualizarCarrinhoUI(); if(carrinho.length === 0) fecharModalCarrinho(); }
 
         function atualizarCarrinhoUI() {
-            const btnCart = document.getElementById('btnCarrinho');
-            const qtdCart = document.getElementById('qtdCart');
-            const valorCart = document.getElementById('valorCart');
+            const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart');
             if (carrinho.length > 0) { btnCart.style.display = 'block'; } else { btnCart.style.display = 'none'; }
-            qtdCart.textContent = carrinho.length;
-            let total = 0; carrinho.forEach(item => total += item.preco);
+            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += item.preco);
             valorCart.textContent = total.toFixed(2).replace('.', ',');
         }
 
         function abrirCarrinho() {
-            const modal = document.getElementById('modalPedido');
-            const listaHTML = document.getElementById('listaItensHTML');
-            const subtotalModal = document.getElementById('subtotalModal');
-
-            listaHTML.innerHTML = "";
-            let total = 0;
-
+            const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
+            listaHTML.innerHTML = ""; let total = 0;
             carrinho.forEach((item, index) => {
                 total += item.preco;
                 let detalheObs = item.obs && item.obs !== "" ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
-                listaHTML.innerHTML += `
-                    <div class="item-carrinho">
-                        <div class="item-info">1x ${item.nome} ${detalheObs}</div>
-                        <div style="display:flex; align-items:center;">
-                            R$ ${item.preco.toFixed(2).replace('.', ',')} 
-                            <button class="btn-remover" onclick="removerItem(${index})">X</button>
-                        </div>
-                    </div>`;
+                listaHTML.innerHTML += `<div class="item-carrinho"><div class="item-info">1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${item.preco.toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
             });
-
             subtotalModal.textContent = total.toFixed(2).replace('.', ',');
-            document.getElementById('status-gps').style.display = 'none';
-            linkMapaGoogle = ""; 
+            document.getElementById('status-gps').style.display = 'none'; linkMapaGoogle = ""; 
             modal.classList.add('ativo');
         }
 
@@ -493,7 +475,6 @@
         function obterLocalizacao() {
             const statusGPS = document.getElementById('status-gps');
             statusGPS.style.display = 'block'; statusGPS.style.color = '#e67e22'; statusGPS.textContent = '⏳ Buscando sua localização...';
-
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (posicao) => {
@@ -501,29 +482,20 @@
                         linkMapaGoogle = `https://maps.google.com/?q=${lat},${lng}`;
                         statusGPS.style.color = '#27ae60'; statusGPS.textContent = '✅ GPS capturado com sucesso!';
                     },
-                    (erro) => {
-                        statusGPS.style.color = '#e74c3c'; statusGPS.textContent = '❌ Erro: Localização falhou. Digite manualmente.';
-                    },
+                    (erro) => { statusGPS.style.color = '#e74c3c'; statusGPS.textContent = '❌ Erro: Localização falhou. Digite manualmente.'; },
                     { enableHighAccuracy: true }
                 );
             }
         }
 
         function enviarPedidoFinal() {
-            const nome = document.getElementById('txt-nome').value.trim();
-            const tipoEntrega = document.getElementById('select-entrega').value;
-            const endereco = document.getElementById('txt-endereco').value.trim();
-            
+            const nome = document.getElementById('txt-nome').value.trim(); const tipoEntrega = document.getElementById('select-entrega').value; const endereco = document.getElementById('txt-endereco').value.trim();
             if (carrinho.length === 0) return;
             if (!nome) { alert('Por favor, informe seu nome.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Informe um endereço ou clique em "Pegar minha localização".'); return; }
 
             let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Método:* ${tipoEntrega}\n`;
-            if(tipoEntrega === 'Entrega') { 
-                if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; 
-                if(linkMapaGoogle !== "") textoWhats += `*📍 Mapa exato do cliente:* \n${linkMapaGoogle}\n`;
-            }
-            
+            if(tipoEntrega === 'Entrega') { if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; if(linkMapaGoogle !== "") textoWhats += `*📍 Mapa exato do cliente:* \n${linkMapaGoogle}\n`; }
             textoWhats += `\n*🧾 O PEDIDO:*\n`;
             let subtotal = 0;
             carrinho.forEach(item => { 
@@ -532,14 +504,11 @@
                 subtotal += item.preco; 
             });
 
-            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00;
-            let totalFinal = subtotal + taxaEntrega;
-
+            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; let totalFinal = subtotal + taxaEntrega;
             textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
             if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
-            // Quando o cliente cria o pedido, mandamos ele com STATUS=1
             const linkDoSeuSite = window.location.origin + window.location.pathname + "?rastreio=true&status=1";
             textoWhats += `\n\n*📍 Acompanhe seu pedido ao vivo por aqui:* \n${linkDoSeuSite}`;
 
@@ -547,54 +516,28 @@
             window.open(linkWhatsapp, '_blank');
 
             carrinho = []; atualizarCarrinhoUI(); fecharModalCarrinho();
-            
-            // Força a tela de rastreio ficar verde na etapa 1 no celular do cliente
-            document.getElementById('passo-1').classList.add('ativo');
-            document.getElementById('passo-2').classList.add('ativo');
-            document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp";
-            
+            document.getElementById('passo-1').classList.add('ativo'); document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp";
             document.getElementById('btnRastreio').style.display = 'block';
         }
 
         function iniciarAnimacaoRastreio() {
-            const telaAnimacao = document.getElementById('telaAnimacao');
-            const modalRastreio = document.getElementById('modalRastreio');
-            telaAnimacao.classList.add('ativo');
-            setTimeout(() => { telaAnimacao.classList.remove('ativo'); modalRastreio.classList.add('ativo'); }, 3000); 
+            const telaAnimacao = document.getElementById('telaAnimacao'); const modalRastreio = document.getElementById('modalRastreio');
+            telaAnimacao.classList.add('ativo'); setTimeout(() => { telaAnimacao.classList.remove('ativo'); modalRastreio.classList.add('ativo'); }, 3000); 
         }
 
         function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); }
 
-        const secaoBebidas = document.getElementById('secao-bebidas');
-        const overlayFrio = document.getElementById('clima-frio-overlay');
-        const tituloContainer = document.getElementById('container-titulo-bebidas');
-        const containerNeve = document.getElementById('container-neve');
+        const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve');
         let intervaloNeve;
-
         function criarFloco() {
-            const floco = document.createElement('div');
-            floco.classList.add('floco');
-            floco.innerText = '❄';
-            floco.style.left = (Math.random() * 150 - 25) + 'vw';
-            floco.style.fontSize = (Math.random() * 15 + 10) + 'px';
-            floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
-            floco.style.opacity = Math.random() * 0.8 + 0.2;
-            containerNeve.appendChild(floco);
-            setTimeout(() => { floco.remove(); }, 5000);
+            const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄';
+            floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2;
+            containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000);
         }
-
         const observador = new IntersectionObserver((entradas) => {
             entradas.forEach(entrada => {
-                if (entrada.isIntersecting) {
-                    overlayFrio.classList.add('ativo');
-                    tituloContainer.classList.add('congelado');
-                    if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); }
-                } else {
-                    overlayFrio.classList.remove('ativo');
-                    tituloContainer.classList.remove('congelado');
-                    clearInterval(intervaloNeve);
-                    intervaloNeve = null;
-                }
+                if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } 
+                else { overlayFrio.classList.remove('ativo'); tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; }
             });
         }, { threshold: 0.1 }); 
         observador.observe(secaoBebidas);
