@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Barreira Máxima contra Modo Escuro -->
     <meta name="color-scheme" content="light only">
     <meta name="theme-color" content="#ffffff">
-    <title>Monte seu Hambúrguer Premium</title>
+    <title>JJ Burguer - Cardápio</title>
     
     <style>
         :root { color-scheme: light; }
@@ -14,102 +15,258 @@
         body {
             background-color: #ffffff !important;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; padding: 15px; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 20px 15px; padding-bottom: 140px; 
+            overflow-x: hidden;
         }
 
-        .construtor-container { text-align: center; width: 100%; max-width: 450px; }
+        .app-container { width: 100%; max-width: 450px; }
 
-        h1 {
-            font-size: 26px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase;
-            background: linear-gradient(135deg, #d35400, #ff6b00);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 2px 3px 6px rgba(211, 84, 0, 0.15);
-        }
+        header { text-align: center; margin-bottom: 25px; }
+        .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; }
+        h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; -webkit-text-fill-color: #d35400 !important; text-transform: uppercase; letter-spacing: 1px; }
 
-        .hamburguer {
-            display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;
-            padding: 50px 15px 65px 15px; background-color: #f4d03f !important; 
+        /* BANNER DE MONTAR */
+        .banner-montar {
+            background-color: #f4d03f !important;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f4d03f'/%3E%3C/svg%3E") !important;
-            border-radius: 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); position: relative; 
+            padding: 30px 20px; border-radius: 20px; text-align: center;
+            box-shadow: 0 8px 20px rgba(244, 208, 63, 0.4); margin-bottom: 30px; text-decoration: none; display: block;
+        }
+        .banner-montar h2 { color: #2c3e50 !important; -webkit-text-fill-color: #2c3e50 !important; font-size: 22px; margin-bottom: 10px; font-weight: 900; }
+        .banner-montar p { color: #555 !important; -webkit-text-fill-color: #555 !important; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
+        .btn-banner { display: inline-block; background: #ff6b00 !important; color: white !important; -webkit-text-fill-color: white !important; padding: 12px 25px; border-radius: 30px; font-weight: bold; text-transform: uppercase; }
+
+        .titulo-secao { font-size: 20px; color: #333 !important; -webkit-text-fill-color: #333 !important; margin-bottom: 15px; border-bottom: 3px solid #f4d03f; display: inline-block; padding-bottom: 5px; }
+
+        /* CARD DO LANCHE */
+        .card-lanche {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+            border: 2px solid #f4f4f4; border-radius: 25px; padding: 20px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
-        .logo-botton {
-            position: absolute; top: 15px; left: 15px; width: 65px; height: 65px;
-            border-radius: 50%; object-fit: cover; background-color: #ffffff; 
-            border: 3px solid #ff6b00; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        .logo-botton:active { transform: scale(1.1) rotate(-8deg); }
-
-        .container-preco {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            background-image: linear-gradient(135deg, #2c3e50, #1a252f) !important;
-            color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;
-            font-size: 16px; font-weight: bold; padding: 8px 22px;
-            border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); white-space: nowrap; z-index: 90;
+        /* VITRINE AMARELA */
+        .vitrine-hamburguer {
+            background-color: #f4d03f !important;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f4d03f'/%3E%3C/svg%3E") !important;
+            border-radius: 20px; padding: 40px 5px; margin-bottom: 20px;
+            display: flex; flex-direction: column; align-items: center; position: relative;
         }
 
-        #preco-total { color: #f4d03f !important; -webkit-text-fill-color: #f4d03f !important; font-size: 18px; margin-left: 5px; }
+        @keyframes respirar { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
 
-        .camada-ingrediente { width: 260px; height: 38px; display: flex; justify-content: center; align-items: center; position: relative; transition: height 0.4s ease, opacity 0.35s ease, transform 0.45s ease; }
-        .topo-container { height: auto; margin-bottom: -12px; z-index: 12; }
-        .base-container { height: auto; margin-top: -12px; z-index: 1; }
-        .camada-pepino { z-index: 8; } .camada-mussarela { z-index: 7; } .camada-alface { z-index: 6; } .camada-bacon { z-index: 5; } .camada-carne { z-index: 4; }
+        .mini-camada { width: 100%; height: 26px; display: flex; justify-content: center; align-items: center; position: relative; animation: respirar 3.5s ease-in-out infinite; }
+        .mini-camada img { width: 140px; height: auto; position: relative; z-index: 10; }
+        .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
+        .z-pepino { z-index: 8; animation-delay: 0.1s; } .z-queijo { z-index: 7; animation-delay: 0.2s; } 
+        .z-alface { z-index: 6; animation-delay: 0.3s; } .z-bacon { z-index: 5; animation-delay: 0.4s; } 
+        .z-carne { z-index: 4; animation-delay: 0.5s; }
+
+        /* ETIQUETAS E LINHAS */
+        .etiqueta-esq, .etiqueta-dir {
+            position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; 
+            color: #d35400 !important; -webkit-text-fill-color: #d35400 !important; text-transform: uppercase; 
+            letter-spacing: 0.5px; display: flex; align-items: center; z-index: 20; white-space: nowrap;
+        }
+        .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
+        .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
+
+        /* TEXTOS DO CARD E BOTÃO ADICIONAR */
+        .card-lanche h3 { color: #333 !important; -webkit-text-fill-color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
+        .card-lanche p { color: #777 !important; -webkit-text-fill-color: #777 !important; font-size: 14px; line-height: 1.4; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px; }
+        .preco-card { font-size: 20px; color: #27ae60 !important; -webkit-text-fill-color: #27ae60 !important; font-weight: 900; }
+        .btn-add { background: #ff6b00 !important; color: white !important; -webkit-text-fill-color: white !important; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+
+        /* BOTÕES FLUTUANTES */
+        .btn-flutuante {
+            position: fixed; left: 50%; transform: translateX(-50%);
+            color: white !important; -webkit-text-fill-color: white !important;
+            padding: 15px 30px; border-radius: 30px; font-weight: 900; font-size: 16px;
+            border: none; cursor: pointer; z-index: 990; white-space: nowrap; transition: 0.3s;
+        }
+        .btn-flutuante:active { transform: translateX(-50%) scale(0.95); }
         
-        .ingrediente-img { width: 100%; height: auto; display: block; }
-        .escondido { height: 0 !important; opacity: 0 !important; transform: translateX(-150%) !important; pointer-events: none; }
-        .saindo-direita { height: 0 !important; opacity: 0 !important; transform: translateX(150%) !important; pointer-events: none; }
+        #btnCarrinho { bottom: 20px; background-color: #27ae60 !important; background-image: linear-gradient(135deg, #27ae60, #2ecc71) !important; box-shadow: 0 5px 20px rgba(39, 174, 96, 0.5); display: none; }
+        #btnRastreio { bottom: 80px; background-color: #2980b9 !important; background-image: linear-gradient(135deg, #2980b9, #3498db) !important; box-shadow: 0 5px 20px rgba(41, 128, 185, 0.5); display: none; }
 
-        .paineis-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        button { background-color: #e74c3c !important; color: white !important; -webkit-text-fill-color: white !important; border: none; padding: 10px 4px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        button.adicionar { background-color: #c0392b !important; }
-
-        .btn-finalizar { width: 100%; background-image: linear-gradient(135deg, #27ae60, #2ecc71) !important; color: white !important; padding: 14px; font-size: 16px; border-radius: 8px; text-transform: uppercase; font-weight: bold; border: none; }
-
+        /* MODAIS */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000; padding:15px; }
         .modal-overlay.ativo { display: flex; }
-        .modal-card { background-color: #ffffff !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align:left; }
-        .modal-card h2 { font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; color: #333 !important; -webkit-text-fill-color: #333 !important; }
+        .modal-card { background: #ffffff !important; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E") !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align: left; max-height: 90vh; overflow-y: auto; }
+        .modal-card h2 { color: #333 !important; -webkit-text-fill-color: #333 !important; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; }
+        
+        /* LISTA DO CARRINHO */
+        .lista-itens { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: #555 !important; -webkit-text-fill-color: #555 !important; }
+        .item-info { font-weight: bold; }
+        .btn-remover { background: #e74c3c !important; color: white !important; -webkit-text-fill-color: white !important; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .subtotal-texto { font-weight: 900; color: #27ae60 !important; -webkit-text-fill-color: #27ae60 !important; font-size: 18px; text-align: right; margin-bottom: 15px; }
+
+        /* FORMULÁRIO E BOTÕES DOS MODAIS */
         .campo-grupo { margin-bottom: 12px; }
         .campo-grupo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555 !important; -webkit-text-fill-color: #555 !important; }
-        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; -webkit-text-fill-color: #000 !important; }
-        
-        .btn-enviar-whats { width: 100%; background-color: #25d366 !important; color: white !important; padding: 12px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; }
-        .btn-fechar { background-color: #95a5a6 !important; width: 100%; margin-top: 8px; padding: 10px; border:none; font-weight:bold; border-radius: 6px; color:white !important; }
+        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; -webkit-text-fill-color: #000 !important; font-family: sans-serif; }
+        .btn-acao-modal { width: 100%; padding: 14px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; cursor: pointer; color: white !important; -webkit-text-fill-color: white !important; }
+        .btn-enviar-whats { background-color: #25d366 !important; }
+        .btn-fechar { background-color: #95a5a6 !important; margin-top: 8px; }
+
+        /* TIMELINE DE RASTREIO */
+        .timeline { margin: 20px 0; padding-left: 10px; }
+        .passo { position: relative; padding-left: 25px; margin-bottom: 15px; color: #777 !important; -webkit-text-fill-color: #777 !important; font-size: 15px; font-weight: bold; }
+        .passo::before { content: ''; position: absolute; left: 0; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: #ccc; z-index: 2; }
+        .passo::after { content: ''; position: absolute; left: 5px; top: 15px; width: 2px; height: 25px; background: #eee; z-index: 1; }
+        .passo:last-child::after { display: none; }
+        .passo.ativo { color: #27ae60 !important; -webkit-text-fill-color: #27ae60 !important; }
+        .passo.ativo::before { background: #27ae60; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
+        .info-rastreio { font-size: 13px; color: #888 !important; -webkit-text-fill-color: #888 !important; background: #f9f9f9 !important; padding: 10px; border-radius: 8px; border-left: 3px solid #f4d03f; margin-bottom: 15px; }
+
+        /* =======================================================
+           ANIMAÇÃO DA LOGO EMPURRANDO O CARRINHO (NOVIDADE!)
+           ======================================================= */
+        .tela-animacao {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 2000; /* Fica acima de tudo no site */
+        }
+        .tela-animacao.ativo { display: flex; }
+
+        .animacao-carrinho {
+            display: flex; align-items: flex-end;
+            animation: deslizarTela 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* A sua logo balançando como se estivesse correndo */
+        .logo-empurrando {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #ff6b00; object-fit: cover;
+            animation: correr 0.4s infinite alternate;
+            position: relative; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        /* O carrinho colado na logo */
+        .icone-carrinho {
+            font-size: 55px; margin-left: -5px; z-index: 1;
+            position: relative; top: 5px; 
+        }
+
+        .texto-buscando {
+            margin-top: 25px; font-size: 18px; font-weight: 900;
+            color: #d35400 !important; -webkit-text-fill-color: #d35400 !important;
+            animation: piscar 1s infinite alternate; text-transform: uppercase;
+        }
+
+        /* O caminho que eles fazem: Entra da esquerda, para no meio, sai pra direita */
+        @keyframes deslizarTela {
+            0% { transform: translateX(-120vw); }
+            35% { transform: translateX(0); }
+            75% { transform: translateX(0); }
+            100% { transform: translateX(120vw); }
+        }
+        @keyframes correr { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
+        @keyframes piscar { 0% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <main class="construtor-container">
-        <h1>Monte seu Hambúrguer</h1>
-        <div class="hamburguer">
-            <img src="logo.png" alt="Logo Hamburgueria" class="logo-botton">
-            <div class="camada-ingrediente topo-container"><img class="ingrediente-img" src="pao_topo.png"></div>
-            <div id="container-pepino" class="camada-ingrediente camada-pepino"><img class="ingrediente-img" src="pepino.png"></div>
-            <div id="container-mussarela" class="camada-ingrediente camada-mussarela"><img class="ingrediente-img" src="queijo.png"></div>
-            <div id="container-alface" class="camada-ingrediente camada-alface"><img class="ingrediente-img" src="alface.png"></div>
-            <div id="container-bacon" class="camada-ingrediente camada-bacon"><img class="ingrediente-img" src="bacon.png"></div>
-            <div id="container-carne" class="camada-ingrediente camada-carne"><img class="ingrediente-img" src="carne.png"></div>
-            <div class="camada-ingrediente base-container"><img class="ingrediente-img" src="pao_base.png"></div>
-            <div class="container-preco">Total: <span id="preco-total">R$ 25,50</span></div>
+    <div class="app-container">
+        
+        <header>
+            <img src="logo.png" alt="Logo da Hamburgueria" class="logo-header">
+            <h1>JJ_BURGUER</h1>
+        </header>
+
+        <!-- BANNER DE MONTAR -->
+        <a href="montar.html" class="banner-montar">
+            <h2>Chef por um dia! 🍔</h2>
+            <p>Escolha seus ingredientes favoritos e monte do seu jeito.</p>
+            <div class="btn-banner">Montar meu Hambúrguer ➔</div>
+        </a>
+
+        <h2 class="titulo-secao">Nossos Clássicos</h2>
+
+        <!-- LANCHE 1 -->
+        <div class="card-lanche">
+            <div class="vitrine-hamburguer">
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
+                <div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
+            </div>
+            <h3>Classic Burger</h3>
+            <p>Pão macio, blend bovino de 160g, queijo mussarela derretido e alface fresca.</p>
+            <div class="card-footer">
+                <span class="preco-card">R$ 22,00</span>
+                <button class="btn-add" onclick="adicionarItem('Classic Burger', 22.00)">Adicionar 🛒</button>
+            </div>
         </div>
 
-        <div class="paineis-botoes">
-            <button id="btn-pepino" onclick="alternarIngrediente('pepino', 'Pepino', 1.50)">Remover Pepino (R$ 1,50)</button>
-            <button id="btn-mussarela" onclick="alternarIngrediente('mussarela', 'Mussarela', 3.00)">Remover Mussarela (R$ 3,00)</button>
-            <button id="btn-bacon" onclick="alternarIngrediente('bacon', 'Bacon', 4.00)">Remover Bacon (R$ 4,00)</button>
-            <button id="btn-carne" onclick="alternarIngrediente('carne', 'Carne', 6.00)">Remover Carne (R$ 6,00)</button>
-            <button id="btn-alface" onclick="alternarIngrediente('alface', 'Alface', 1.00)" style="grid-column: span 2;">Remover Alface (R$ 1,00)</button>
+        <!-- LANCHE 2 -->
+        <div class="card-lanche">
+            <div class="vitrine-hamburguer">
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
+                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
+            </div>
+            <h3>Bacon Master</h3>
+            <p>A escolha dos fortes: Pão, blend 160g, queijo mussarela e muito bacon premium.</p>
+            <div class="card-footer">
+                <span class="preco-card">R$ 27,00</span>
+                <button class="btn-add" onclick="adicionarItem('Bacon Master', 27.00)">Adicionar 🛒</button>
+            </div>
         </div>
 
-        <button class="btn-finalizar" onclick="abrirModal()">FINALIZAR PEDIDO ➔</button>
-    </main>
+        <!-- LANCHE 3 -->
+        <div class="card-lanche">
+            <div class="vitrine-hamburguer">
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div>
+                <div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div>
+                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
+            </div>
+            <h3>O Monstrão</h3>
+            <p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
+            <div class="card-footer">
+                <span class="preco-card">R$ 32,50</span>
+                <button class="btn-add" onclick="adicionarItem('O Monstrão', 32.50)">Adicionar 🛒</button>
+            </div>
+        </div>
 
+    </div>
+
+    <!-- BOTÕES FLUTUANTES -->
+    <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
+    <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
+
+    <!-- NOVA TELA DE ANIMAÇÃO DO CARRINHO (FICA ESCONDIDA ATÉ O CLIQUE) -->
+    <div id="telaAnimacao" class="tela-animacao">
+        <div class="animacao-carrinho">
+            <img src="logo.png" class="logo-empurrando" alt="Logo">
+            <div class="icone-carrinho">🛒</div>
+        </div>
+        <div class="texto-buscando">Buscando seu pedido...</div>
+    </div>
+
+    <!-- MODAL DO CARRINHO COMPLETO -->
     <div id="modalPedido" class="modal-overlay">
         <div class="modal-card">
-            <h2>Dados do seu Pedido</h2>
-            <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
+            <h2>Seu Pedido 🛒</h2>
+            
+            <div class="lista-itens" id="listaItensHTML"></div>
+            <p class="subtotal-texto">Subtotal: R$ <span id="subtotalModal">0,00</span></p>
+
+            <div class="campo-grupo">
+                <label>Seu Nome:</label>
+                <input type="text" id="txt-nome" placeholder="Digite seu nome completo">
+            </div>
             <div class="campo-grupo">
                 <label>Como deseja receber?</label>
                 <select id="select-entrega" onchange="mudarOpcaoEntrega()">
@@ -117,84 +274,161 @@
                     <option value="Retirada">Retirar na Hamburgueria</option>
                 </select>
             </div>
-            <div class="campo-grupo" id="box-endereco"><label>Endereço de Entrega:</label><input type="text" id="txt-endereco" placeholder="Rua, número e bairro"></div>
-            <button class="btn-enviar-whats" onclick="enviarPedidoWhatsApp()">Enviar Pedido no WhatsApp 💬</button>
-            <button class="btn-fechar" onclick="fecharModal()">Voltar e Modificar lanche</button>
+            <div class="campo-grupo" id="box-endereco">
+                <label>Endereço de Entrega:</label>
+                <input type="text" id="txt-endereco" placeholder="Rua, número e bairro">
+            </div>
+            
+            <button class="btn-acao-modal btn-enviar-whats" onclick="enviarPedidoFinal()">Concluir via WhatsApp 💬</button>
+            <button class="btn-acao-modal btn-fechar" onclick="fecharModalCarrinho()">Continuar Comprando</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE ACOMPANHAMENTO DO PEDIDO -->
+    <div id="modalRastreio" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Status do Pedido 🛵</h2>
+            <div class="info-rastreio">
+                <strong>Importante:</strong> Seu pedido foi enviado com sucesso para o nosso WhatsApp. O acompanhamento em tempo real e a confirmação do restaurante acontecem por lá!
+            </div>
+            
+            <div class="timeline">
+                <div class="passo ativo">✅ Pedido Criado e Enviado</div>
+                <div class="passo">⏳ Aguardando Confirmação no WhatsApp</div>
+                <div class="passo">🍔 Em Preparo na Cozinha</div>
+                <div class="passo">🛵 Saiu para Entrega (ou Pronto para Retirada)</div>
+            </div>
+
+            <button class="btn-acao-modal btn-fechar" onclick="fecharRastreio()">Voltar ao Cardápio</button>
         </div>
     </div>
 
     <script>
-        let valorTotal = 25.50;
-        let ingredientesAtivos = { pepino: true, mussarela: true, bacon: true, carne: true, alface: true };
+        let carrinho = [];
 
-        function abrirModal() { document.getElementById('modalPedido').classList.add('ativo'); }
-        function fecharModal() { document.getElementById('modalPedido').classList.remove('ativo'); }
+        function adicionarItem(nomeLanche, precoLanche) {
+            carrinho.push({ nome: nomeLanche, preco: precoLanche });
+            atualizarCarrinhoUI();
+        }
+
+        function removerItem(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinhoUI();
+            if(carrinho.length === 0) fecharModalCarrinho();
+        }
+
+        function atualizarCarrinhoUI() {
+            const btnCart = document.getElementById('btnCarrinho');
+            const qtdCart = document.getElementById('qtdCart');
+            const valorCart = document.getElementById('valorCart');
+            
+            if (carrinho.length > 0) {
+                btnCart.style.display = 'block';
+            } else {
+                btnCart.style.display = 'none';
+            }
+
+            qtdCart.textContent = carrinho.length;
+            let total = 0;
+            carrinho.forEach(item => total += item.preco);
+            valorCart.textContent = total.toFixed(2).replace('.', ',');
+        }
+
+        function abrirCarrinho() {
+            const modal = document.getElementById('modalPedido');
+            const listaHTML = document.getElementById('listaItensHTML');
+            const subtotalModal = document.getElementById('subtotalModal');
+
+            listaHTML.innerHTML = "";
+            let total = 0;
+
+            carrinho.forEach((item, index) => {
+                total += item.preco;
+                listaHTML.innerHTML += `
+                    <div class="item-carrinho">
+                        <span class="item-info">1x ${item.nome}</span>
+                        <span>R$ ${item.preco.toFixed(2).replace('.', ',')} 
+                            <button class="btn-remover" onclick="removerItem(${index})">X</button>
+                        </span>
+                    </div>
+                `;
+            });
+
+            subtotalModal.textContent = total.toFixed(2).replace('.', ',');
+            modal.classList.add('ativo');
+        }
+
+        function fecharModalCarrinho() { 
+            document.getElementById('modalPedido').classList.remove('ativo'); 
+        }
 
         function mudarOpcaoEntrega() {
             const tipo = document.getElementById('select-entrega').value;
             document.getElementById('box-endereco').style.display = (tipo === 'Retirada') ? 'none' : 'block';
         }
 
-        function alternarIngrediente(idCamada, nomeExibicao, precoIngrediente) {
-            const container = document.getElementById(`container-${idCamada}`);
-            const botao = document.getElementById(`btn-${idCamada}`);
-            const precoExibicao = document.getElementById('preco-total');
-
-            if (container.classList.contains('escondido') || container.classList.contains('saindo-direita')) {
-                container.classList.remove('escondido', 'saindo-direita');
-                botao.textContent = `Remover ${nomeExibicao} (R$ ${precoIngrediente.toFixed(2).replace('.', ',')})`;
-                botao.classList.remove('adicionar');
-                valorTotal += precoIngrediente;
-                ingredientesAtivos[idCamada] = true;
-            } else {
-                container.classList.add('saindo-direita');
-                botao.textContent = `Adicionar ${nomeExibicao} (R$ ${precoIngrediente.toFixed(2).replace('.', ',')})`;
-                botao.classList.add('adicionar');
-                valorTotal -= precoIngrediente;
-                ingredientesAtivos[idCamada] = false;
-                setTimeout(() => {
-                    if (container.classList.contains('saindo-direita')) {
-                        container.classList.remove('saindo-direita');
-                        container.classList.add('escondido');
-                    }
-                }, 450);
-            }
-            precoExibicao.textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
-        }
-
-        function enviarPedidoWhatsApp() {
+        // FUNÇÃO DE ENVIO PARA O WHATSAPP
+        function enviarPedidoFinal() {
             const nome = document.getElementById('txt-nome').value.trim();
             const tipoEntrega = document.getElementById('select-entrega').value;
             const endereco = document.getElementById('txt-endereco').value.trim();
             
+            if (carrinho.length === 0) { alert('Seu carrinho está vazio!'); return; }
             if (!nome) { alert('Por favor, informe seu nome antes de prosseguir.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco) { alert('Por favor, preencha o endereço para a entrega.'); return; }
 
-            let listaIngredientes = [];
-            if (ingredientesAtivos.carne) listaIngredientes.push(" - Blend Bovino (Carne)");
-            if (ingredientesAtivos.bacon) listaIngredientes.push(" - Bacon Crocante");
-            if (ingredientesAtivos.mussarela) listaIngredientes.push(" - Queijo Mussarela");
-            if (ingredientesAtivos.pepino) listaIngredientes.push(" - Pepino");
-            if (ingredientesAtivos.alface) listaIngredientes.push(" - Alface Fresco");
-
-            if(listaIngredientes.length === 0) { listaIngredientes.push(" - Apenas o Pão (Lanche Vazio)"); }
-
-            let textoWhats = `*🍔 NOVO PEDIDO - MONTE SEU HAMBÚRGUER* \n\n*Cliente:* ${nome}\n*Método:* ${tipoEntrega}\n`;
+            let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Método:* ${tipoEntrega}\n`;
             if(tipoEntrega === 'Entrega') { textoWhats += `*Endereço:* ${endereco}\n`; }
             
-            textoWhats += `\n*🧾 COMPOSIÇÃO DO BURGER:* \n - Pão Coroa (Topo)\n`;
-            listaIngredientes.forEach(item => { textoWhats += `${item}\n`; });
-            textoWhats += ` - Pão Base\n\n`;
+            textoWhats += `\n*🧾 O PEDIDO:*\n`;
+            
+            let subtotal = 0;
+            carrinho.forEach(item => {
+                textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`;
+                subtotal += item.preco;
+            });
 
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00;
-            let totalFinal = valorTotal + taxaEntrega;
+            let totalFinal = subtotal + taxaEntrega;
 
-            textoWhats += `Subtotal Lanche: R$ ${valorTotal.toFixed(2).replace('.', ',')}\n`;
+            textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
             if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
             const meuNumeroWhastapp = "5568992365649"; 
-            window.location.href = `https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`;
+            const linkWhatsapp = `https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`;
+            
+            window.open(linkWhatsapp, '_blank');
+
+            carrinho = [];
+            atualizarCarrinhoUI();
+            
+            fecharModalCarrinho();
+            document.getElementById('btnRastreio').style.display = 'block';
+        }
+
+        // ==========================================
+        // NOVA FUNÇÃO: ANIMAÇÃO DA LOGO E RASTREIO
+        // ==========================================
+        function iniciarAnimacaoRastreio() {
+            const telaAnimacao = document.getElementById('telaAnimacao');
+            const modalRastreio = document.getElementById('modalRastreio');
+            
+            // 1. Mostra a tela branca e começa a animação (a logo entra correndo)
+            telaAnimacao.classList.add('ativo');
+
+            // 2. Espera exatamente 2.5 segundos (tempo que a logo leva para cruzar a tela)
+            setTimeout(() => {
+                // Esconde a animação
+                telaAnimacao.classList.remove('ativo');
+                
+                // Abre o recibo / status do pedido
+                modalRastreio.classList.add('ativo');
+            }, 2500); 
+        }
+
+        function fecharRastreio() {
+            document.getElementById('modalRastreio').classList.remove('ativo');
         }
     </script>
 </body>
