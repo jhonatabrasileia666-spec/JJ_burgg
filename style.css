@@ -1,0 +1,123 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #f4d03f; /* Fundo amarelo idêntico ao do vídeo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.construtor-container {
+    text-align: center;
+    background: transparent;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 40px;
+    color: #4a2c11;
+}
+
+/* Área do Hambúrguer */
+.hamburguer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px; /* Pequeno espaço entre os ingredientes */
+    margin-bottom: 50px;
+    min-height: 260px; /* Mantém a estrutura firme */
+    justify-content: center;
+}
+
+/* Base de todos os ingredientes */
+.ingrediente {
+    width: 200px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Estilo de cada camada */
+.pao-topo {
+    height: 45px;
+    background-color: #e67e22;
+    border-radius: 40px 40px 10px 10px;
+}
+
+.tomate {
+    height: 15px;
+    background-color: #e74c3c;
+    border-radius: 5px;
+}
+
+.alface {
+    height: 15px;
+    background-color: #2ecc71;
+    border-radius: 5px;
+}
+
+.queijo {
+    height: 12px;
+    background-color: #f1c40f;
+    border-radius: 3px;
+}
+
+.carne {
+    height: 30px;
+    background-color: #795548;
+    border-radius: 10px;
+}
+
+.pao-base {
+    height: 30px;
+    background-color: #d35400;
+    border-radius: 5px 5px 20px 20px;
+}
+
+/* Classe dinâmica para sumir com o ingrediente */
+.escondido {
+    height: 0 !important;
+    margin: 0 !important;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Grid de Botões (2 colunas) */
+.paineis-botoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 0 10px;
+}
+
+/* Estilo dos Botões */
+button {
+    background-color: #5d6d7e;
+    color: white;
+    border: none;
+    padding: 12px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Cor quando o botão muda para "Adicionar" */
+button.adicionar {
+    background-color: #e67e22;
+}
