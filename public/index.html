@@ -34,7 +34,10 @@
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; cursor: pointer; }
         h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; letter-spacing: 1px; }
 
-        .banner-montar { background-color: #f4d03f !important; padding: 30px 20px; border-radius: 20px; text-align: center; box-shadow: 0 8px 20px rgba(244, 208, 63, 0.4); margin-bottom: 30px; text-decoration: none; display: block; }
+        .banner-montar {
+            background-color: #f4d03f !important; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f4d03f'/%3E%3C/svg%3E") !important;
+            padding: 30px 20px; border-radius: 20px; text-align: center; box-shadow: 0 8px 20px rgba(244, 208, 63, 0.4); margin-bottom: 30px; text-decoration: none; display: block;
+        }
         .banner-montar h2 { color: #2c3e50 !important; font-size: 22px; margin-bottom: 10px; font-weight: 900; }
         .banner-montar p { color: #555 !important; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .btn-banner { display: inline-block; background: #ff6b00 !important; color: white !important; padding: 12px 25px; border-radius: 30px; font-weight: bold; text-transform: uppercase; }
@@ -44,14 +47,18 @@
 
         .card-lanche { background-color: #ffffff !important; border: 2px solid #f4f4f4; border-radius: 25px; padding: 20px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 
-        .vitrine-hamburguer { background-color: #f4d03f !important; border-radius: 20px; padding: 40px 5px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .vitrine-hamburguer {
+            background-color: #f4d03f !important; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f4d03f'/%3E%3C/svg%3E") !important;
+            border-radius: 20px; padding: 40px 5px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; position: relative;
+        }
 
         @keyframes respirar { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
 
         .mini-camada { width: 100%; height: 26px; display: flex; justify-content: center; align-items: center; position: relative; animation: respirar 3.5s ease-in-out infinite; }
         .mini-camada img { width: 140px; height: auto; position: relative; z-index: 10; }
         .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
-        .z-pepino { z-index: 8; animation-delay: 0.1s; } .z-queijo { z-index: 7; animation-delay: 0.2s; } .z-alface { z-index: 6; animation-delay: 0.3s; } .z-bacon { z-index: 5; animation-delay: 0.4s; } .z-carne { z-index: 4; animation-delay: 0.5s; }
+        .z-pepino { z-index: 8; animation-delay: 0.1s; } .z-queijo { z-index: 7; animation-delay: 0.2s; } 
+        .z-alface { z-index: 6; animation-delay: 0.3s; } .z-bacon { z-index: 5; animation-delay: 0.4s; } .z-carne { z-index: 4; animation-delay: 0.5s; }
 
         .etiqueta-esq, .etiqueta-dir { position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: #d35400 !important; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; z-index: 20; white-space: nowrap; }
         .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
@@ -63,6 +70,7 @@
         .preco-card { font-size: 20px; color: #27ae60 !important; font-weight: 900; }
         .btn-add { background: #ff6b00 !important; color: white !important; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
 
+        /* CARDS DE BEBIDA */
         #secao-bebidas { width: 100%; margin-top: 20px; }
         .card-bebida { background-color: #ffffff !important; border-radius: 15px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.06); border: 2px solid #f4f4f4; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
         .info-bebida h3 { color: #2c3e50 !important; font-size: 18px; font-weight: 900; }
@@ -73,25 +81,29 @@
         .floco { position: absolute; top: -20px; color: #ffffff; user-select: none; text-shadow: 0 0 8px rgba(255,255,255,1); animation: nevada linear forwards; }
         @keyframes nevada { 0% { transform: translate(0, -10px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-80px, 105vh) rotate(360deg); opacity: 0; } }
 
+        /* BOTÕES FLUTUANTES */
         .btn-flutuante { position: fixed; left: 50%; transform: translateX(-50%); color: white !important; padding: 15px 30px; border-radius: 30px; font-weight: 900; font-size: 16px; border: none; cursor: pointer; z-index: 990; white-space: nowrap; transition: 0.3s; }
         .btn-flutuante:active { transform: translateX(-50%) scale(0.95); }
-        #btnCarrinho { bottom: 20px; background-color: #27ae60 !important; display: none; }
-        #btnRastreio { bottom: 80px; background-color: #2980b9 !important; display: none; }
+        #btnCarrinho { bottom: 20px; background-color: #27ae60 !important; background-image: linear-gradient(135deg, #27ae60, #2ecc71) !important; box-shadow: 0 5px 20px rgba(39, 174, 96, 0.5); display: none; }
+        #btnRastreio { bottom: 80px; background-color: #2980b9 !important; background-image: linear-gradient(135deg, #2980b9, #3498db) !important; box-shadow: 0 5px 20px rgba(41, 128, 185, 0.5); display: none; }
 
-        /* MODAIS */
+        /* MODAIS GERAIS */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000; padding:15px; }
         .modal-overlay.ativo { display: flex; }
         .modal-card { background: #ffffff !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align: left; max-height: 90vh; overflow-y: auto; }
         .modal-card h2 { color: #333 !important; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; }
         
+        /* PERSONALIZAÇÃO E EXTRAS */
         .header-personaliza { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4d03f; padding-bottom: 10px; margin-bottom: 15px; }
+        .header-personaliza h2 { border: none; margin: 0; padding: 0; }
         .preco-base-modal { color: #27ae60 !important; font-weight: 900; font-size: 18px; }
         .item-extra { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9 !important; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee; }
         .item-extra label { display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer; font-weight: bold; color: #444 !important; font-size: 14px; }
         .item-extra input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ff6b00; cursor: pointer; }
         .preco-extra { color: #d35400 !important; font-weight: bold; font-size: 13px; }
-        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; margin-top: 5px; background: #fff !important; color: #000 !important; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; font-family: sans-serif; resize: none; margin-top: 5px; background: #fff !important; color: #000 !important; }
 
+        /* CARRINHO E FORMULÁRIOS */
         .lista-itens { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: #555 !important; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
         .item-info { font-weight: bold; flex: 1; }
@@ -100,16 +112,14 @@
         .subtotal-texto { font-weight: 900; color: #27ae60 !important; font-size: 18px; text-align: right; margin-bottom: 15px; }
         
         .campo-grupo { margin-bottom: 12px; } .campo-grupo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555 !important; }
-        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; }
+        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; font-family: sans-serif; }
         .btn-acao-modal { width: 100%; padding: 14px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; cursor: pointer; color: white !important; }
         .btn-confirmar { background-color: #ff6b00 !important; } .btn-enviar-whats { background-color: #25d366 !important; } .btn-fechar { background-color: #95a5a6 !important; margin-top: 8px; }
         .btn-gps { width: 100%; background-color: #f39c12 !important; color: white !important; padding: 10px; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; margin-bottom: 5px; cursor: pointer; font-size: 13px; }
-
-        /* LISTA DO PAINEL ADMIN */
-        .card-pedido-admin { border: 1px solid #ccc; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; }
-        .card-pedido-admin strong { color: #333; font-size: 15px; display: block; }
-        .card-pedido-admin span { font-size: 12px; font-weight: bold; }
-        .btn-gerenciar { background: #f39c12 !important; color: white !important; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        
+        /* BOTÕES DE AUTOMAÇÃO NO PAINEL */
+        .btn-copiar { background-color: #2980b9 !important; }
+        .alerta-copiado { display: none; color: #27ae60; font-weight: bold; font-size: 13px; text-align: center; margin-top: 10px; }
 
         .tela-animacao { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff !important; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .tela-animacao.ativo { display: flex; }
@@ -120,6 +130,7 @@
         @keyframes deslizarTela { 0% { transform: translateX(-120vw); } 35% { transform: translateX(0); } 75% { transform: translateX(0); } 100% { transform: translateX(120vw); } }
         @keyframes piscar { 0% { opacity: 0.4; } 100% { opacity: 1; } }
 
+        /* TIMELINE (LINHA DO TEMPO) */
         .timeline { margin: 20px 0; padding-left: 10px; }
         .passo { position: relative; padding-left: 25px; margin-bottom: 15px; color: #ccc !important; font-size: 15px; font-weight: bold; transition: color 0.5s ease; }
         .passo::before { content: ''; position: absolute; left: 0; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: #eee; z-index: 2; transition: background 0.5s ease; }
@@ -141,7 +152,11 @@
             <h1>JJ_BURGUER</h1>
         </header>
 
-        <a href="montar.html" class="banner-montar"><h2>Chef por um dia! 🍔</h2><p>Escolha ingredientes e monte do seu jeito.</p><div class="btn-banner">Montar Hambúrguer ➔</div></a>
+        <a href="montar.html" class="banner-montar">
+            <h2>Chef por um dia! 🍔</h2>
+            <p>Escolha ingredientes e monte do seu jeito.</p>
+            <div class="btn-banner">Montar Hambúrguer ➔</div>
+        </a>
 
         <h2 class="titulo-secao">Nossos Clássicos</h2>
 
@@ -153,7 +168,8 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>Classic Burger</h3><p>Blend bovino 160g, queijo derretido e alface.</p>
+            <h3>Classic Burger</h3>
+            <p>Pão macio, blend bovino de 160g, queijo mussarela derretido e alface fresca.</p>
             <div class="card-footer"><span class="preco-card">R$ 22,00</span><button class="btn-add" onclick="abrirPersonalizacao('Classic Burger', 22.00)">Adicionar 🛒</button></div>
         </div>
 
@@ -165,7 +181,8 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>Bacon Master</h3><p>Blend 160g, queijo mussarela e muito bacon premium.</p>
+            <h3>Bacon Master</h3>
+            <p>A escolha dos fortes: Pão, blend 160g, queijo mussarela e muito bacon premium.</p>
             <div class="card-footer"><span class="preco-card">R$ 27,00</span><button class="btn-add" onclick="abrirPersonalizacao('Bacon Master', 27.00)">Adicionar 🛒</button></div>
         </div>
 
@@ -179,94 +196,85 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>O Monstrão</h3><p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
+            <h3>O Monstrão</h3>
+            <p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
             <div class="card-footer"><span class="preco-card">R$ 32,50</span><button class="btn-add" onclick="abrirPersonalizacao('O Monstrão', 32.50)">Adicionar 🛒</button></div>
         </div>
 
         <div id="secao-bebidas">
             <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
-            <div class="card-bebida"><div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida">R$ 6,00</span></div><button class="btn-add-frio" onclick="adicionarItemCardapio('Coca-Cola Lata', 6.00, '')">Add 🛒</button></div>
-            <div class="card-bebida"><div class="info-bebida"><h3>Guaraná Antarctica</h3><p>Lata 350ml</p><span class="preco-bebida">R$ 5,00</span></div><button class="btn-add-frio" onclick="adicionarItemCardapio('Guaraná Lata', 5.00, '')">Add 🛒</button></div>
-            <div class="card-bebida"><div class="info-bebida"><h3>Suco de Laranja</h3><p>Natural (500ml)</p><span class="preco-bebida">R$ 9,00</span></div><button class="btn-add-frio" onclick="adicionarItemCardapio('Suco Laranja', 9.00, '')">Add 🛒</button></div>
+            
+            <div class="card-bebida">
+                <div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida">R$ 6,00</span></div>
+                <button class="btn-add-frio" onclick="adicionarItemCardapio('Coca-Cola Lata', 6.00, '')">Add 🛒</button>
+            </div>
+            <div class="card-bebida">
+                <div class="info-bebida"><h3>Guaraná Antarctica</h3><p>Lata 350ml</p><span class="preco-bebida">R$ 5,00</span></div>
+                <button class="btn-add-frio" onclick="adicionarItemCardapio('Guaraná Lata', 5.00, '')">Add 🛒</button>
+            </div>
+            <div class="card-bebida">
+                <div class="info-bebida"><h3>Suco de Laranja</h3><p>Natural (500ml)</p><span class="preco-bebida">R$ 9,00</span></div>
+                <button class="btn-add-frio" onclick="adicionarItemCardapio('Suco Laranja', 9.00, '')">Add 🛒</button>
+            </div>
         </div>
+
     </div>
 
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
-    <!-- ==============================================
-         PAINEL DE GESTÃO DO DONO (COM LISTA SALVA)
-         ============================================== -->
     <div id="modalAdmin" class="modal-overlay">
         <div class="modal-card" style="border: 4px solid #f39c12;">
+            <h2 style="color: #f39c12 !important; border-bottom: none; margin-bottom: 5px;">🔐 Painel do Dono</h2>
             
-            <!-- TELA 1: SENHA -->
             <div id="area-senha">
-                <h2 style="color: #f39c12 !important; border-bottom: none; margin-bottom: 5px;">🔐 Acesso Restrito</h2>
-                <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Digite a senha para gerenciar os pedidos.</p>
-                <input type="password" id="admin-senha-input" placeholder="Sua senha...">
-                <button class="btn-acao-modal" style="background-color: #f39c12 !important;" onclick="verificarSenha()">Desbloquear Painel 🔓</button>
+                <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Acesso restrito. Por favor, digite a senha.</p>
+                <input type="password" id="admin-senha-input" placeholder="Digite a senha...">
+                <button class="btn-acao-modal" style="background-color: #f39c12 !important;" onclick="verificarSenha()">Desbloquear 🔓</button>
                 <button class="btn-acao-modal btn-fechar" onclick="fecharPainelDono()">Cancelar</button>
             </div>
 
-            <!-- TELA 2: LISTA DE PEDIDOS -->
-            <div id="area-lista-pedidos" style="display: none;">
-                <h2 style="color: #f39c12 !important; border-bottom: 2px solid #f39c12;">📋 Pedidos Ativos</h2>
-                <button class="btn-acao-modal" style="background-color: #3498db !important; padding: 10px; margin-bottom: 15px;" onclick="mostrarTelaAddPedido()">➕ Cadastrar Cliente da Fila</button>
-                
-                <div id="container-lista-admin" style="max-height: 250px; overflow-y: auto;">
-                    <!-- A lista de clientes vai aparecer aqui via JavaScript -->
-                </div>
-                
-                <button class="btn-acao-modal btn-fechar" onclick="fecharPainelDono()">Sair do Painel</button>
-            </div>
-
-            <!-- TELA 3: ADICIONAR NOVO CLIENTE -->
-            <div id="area-add-pedido" style="display: none;">
-                <h2 style="color: #3498db !important; border-bottom: 2px solid #3498db;">➕ Novo Cliente</h2>
-                <div class="campo-grupo">
-                    <label>Nome do Cliente:</label>
-                    <input type="text" id="add-admin-nome" placeholder="Ex: João Silva">
-                </div>
-                <div class="campo-grupo">
-                    <label>WhatsApp (com DDD):</label>
-                    <input type="number" id="add-admin-tel" placeholder="Ex: 68999999999">
-                </div>
-                <button class="btn-acao-modal" style="background-color: #27ae60 !important;" onclick="salvarNovoClienteAdmin()">Salvar na Lista</button>
-                <button class="btn-acao-modal btn-fechar" onclick="voltarParaListaAdmin()">Voltar</button>
-            </div>
-
-            <!-- TELA 4: ATUALIZAR STATUS DE UM CLIENTE -->
-            <div id="area-gerenciar-pedido" style="display: none;">
-                <h2 id="gerenciar-nome-cliente" style="color: #f39c12 !important; border-bottom: 2px solid #f39c12;">Nome</h2>
+            <div id="area-painel" style="display: none;">
+                <p style="font-size: 13px; color: #555 !important; margin-bottom: 15px;">Gere o link automático e mande no WhatsApp do cliente.</p>
                 
                 <div class="campo-grupo">
-                    <label>Atualizar Status para:</label>
-                    <select id="gerenciar-status-cliente">
-                        <option value="1">✅ Aguardando Confirmação</option>
+                    <label>Novo Status do Pedido:</label>
+                    <select id="admin-status">
                         <option value="2">🍔 Em Preparo na Cozinha</option>
                         <option value="3">🛵 Saiu para Entrega / Retirada</option>
                     </select>
                 </div>
                 
-                <button class="btn-acao-modal" style="background-color: #25d366 !important;" onclick="atualizarStatusEEnviarWhats()">Atualizar e Avisar no WhatsApp 💬</button>
-                <button class="btn-acao-modal" style="background-color: #e74c3c !important; margin-top: 15px;" onclick="excluirPedidoDaLista()">🗑️ Concluir e Remover da Lista</button>
-                <button class="btn-acao-modal btn-fechar" onclick="voltarParaListaAdmin()">Voltar</button>
+                <button class="btn-acao-modal btn-copiar" onclick="copiarLinkMagico()">📋 Copiar Mensagem Pronta</button>
+                <div id="msg-copiado" class="alerta-copiado">✅ Mensagem copiada! É só colar no WhatsApp do cliente.</div>
+                
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                
+                <div class="campo-grupo">
+                    <label>Ou enviar direto (Digite o Whats com DDD):</label>
+                    <input type="number" id="admin-telefone" placeholder="Ex: 68999999999">
+                </div>
+                <button class="btn-acao-modal" style="background-color: #25d366 !important;" onclick="enviarStatusCliente()">Enviar no WhatsApp 💬</button>
+                
+                <button class="btn-acao-modal btn-fechar" onclick="fecharPainelDono()">Sair do Painel</button>
             </div>
-
         </div>
     </div>
 
-    <!-- MODAIS RESTANTES -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
-            <div class="header-personaliza"><h2 id="tituloCustomLanche">Nome do Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
+            <div class="header-personaliza">
+                <h2 id="tituloCustomLanche">Nome do Lanche</h2>
+                <span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span>
+            </div>
             <p style="font-weight: bold; margin-bottom: 10px; color: #555;">Deseja adicionar algum extra?</p>
             <div class="item-extra"><label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label><span class="preco-extra">+ R$ 4,00</span></div>
             <div class="item-extra"><label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label><span class="preco-extra">+ R$ 3,50</span></div>
             <div class="item-extra"><label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label><span class="preco-extra">+ R$ 8,00</span></div>
             <div class="item-extra"><label><input type="checkbox" class="check-extra" value="2.50" data-nome="Cebola" onchange="atualizarPrecoCustom()"> Cebola Caramelizada</label><span class="preco-extra">+ R$ 2,50</span></div>
+
             <div class="campo-grupo" style="margin-top: 15px;"><label>Alguma observação?</label><textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles..."></textarea></div>
+
             <button id="btnConfirmarCustom" class="btn-acao-modal btn-confirmar" onclick="confirmarPersonalizacao()">Adicionar ao Carrinho</button>
             <button class="btn-acao-modal btn-fechar" onclick="fecharPersonalizacao()">Cancelar</button>
         </div>
@@ -277,13 +285,20 @@
             <h2>Seu Pedido 🛒</h2>
             <div class="lista-itens" id="listaItensHTML"></div>
             <p class="subtotal-texto">Subtotal: R$ <span id="subtotalModal">0,00</span></p>
+
             <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
-            <div class="campo-grupo"><label>Como deseja receber?</label><select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select></div>
+            <div class="campo-grupo">
+                <label>Como deseja receber?</label>
+                <select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select>
+            </div>
+            
             <div class="campo-grupo" id="box-endereco">
-                <label>Endereço de Entrega (Referência):</label><input type="text" id="txt-endereco" placeholder="Ex: Rua das Flores, 123">
+                <label>Endereço de Entrega (Referência):</label>
+                <input type="text" id="txt-endereco" placeholder="Ex: Rua das Flores, 123">
                 <button class="btn-gps" onclick="obterLocalizacao()">📍 Pegar minha localização exata (GPS)</button>
                 <small id="status-gps" style="display:none; color: #27ae60; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small>
             </div>
+            
             <button class="btn-acao-modal btn-enviar-whats" onclick="enviarPedidoFinal()">Concluir via WhatsApp 💬</button>
             <button class="btn-acao-modal btn-fechar" onclick="fecharModalCarrinho()">Continuar Comprando</button>
         </div>
@@ -309,23 +324,17 @@
 
     <script>
         // ==========================================
-        // O NOVO SISTEMA DE GESTÃO DO DONO (Mini-CRM Local)
+        // LÓGICA DO PAINEL DE CONTROLE (SENHA E AUTOMAÇÃO)
         // ==========================================
-        
-        // Puxa a lista da memória do celular do Dono, ou cria uma vazia
-        let pedidosAdmin = JSON.parse(localStorage.getItem('jjburguer_lista')) || [];
-        let indiceEditando = -1; 
         let cliquesLogo = 0;
-
+        
         function cliqueLogoSecreto() {
             cliquesLogo++;
             if (cliquesLogo === 3) {
                 document.getElementById('modalAdmin').classList.add('ativo');
                 document.getElementById('area-senha').style.display = 'block';
-                document.getElementById('area-lista-pedidos').style.display = 'none';
-                document.getElementById('area-add-pedido').style.display = 'none';
-                document.getElementById('area-gerenciar-pedido').style.display = 'none';
-                document.getElementById('admin-senha-input').value = ""; 
+                document.getElementById('area-painel').style.display = 'none';
+                document.getElementById('admin-senha-input').value = ""; // Limpa a senha
                 cliquesLogo = 0; 
             }
             setTimeout(() => { cliquesLogo = 0; }, 1500); 
@@ -333,12 +342,15 @@
 
         function verificarSenha() {
             const senhaDigitada = document.getElementById('admin-senha-input').value;
-            const senhaCorreta = "jj123"; // SUA SENHA DE ACESSO
+            
+            // ==============================================
+            // AQUI VOCÊ PODE MUDAR A SUA SENHA DE ACESSO
+            // ==============================================
+            const senhaCorreta = "jj123"; 
 
             if (senhaDigitada === senhaCorreta) {
                 document.getElementById('area-senha').style.display = 'none';
-                renderizarListaAdmin();
-                document.getElementById('area-lista-pedidos').style.display = 'block';
+                document.getElementById('area-painel').style.display = 'block';
             } else {
                 alert("❌ Senha incorreta!");
             }
@@ -348,102 +360,41 @@
             document.getElementById('modalAdmin').classList.remove('ativo');
         }
 
-        function mostrarTelaAddPedido() {
-            document.getElementById('area-lista-pedidos').style.display = 'none';
-            document.getElementById('area-add-pedido').style.display = 'block';
-            document.getElementById('add-admin-nome').value = "";
-            document.getElementById('add-admin-tel').value = "";
+        // Gera a mensagem inteira para enviar ao cliente
+        function gerarMensagemPronta() {
+            const statusSelecionado = document.getElementById('admin-status').value;
+            const linkMagico = window.location.origin + window.location.pathname + "?rastreio=true&status=" + statusSelecionado;
+            let nomeStatus = statusSelecionado === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
+            return `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nClique no link abaixo para acompanhar pelo site:\n${linkMagico}`;
         }
 
-        function voltarParaListaAdmin() {
-            document.getElementById('area-add-pedido').style.display = 'none';
-            document.getElementById('area-gerenciar-pedido').style.display = 'none';
-            renderizarListaAdmin();
-            document.getElementById('area-lista-pedidos').style.display = 'block';
+        // Função de automação: Copia para a área de transferência do celular
+        function copiarLinkMagico() {
+            const texto = gerarMensagemPronta();
+            
+            // Cria um campo de texto temporário invisível para copiar o texto (funciona em todos os celulares)
+            const tempInput = document.createElement("textarea");
+            tempInput.value = texto;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            // Mostra o aviso que copiou
+            document.getElementById('msg-copiado').style.display = 'block';
+            setTimeout(() => { document.getElementById('msg-copiado').style.display = 'none'; }, 3000);
         }
 
-        function salvarNovoClienteAdmin() {
-            const nome = document.getElementById('add-admin-nome').value.trim();
-            const tel = document.getElementById('add-admin-tel').value.trim();
-            
-            if(!nome || !tel) { alert("Preencha o nome e o número!"); return; }
-
-            // Salva o novo cliente com status 1 (Aguardando)
-            pedidosAdmin.push({ nome: nome, telefone: tel, status: 1 });
-            localStorage.setItem('jjburguer_lista', JSON.stringify(pedidosAdmin));
-            
-            voltarParaListaAdmin();
-        }
-
-        function renderizarListaAdmin() {
-            const container = document.getElementById('container-lista-admin');
-            container.innerHTML = "";
-            
-            if (pedidosAdmin.length === 0) {
-                container.innerHTML = "<p style='text-align:center; color:#777;'>Nenhum pedido ativo.</p>";
-                return;
-            }
-
-            // Cria um card para cada cliente na lista
-            pedidosAdmin.forEach((pedido, index) => {
-                let statusTexto = "Aguardando"; let corStatus = "#e74c3c";
-                if(pedido.status == 2) { statusTexto = "Em Preparo"; corStatus = "#f39c12"; }
-                if(pedido.status == 3) { statusTexto = "Saiu p/ Entrega"; corStatus = "#27ae60"; }
-
-                container.innerHTML += `
-                    <div class="card-pedido-admin">
-                        <div>
-                            <strong>${pedido.nome}</strong>
-                            <span style="color: ${corStatus};">${statusTexto}</span>
-                        </div>
-                        <button class="btn-gerenciar" onclick="abrirGerenciarPedido(${index})">Gerenciar</button>
-                    </div>
-                `;
-            });
-        }
-
-        function abrirGerenciarPedido(index) {
-            indiceEditando = index;
-            const pedido = pedidosAdmin[index];
-            
-            document.getElementById('gerenciar-nome-cliente').innerText = "Cliente: " + pedido.nome;
-            document.getElementById('gerenciar-status-cliente').value = pedido.status;
-            
-            document.getElementById('area-lista-pedidos').style.display = 'none';
-            document.getElementById('area-gerenciar-pedido').style.display = 'block';
-        }
-
-        function atualizarStatusEEnviarWhats() {
-            const novoStatus = document.getElementById('gerenciar-status-cliente').value;
-            const pedido = pedidosAdmin[indiceEditando];
-            
-            // Atualiza a memória
-            pedido.status = novoStatus;
-            localStorage.setItem('jjburguer_lista', JSON.stringify(pedidosAdmin));
-
-            // Gera o link mágico para o cliente
-            const linkMagico = window.location.origin + window.location.pathname + "?rastreio=true&status=" + novoStatus;
-            let nomeStatus = "✅ *CONFIRMADO*";
-            if(novoStatus == 2) nomeStatus = "🍔 *EM PREPARO*";
-            if(novoStatus == 3) nomeStatus = "🛵 *SAIU PARA ENTREGA*";
-
-            let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias, ${pedido.nome}! O status do seu pedido mudou para:\n${nomeStatus}\n\nClique no link abaixo para acompanhar pelo site:\n${linkMagico}`;
-            
-            // Abre o WhatsApp
-            window.open(`https://wa.me/55${pedido.telefone}?text=${encodeURIComponent(textoWhats)}`, '_blank');
-            voltarParaListaAdmin();
-        }
-
-        function excluirPedidoDaLista() {
-            if(confirm("Tem certeza que quer remover este pedido da lista?")) {
-                pedidosAdmin.splice(indiceEditando, 1);
-                localStorage.setItem('jjburguer_lista', JSON.stringify(pedidosAdmin));
-                voltarParaListaAdmin();
-            }
+        function enviarStatusCliente() {
+            const tel = document.getElementById('admin-telefone').value.trim();
+            if(!tel) { alert("Digite o número do cliente!"); return; }
+            const textoWhats = gerarMensagemPronta();
+            window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            fecharPainelDono();
         }
 
         // ==========================================
-        // LÓGICA DO CLIENTE (MANTIDA INTACTA)
+        // LÓGICA DO CLIENTE (MANTIDA)
         // ==========================================
         window.addEventListener('load', () => {
             const parametrosURL = new URLSearchParams(window.location.search);
@@ -458,29 +409,40 @@
             }
         });
 
-        let carrinho = []; let linkMapaGoogle = ""; let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
+        let carrinho = [];
+        let linkMapaGoogle = ""; 
+        let lancheSendoPersonalizado = "";
+        let precoBaseSendoPersonalizado = 0;
 
         function abrirPersonalizacao(nomeLanche, precoBase) {
             lancheSendoPersonalizado = nomeLanche; precoBaseSendoPersonalizado = precoBase;
-            document.getElementById('tituloCustomLanche').innerText = nomeLanche; document.getElementById('txt-observacao').value = ""; document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
+            document.getElementById('tituloCustomLanche').innerText = nomeLanche;
+            document.getElementById('txt-observacao').value = "";
+            document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
             atualizarPrecoCustom(); document.getElementById('modalPersonalizar').classList.add('ativo');
         }
 
         function atualizarPrecoCustom() {
-            let total = precoBaseSendoPersonalizado; document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); });
-            document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`; document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`;
+            let total = precoBaseSendoPersonalizado;
+            document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); });
+            document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
         function confirmarPersonalizacao() {
             let precoTotalItem = precoBaseSendoPersonalizado; let extrasEscolhidos = [];
             document.querySelectorAll('.check-extra:checked').forEach(cb => { precoTotalItem += parseFloat(cb.value); extrasEscolhidos.push(cb.getAttribute('data-nome')); });
-            let observacao = document.getElementById('txt-observacao').value.trim(); let nomeFinalCarrinho = lancheSendoPersonalizado;
+            let observacao = document.getElementById('txt-observacao').value.trim();
+            let nomeFinalCarrinho = lancheSendoPersonalizado;
             if (extrasEscolhidos.length > 0) { nomeFinalCarrinho += ` (+ ${extrasEscolhidos.join(', ')})`; }
-            adicionarItemCardapio(nomeFinalCarrinho, precoTotalItem, observacao); fecharPersonalizacao();
+            adicionarItemCardapio(nomeFinalCarrinho, precoTotalItem, observacao);
+            fecharPersonalizacao();
         }
 
         function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
+
         function adicionarItemCardapio(nome, preco, obs) { carrinho.push({ nome: nome, preco: preco, obs: obs }); atualizarCarrinhoUI(); }
+
         function removerItem(index) { carrinho.splice(index, 1); atualizarCarrinhoUI(); if(carrinho.length === 0) fecharModalCarrinho(); }
 
         function atualizarCarrinhoUI() {
@@ -494,14 +456,21 @@
             const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
             listaHTML.innerHTML = ""; let total = 0;
             carrinho.forEach((item, index) => {
-                total += item.preco; let detalheObs = item.obs && item.obs !== "" ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
+                total += item.preco;
+                let detalheObs = item.obs && item.obs !== "" ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
                 listaHTML.innerHTML += `<div class="item-carrinho"><div class="item-info">1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${item.preco.toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
             });
-            subtotalModal.textContent = total.toFixed(2).replace('.', ','); document.getElementById('status-gps').style.display = 'none'; linkMapaGoogle = ""; modal.classList.add('ativo');
+            subtotalModal.textContent = total.toFixed(2).replace('.', ',');
+            document.getElementById('status-gps').style.display = 'none'; linkMapaGoogle = ""; 
+            modal.classList.add('ativo');
         }
 
         function fecharModalCarrinho() { document.getElementById('modalPedido').classList.remove('ativo'); }
-        function mudarOpcaoEntrega() { document.getElementById('box-endereco').style.display = (document.getElementById('select-entrega').value === 'Retirada') ? 'none' : 'block'; }
+
+        function mudarOpcaoEntrega() {
+            const tipo = document.getElementById('select-entrega').value;
+            document.getElementById('box-endereco').style.display = (tipo === 'Retirada') ? 'none' : 'block';
+        }
 
         function obterLocalizacao() {
             const statusGPS = document.getElementById('status-gps');
@@ -509,7 +478,8 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (posicao) => {
-                        linkMapaGoogle = `https://maps.google.com/?q=${posicao.coords.latitude},${posicao.coords.longitude}`;
+                        const lat = posicao.coords.latitude; const lng = posicao.coords.longitude;
+                        linkMapaGoogle = `https://maps.google.com/?q=${lat},${lng}`;
                         statusGPS.style.color = '#27ae60'; statusGPS.textContent = '✅ GPS capturado com sucesso!';
                     },
                     (erro) => { statusGPS.style.color = '#e74c3c'; statusGPS.textContent = '❌ Erro: Localização falhou. Digite manualmente.'; },
@@ -520,32 +490,57 @@
 
         function enviarPedidoFinal() {
             const nome = document.getElementById('txt-nome').value.trim(); const tipoEntrega = document.getElementById('select-entrega').value; const endereco = document.getElementById('txt-endereco').value.trim();
-            if (carrinho.length === 0) return; if (!nome) { alert('Por favor, informe seu nome.'); return; }
+            if (carrinho.length === 0) return;
+            if (!nome) { alert('Por favor, informe seu nome.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Informe um endereço ou clique em "Pegar minha localização".'); return; }
 
             let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Método:* ${tipoEntrega}\n`;
             if(tipoEntrega === 'Entrega') { if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; if(linkMapaGoogle !== "") textoWhats += `*📍 Mapa exato do cliente:* \n${linkMapaGoogle}\n`; }
             textoWhats += `\n*🧾 O PEDIDO:*\n`;
-            let subtotal = 0; carrinho.forEach(item => { textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; if(item.obs && item.obs !== "") textoWhats += `      *Obs:* ${item.obs}\n`; subtotal += item.preco; });
+            let subtotal = 0;
+            carrinho.forEach(item => { 
+                textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`;
+                if(item.obs && item.obs !== "") textoWhats += `      *Obs:* ${item.obs}\n`;
+                subtotal += item.preco; 
+            });
+
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; let totalFinal = subtotal + taxaEntrega;
-            textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`; if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
+            textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+            if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
             const linkDoSeuSite = window.location.origin + window.location.pathname + "?rastreio=true&status=1";
             textoWhats += `\n\n*📍 Acompanhe seu pedido ao vivo por aqui:* \n${linkDoSeuSite}`;
-            window.open(`https://wa.me/5568992365649?text=${encodeURIComponent(textoWhats)}`, '_blank');
+
+            const linkWhatsapp = `https://wa.me/5568992365649?text=${encodeURIComponent(textoWhats)}`;
+            window.open(linkWhatsapp, '_blank');
 
             carrinho = []; atualizarCarrinhoUI(); fecharModalCarrinho();
-            document.getElementById('passo-1').classList.add('ativo'); document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp"; document.getElementById('btnRastreio').style.display = 'block';
+            document.getElementById('passo-1').classList.add('ativo'); document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp";
+            document.getElementById('btnRastreio').style.display = 'block';
         }
 
-        function iniciarAnimacaoRastreio() { const telaAnimacao = document.getElementById('telaAnimacao'); const modalRastreio = document.getElementById('modalRastreio'); telaAnimacao.classList.add('ativo'); setTimeout(() => { telaAnimacao.classList.remove('ativo'); modalRastreio.classList.add('ativo'); }, 3000); }
+        function iniciarAnimacaoRastreio() {
+            const telaAnimacao = document.getElementById('telaAnimacao'); const modalRastreio = document.getElementById('modalRastreio');
+            telaAnimacao.classList.add('ativo'); setTimeout(() => { telaAnimacao.classList.remove('ativo'); modalRastreio.classList.add('ativo'); }, 3000); 
+        }
+
         function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); }
 
-        const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve'); let intervaloNeve;
-        function criarFloco() { const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); }
-        const observador = new IntersectionObserver((entradas) => { entradas.forEach(entrada => { if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } else { overlayFrio.classList.remove('ativo'); tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; } }); }, { threshold: 0.1 }); observador.observe(secaoBebidas);
+        const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve');
+        let intervaloNeve;
+        function criarFloco() {
+            const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄';
+            floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2;
+            containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000);
+        }
+        const observador = new IntersectionObserver((entradas) => {
+            entradas.forEach(entrada => {
+                if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } 
+                else { overlayFrio.classList.remove('ativo'); tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; }
+            });
+        }, { threshold: 0.1 }); 
+        observador.observe(secaoBebidas);
     </script>
 </body>
 </html>
-

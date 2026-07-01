@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2c3e50">
+    <title>JJ Burguer - Painel Admin</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body { background-color: #ecf0f1; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
+
+        /* CABEÇALHO ADMIN */
+        header { background-color: #2c3e50; color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #f39c12; }
+        header p { font-size: 13px; color: #bdc3c7; }
+
+        .container { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
+
+        /* ÁREA DE PEDIDOS */
+        .card-pedido { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-left: 5px solid #e74c3c; }
+        .card-pedido.preparo { border-left-color: #f39c12; }
+        .card-pedido.entrega { border-left-color: #27ae60; }
+        
+        .header-pedido { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+        .nome-cliente { font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .badge-status { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; }
+        .badge-novo { background: #e74c3c; }
+        .badge-preparo { background: #f39c12; }
+        .badge-entrega { background: #27ae60; }
+
+        .detalhes-pedido { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 15px; }
+        .total-pedido { font-weight: 900; color: #27ae60; font-size: 16px; margin-top: 5px; display: block; }
+
+        .acoes-pedido { display: flex; gap: 10px; }
+        .btn-acao { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 13px; }
+        .btn-preparo { background: #f39c12; }
+        .btn-entrega { background: #27ae60; }
+        .btn-concluir { background: #95a5a6; }
+
+        /* ÁREA DE CARDÁPIO */
+        .card-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .info-item h3 { font-size: 16px; color: #2c3e50; margin-bottom: 5px; }
+        .input-preco { width: 100px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; font-weight: bold; color: #27ae60; text-align: center; }
+        .btn-salvar-preco { background: #2980b9; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-left: 10px;}
+
+        /* BOTÃO ADICIONAR ITEM */
+        .btn-add-item { width: 100%; padding: 15px; background: #2c3e50; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; margin-bottom: 20px; cursor: pointer; border: 2px dashed #f39c12;}
+
+        /* NAVEGAÇÃO INFERIOR */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
+        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: #7f8c8d; font-size: 14px; font-weight: bold; cursor: pointer; border-top: 3px solid transparent; }
+        .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
+
+        /* OCULTAR TELAS */
+        .tela { display: none; }
+        .tela.ativo { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JJ Burguer Admin</h1>
+        <p>Painel de Controle</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="tela-pedidos" class="tela ativo">
+            <h2 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">Últimos Pedidos</h2>
+            
+            <div class="card-pedido">
+                <div class="header-pedido">
+                    <span class="nome-cliente">João Silva</span>
+                    <span class="badge-status badge-novo">NOVO</span>
+                </div>
+                <div class="detalhes-pedido">
+                    <strong>Itens:</strong><br>
+                    - 1x Bacon Master (+ Cheddar)<br>
+                    - 1x Coca-Cola Lata<br>
+                    <strong>Endereço:</strong> Rua das Flores, 123
+                    <span class="total-pedido">Total: R$ 35,50</span>
+                </div>
+                <div class="acoes-pedido">
+                    <button class="btn-acao btn-preparo">Em Preparo</button>
+                    <button class="btn-acao btn-concluir">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="card-pedido preparo">
+                <div class="header-pedido">
+                    <span class="nome-cliente">Maria Souza</span>
+                    <span class="badge-status badge-preparo">EM PREPARO</span>
+                </div>
+                <div class="detalhes-pedido">
+                    <strong>Itens:</strong><br>
+                    - 1x O Monstrão<br>
+                    <strong>Retirada no Local</strong>
+                    <span class="total-pedido">Total: R$ 32,50</span>
+                </div>
+                <div class="acoes-pedido">
+                    <button class="btn-acao btn-entrega">Pronto / Saiu</button>
+                    <button class="btn-acao btn-concluir">Concluir</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tela-cardapio" class="tela">
+            <h2 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">Gerenciar Preços</h2>
+            
+            <button class="btn-add-item">➕ Adicionar Novo Hambúrguer</button>
+
+            <div class="card-item">
+                <div class="info-item">
+                    <h3>Classic Burger</h3>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="number" class="input-preco" value="22.00">
+                    <button class="btn-salvar-preco">Salvar</button>
+                </div>
+            </div>
+
+            <div class="card-item">
+                <div class="info-item">
+                    <h3>Bacon Master</h3>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="number" class="input-preco" value="27.00">
+                    <button class="btn-salvar-preco">Salvar</button>
+                </div>
+            </div>
+
+            <div class="card-item">
+                <div class="info-item">
+                    <h3>Coca-Cola (Lata)</h3>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="number" class="input-preco" value="6.00">
+                    <button class="btn-salvar-preco">Salvar</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <div id="tab-pedidos" class="nav-item ativo" onclick="mudarAba('pedidos')">🛒 Pedidos</div>
+        <div id="tab-cardapio" class="nav-item" onclick="mudarAba('cardapio')">🍔 Cardápio</div>
+    </div>
+
+    <script>
+        // Função para alternar entre as abas do Painel
+        function mudarAba(aba) {
+            document.getElementById('tela-pedidos').classList.remove('ativo');
+            document.getElementById('tela-cardapio').classList.remove('ativo');
+            document.getElementById('tab-pedidos').classList.remove('ativo');
+            document.getElementById('tab-cardapio').classList.remove('ativo');
+
+            if(aba === 'pedidos') {
+                document.getElementById('tela-pedidos').classList.add('ativo');
+                document.getElementById('tab-pedidos').classList.add('ativo');
+            } else {
+                document.getElementById('tela-cardapio').classList.add('ativo');
+                document.getElementById('tab-cardapio').classList.add('ativo');
+            }
+        }
+    </script>
+</body>
+</html>
