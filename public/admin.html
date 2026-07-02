@@ -78,12 +78,9 @@
     </div>
 
     <script>
-        // ===============================================
-        // LÓGICA DE LOGIN
-        // ===============================================
         function fazerLogin() {
             const senha = document.getElementById('input-senha').value;
-            if(senha === 'jj123') { // PODE MUDAR A SUA PALAVRA-PASSE AQUI
+            if(senha === 'jj123') { // SUA SENHA AQUI
                 document.getElementById('tela-login').classList.remove('ativo');
                 document.getElementById('tela-pedidos').classList.add('ativo');
                 document.getElementById('menu-inferior').style.display = 'flex';
@@ -108,13 +105,15 @@
         }
 
         // ===============================================
-        // MÁGICA 1: PUXAR E ATUALIZAR PEDIDOS
+        // LEITURA DE PEDIDOS (AGORA À PROVA DE BALAS)
         // ===============================================
         async function carregarPedidos() {
+            const container = document.getElementById('lista-pedidos-container');
+            container.innerHTML = '<p style="text-align:center;">A atualizar pedidos...</p>';
+            
             try {
                 const res = await fetch('/api/pedidos');
                 const pedidos = await res.json();
-                const container = document.getElementById('lista-pedidos-container');
                 container.innerHTML = '';
 
                 if(pedidos.length === 0) {
@@ -123,19 +122,33 @@
                 }
 
                 pedidos.forEach(p => {
-                    // Formata os itens para aparecer na tela
                     let itensHTML = '';
-                    if(p.itens) {
-                        p.itens.forEach(i => { itensHTML += `- 1x ${i.nome}<br>`; });
+                    
+                    // TRATAMENTO DE ERRO: O salvador da pátria para evitar o bug do JSON
+                    let listaItens = p.itens;
+                    if(typeof listaItens === 'string') {
+                        try { listaItens = JSON.parse(listaItens); } catch(e) {}
+                    }
+
+                    if(Array.isArray(listaItens)) {
+                        listaItens.forEach(i => { 
+                            itensHTML += `- 1x ${i.nome}<br>`; 
+                            // Se tiver observações ou ingredientes extras
+                            if(i.obs && i.obs.trim() !== '') {
+                                itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`;
+                            }
+                        });
+                    } else {
+                        itensHTML = "Detalhes do lanche guardados com sucesso.";
                     }
 
                     container.innerHTML += `
                         <div class="card" style="border-left: 5px solid ${p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60'};">
-                            <div class="pedido-nome">Cliente: ${p.cliente_nome} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone}</span></div>
+                            <div class="pedido-nome">Cliente: ${p.cliente_nome} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
                             <div class="pedido-detalhes">
                                 <strong>Itens:</strong><br>${itensHTML}
-                                <br><strong>Entrega:</strong> ${p.endereco}
-                                <br><strong style="color:#27ae60; font-size:16px;">Total: R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</strong>
+                                <br><strong style="margin-top: 10px; display:block;">Entrega:</strong> ${p.endereco}
+                                <br><strong style="color:#27ae60; font-size:16px; margin-top: 5px; display:block;">Total: R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</strong>
                             </div>
                             <select id="status-${p.id}">
                                 <option value="1" ${p.status == 1 ? 'selected' : ''}>⏳ Aguardando Confirmação</option>
@@ -147,13 +160,15 @@
                         </div>
                     `;
                 });
-            } catch(e) { console.error("Erro", e); }
+            } catch(e) { 
+                console.error("Erro", e); 
+                container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">Erro ao carregar do servidor. Recarregue a página.</p>`;
+            }
         }
 
         async function atualizarStatusPedido(idPedido, telefoneCliente) {
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
             
-            // Grava o novo status no Banco de Dados
             await fetch(`/api/pedidos/${idPedido}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -162,24 +177,23 @@
 
             alert('✅ Status gravado no Banco de Dados!');
             
-            // Se for concluído, não precisa de mandar mensagem, apenas recarrega
+            // Se concluiu, remove da lista
             if(novoStatus === "4") {
                 carregarPedidos();
                 return;
             }
 
-            // Avisa o cliente no WhatsApp com o Link Automático
-            const linkMagico = window.location.origin + "/index.html?rastreio=true&status=" + novoStatus;
-            let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
-            let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site:\n${linkMagico}`;
+            // Manda o rastreio pro cliente se ele tiver telefone
+            if(telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
+                const linkMagico = window.location.origin + "/index.html?rastreio=true&status=" + novoStatus;
+                let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
+                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site:\n${linkMagico}`;
+                window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            }
             
-            window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             carregarPedidos();
         }
 
-        // ===============================================
-        // MÁGICA 2: MUDAR OS PREÇOS DOS LANCHES
-        // ===============================================
         async function carregarCardapio() {
             try {
                 const res = await fetch('/api/cardapio');
@@ -203,14 +217,12 @@
 
         async function salvarNovoPreco(idProduto) {
             const precoNovo = document.getElementById(`preco-edit-${idProduto}`).value;
-            
             await fetch(`/api/cardapio/${idProduto}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ preco: parseFloat(precoNovo) })
             });
-
-            alert('✅ Preço atualizado com sucesso! Os clientes já vão ver o preço novo.');
+            alert('✅ Preço atualizado com sucesso! O site principal já mostra o novo preço.');
         }
     </script>
 </body>
