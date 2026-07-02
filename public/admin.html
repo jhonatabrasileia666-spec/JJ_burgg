@@ -25,7 +25,7 @@
         .pedido-detalhes { font-size: 14px; color: #555; margin-bottom: 15px; }
         
         select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; }
-        .btn-salvar { width: 100%; background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-salvar { background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
 
         .item-cardapio { display: flex; justify-content: space-between; align-items: center; }
         .input-preco { width: 90px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d35400; text-align: center; }
@@ -84,7 +84,7 @@
                 <h3 style="margin-bottom: 10px; font-size: 16px; color: #d35400;">💸 Lançar Gasto / Despesa</h3>
                 <input type="text" id="gasto-desc" placeholder="Ex: Carne, Pão, Gasolina..." style="margin-bottom: 5px;">
                 <input type="number" id="gasto-valor" placeholder="Valor (Ex: 50.00)" style="margin-bottom: 10px;">
-                <button class="btn-salvar" style="background: #e74c3c;" onclick="salvarGasto()">Adicionar Despesa</button>
+                <button class="btn-salvar" style="background: #e74c3c; width: 100%;" onclick="salvarGasto()">Adicionar Despesa</button>
             </div>
 
             <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px;">Histórico de Gastos (Hoje)</h3>
@@ -141,7 +141,6 @@
                 }
 
                 pedidos.forEach(p => {
-                    // BLINDAGEM: Se um pedido der problema, o catch isola o erro e ele continua lendo os outros
                     try {
                         let itensHTML = '';
                         let listaItens = p.itens;
@@ -173,32 +172,41 @@
                                     <option value="3" ${p.status == 3 ? 'selected' : ''}>🛵 Saiu para Entrega / Retirada</option>
                                     <option value="4" ${p.status == 4 ? 'selected' : ''}>✅ Concluído (Remover da Lista)</option>
                                 </select>
-                                <button class="btn-salvar" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}')">Atualizar e Avisar Cliente</button>
+                                
+                                <!-- NOVOS BOTÕES: SILENCIOSO E WHATSAPP -->
+                                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                    <button class="btn-salvar" style="background:#3498db; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', false)">Atualizar App</button>
+                                    <button class="btn-salvar" style="background:#25d366; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', true)">Atualizar + Whats</button>
+                                </div>
                             </div>
                         `;
-                    } catch (errLoop) {
-                        console.error("Pedido pulado por falha na leitura", p);
-                    }
+                    } catch (errLoop) {}
                 });
             } catch(e) { container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">Erro ao carregar do servidor.</p>`; }
         }
 
-        async function atualizarStatusPedido(idPedido, telefoneCliente) {
+        async function atualizarStatusPedido(idPedido, telefoneCliente, enviarWhatsApp) {
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
+            
             await fetch(`/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
             
             if(novoStatus === "4") {
                 carregarPedidos();
                 carregarFinanceiro();
+                alert('✅ Status atualizado e pedido arquivado!');
                 return;
             }
 
-            if(telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
-                const linkMagico = window.location.origin + "/index.html?rastreio=true&status=" + novoStatus;
-                let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
-                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site:\n${linkMagico}`;
+            // Manda o WhatsApp apenas se você apertou o botão Verde (enviarWhatsApp = true)
+            if(enviarWhatsApp && telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
+                const linkMagico = window.location.origin + "/index.html?rastreio=true";
+                let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
+                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo:\n${linkMagico}`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            } else {
+                alert('✅ Tela do cliente atualizada com sucesso!');
             }
+            
             carregarPedidos();
         }
 
