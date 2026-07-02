@@ -87,6 +87,8 @@
     </style>
 </head>
 <body>
+    <audio id="somAlertaCliente" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
     <div id="clima-frio-overlay"></div>
     <div id="container-neve"></div>
 
@@ -195,6 +197,23 @@
     <script>
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
 
+        // ==========================================
+        // DESTRAVAR ÁUDIO NO TELEMÓVEL DO CLIENTE
+        // ==========================================
+        let audioDesbloqueado = false;
+        document.addEventListener('click', function() {
+            if(!audioDesbloqueado) {
+                const som = document.getElementById('somAlertaCliente');
+                som.volume = 0; // Toca mutado só para o navegador liberar
+                som.play().then(() => {
+                    som.pause();
+                    som.currentTime = 0;
+                    som.volume = 1; // Restaura o volume para quando o alerta real for tocar
+                    audioDesbloqueado = true;
+                }).catch(()=>{});
+            }
+        });
+
         let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
 
         async function carregarPrecosDoBanco() {
@@ -251,11 +270,7 @@
             carrinho.splice(i, 1); 
             localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
             atualizarCarrinhoUI(); 
-            if(carrinho.length === 0) {
-                fecharModalCarrinho(); 
-            } else {
-                abrirCarrinho();
-            }
+            if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); }
         }
 
         function atualizarCarrinhoUI() {
@@ -299,7 +314,6 @@
             if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
 
-            // Pede permissão para mostrar notificações no telemóvel!
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
@@ -330,8 +344,8 @@
                 });
                 
                 const dados = await resposta.json();
-                idPedidoGerado = dados.id_pedido; // GUARDA A ETIQUETA ÚNICA
-                localStorage.setItem('meu_pedido_jj', idPedidoGerado); // Salva na memória do telemóvel
+                idPedidoGerado = dados.id_pedido; 
+                localStorage.setItem('meu_pedido_jj', idPedidoGerado); 
                 
                 botao.innerHTML = textoOriginal;
                 botao.style.opacity = '1';
@@ -360,9 +374,6 @@
             }, 1000);
         }
 
-        // ==========================================
-        // MÁGICA: NOTIFICAÇÕES E ETIQUETA ÚNICA
-        // ==========================================
         let intervalRastreio = null;
         let idRastreioAtual = null;
         let statusAtual = 1;
@@ -380,6 +391,9 @@
             if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
         }
 
+        // ==========================================
+        // TOCAR O SOM DE ALERTA NO CLIENTE
+        // ==========================================
         function tocarNotificacao(status) {
             let msg = "";
             if(status == 2) msg = "🍔 O seu pedido está a ser preparado na cozinha!";
@@ -389,10 +403,11 @@
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("JJ Burguer", { body: msg, icon: "logo.png" });
             }
+            
             try {
-                // Toca um som de alerta
-                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-                audio.play();
+                const som = document.getElementById('somAlertaCliente');
+                som.currentTime = 0;
+                som.play().catch(e => console.log("Som bloqueado: o utilizador ainda não tocou no ecrã."));
             } catch(e) {}
         }
 
@@ -407,18 +422,18 @@
                 try {
                     const res = await fetch(API_URL + '/api/pedidos');
                     const pedidos = await res.json();
-                    const meuPedido = pedidos.find(p => p.id == idRastreioAtual); // Agora procura pela Etiqueta Única!
+                    const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
                     
                     if (meuPedido) {
                         if(meuPedido.status > statusAtual) {
                             statusAtual = meuPedido.status;
-                            tocarNotificacao(statusAtual); // Dispara pop-up e som!
+                            tocarNotificacao(statusAtual); 
                         }
                         atualizarStatusVisual(meuPedido.status);
                     } else {
                         atualizarStatusVisual(4);
                         document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!";
-                        localStorage.removeItem('meu_pedido_jj'); // Limpa a memória
+                        localStorage.removeItem('meu_pedido_jj'); 
                         if(intervalRastreio) clearInterval(intervalRastreio);
                         
                         setTimeout(() => {
