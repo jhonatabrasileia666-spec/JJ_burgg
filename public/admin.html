@@ -84,6 +84,7 @@
                 <button class="btn-salvar" id="btn-lancar-lanche" onclick="lancarLancheNoCardapio()">🚀 Lançar no Site Principal</button>
             </div>
         </div>
+
     </div>
 
     <div class="bottom-nav" id="menu-inferior">
@@ -134,7 +135,9 @@
             div.style.cursor = 'grab';
             
             let img = document.createElement('img');
-            img.src = `${API_URL}/${imagem}?v=${Date.now()}`;
+            // Verifica se é imagem do BD (Base64) ou local
+            let imgSrc = imagem.startsWith('data:') ? imagem : `${API_URL}/${imagem}`;
+            img.src = imgSrc;
             img.style.width = '100%';
             img.style.pointerEvents = 'none'; 
             
@@ -186,20 +189,23 @@
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
             let htmlBotoes = `
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Carne', 'carne.png')"><img src="${API_URL}/carne.png?v=1" width="25"> Carne</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Bacon', 'bacon.png')"><img src="${API_URL}/bacon.png?v=1" width="25"> Bacon</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Queijo', 'queijo.png')"><img src="${API_URL}/queijo.png?v=1" width="25"> Queijo</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png" width="25"> Pão Topo</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png" width="25"> Pão Base</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Carne', 'carne.png')"><img src="${API_URL}/carne.png" width="25"> Carne</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Bacon', 'bacon.png')"><img src="${API_URL}/bacon.png" width="25"> Bacon</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Queijo', 'queijo.png')"><img src="${API_URL}/queijo.png" width="25"> Queijo</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png" width="25"> Alface</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png" width="25"> Pepino</button>
             `;
             try {
-                const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now());
+                const res = await fetch(API_URL + '/api/ingredientes');
                 const ingredientes = await res.json();
                 if(Array.isArray(ingredientes)) {
                     ingredientes.forEach(ing => {
-                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${API_URL}/${ing.imagem}?t=${Date.now()}" width="25"> ${ing.nome}</button>`;
+                        let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`;
+                        // Escapa as aspas da imagem em base64 para não quebrar o HTML do botão
+                        let imgSafe = ing.imagem.replace(/'/g, "\\'"); 
+                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${imgSafe}')"><img src="${imgSrc}" width="25"> ${ing.nome}</button>`;
                     });
                 }
             } catch(e) {}
@@ -207,7 +213,7 @@
         }
 
         // ===============================================
-        // MÁGICA: O COMPRESSOR DE FOTOS AUTOMÁTICO
+        // MÁGICA: O COMPRESSOR BLINDADO + SALVAR NO BD
         // ===============================================
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
@@ -215,49 +221,36 @@
             if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha uma foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Comprimindo imagem e salvando...'; btn.disabled = true;
+            btn.innerText = '⏳ Comprimindo e Salvando...'; btn.disabled = true;
 
-            const nomeArquivo = `ingred_${Date.now()}.webp`; // Arquivo minúsculo WebP
             const reader = new FileReader();
 
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = async function() {
-                    // O Compressor cria um "Canvas" para reduzir o peso de 5MB para ~50KB
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 400; // Tamanho máximo de largura/altura
+                    const MAX_SIZE = 300; // Tamanho super leve
                     let width = img.width; let height = img.height;
 
-                    if (width > height) {
-                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                    } else {
-                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                    }
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
 
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Transforma na imagem leve para enviar
+                    // Transforma em Texto Base64
                     const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
 
                     try {
-                        // Envia para a Pasta
-                        const resUpload = await fetch(API_URL + '/api/upload', { 
-                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify({ nomeArquivo: nomeArquivo, base64: base64Reduzida }) 
-                        });
-                        
-                        if(!resUpload.ok) throw new Error("A conexão com o servidor caiu. Tente novamente.");
-
-                        // Salva no Banco de Dados
+                        // Envia DIRETO para o Banco de Dados, não salva em pasta!
                         const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
                             method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) 
+                            body: JSON.stringify({ nome: nome, imagem: base64Reduzida }) 
                         });
                         
                         if(respostaDb.ok) {
-                            alert('✅ Ingrediente Criado! Já pode usá-lo na montagem.');
+                            alert('✅ Ingrediente Criado! Já está protegido no Banco de Dados.');
                             document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
                             carregarIngredientesNaFabrica(); 
                         } else {
