@@ -110,6 +110,9 @@
         <div class="modal-card">
             <h2>Dados do seu Pedido</h2>
             <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
+            
+            <div class="campo-grupo"><label>Seu Telefone:</label><input type="number" id="txt-telefone" placeholder="DDD + Número"></div>
+
             <div class="campo-grupo">
                 <label>Como deseja receber?</label>
                 <select id="select-entrega" onchange="mudarOpcaoEntrega()">
@@ -117,7 +120,12 @@
                     <option value="Retirada">Retirar na Hamburgueria</option>
                 </select>
             </div>
-            <div class="campo-grupo" id="box-endereco"><label>Endereço de Entrega:</label><input type="text" id="txt-endereco" placeholder="Rua, número e bairro"></div>
+            <div class="campo-grupo" id="box-endereco">
+                <label>Endereço de Entrega:</label>
+                <input type="text" id="txt-endereco" placeholder="Rua, número e bairro">
+                <button type="button" onclick="obterLocalizacao()" style="width: 100%; background-color: #f39c12 !important; color: white !important; padding: 10px; border: none; border-radius: 6px; font-weight: bold; margin-top: 8px; cursor: pointer; font-size: 13px;">📍 Pegar minha localização exata (GPS)</button>
+                <small id="status-gps" style="display:none; color: #27ae60 !important; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small>
+            </div>
             <button class="btn-enviar-whats" onclick="enviarPedidoWhatsApp()">Enviar Pedido no WhatsApp 💬</button>
             <button class="btn-fechar" onclick="fecharModal()">Voltar e Modificar lanche</button>
         </div>
@@ -126,6 +134,7 @@
     <script>
         let valorTotal = 25.50;
         let ingredientesAtivos = { pepino: true, mussarela: true, bacon: true, carne: true, alface: true };
+        let linkMapaGoogle = ""; // VARIÁVEL DO GPS (NOVA)
 
         function abrirModal() { document.getElementById('modalPedido').classList.add('ativo'); }
         function fecharModal() { document.getElementById('modalPedido').classList.remove('ativo'); }
@@ -133,6 +142,18 @@
         function mudarOpcaoEntrega() {
             const tipo = document.getElementById('select-entrega').value;
             document.getElementById('box-endereco').style.display = (tipo === 'Retirada') ? 'none' : 'block';
+        }
+
+        // FUNÇÃO DO GPS (NOVA)
+        function obterLocalizacao() {
+            const st = document.getElementById('status-gps'); 
+            st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...';
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; },
+                    (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }
+                );
+            }
         }
 
         function alternarIngrediente(idCamada, nomeExibicao, precoIngrediente) {
@@ -162,13 +183,14 @@
             precoExibicao.textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        function enviarPedidoWhatsApp() {
+        async function enviarPedidoWhatsApp() {
             const nome = document.getElementById('txt-nome').value.trim();
+            const tel = document.getElementById('txt-telefone') ? document.getElementById('txt-telefone').value.trim() : ""; // TELEFONE NOVO
             const tipoEntrega = document.getElementById('select-entrega').value;
             const endereco = document.getElementById('txt-endereco').value.trim();
             
-            if (!nome) { alert('Por favor, informe seu nome antes de prosseguir.'); return; }
-            if (tipoEntrega === 'Entrega' && !endereco) { alert('Por favor, preencha o endereço para a entrega.'); return; }
+            if (!nome || !tel) { alert('Por favor, informe seu nome e telefone antes de prosseguir.'); return; }
+            if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, preencha o endereço ou use o GPS para a entrega.'); return; }
 
             let listaIngredientes = [];
             if (ingredientesAtivos.carne) listaIngredientes.push(" - Blend Bovino (Carne)");
@@ -179,22 +201,47 @@
 
             if(listaIngredientes.length === 0) { listaIngredientes.push(" - Apenas o Pão (Lanche Vazio)"); }
 
-            let textoWhats = `*🍔 NOVO PEDIDO - MONTE SEU HAMBÚRGUER* \n\n*Cliente:* ${nome}\n*Método:* ${tipoEntrega}\n`;
-            if(tipoEntrega === 'Entrega') { textoWhats += `*Endereço:* ${endereco}\n`; }
+            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00;
+            let totalFinal = valorTotal + taxaEntrega;
+
+            // --- SALVAR NO BANCO DE DADOS (ADMIN) ---
+            const itemParaBanco = [{
+                nome: "Hambúrguer Customizado (Montado)",
+                preco: valorTotal,
+                obs: "Ingredientes: " + listaIngredientes.join(', ').replace(/ - /g, '')
+            }];
+
+            try {
+                await fetch('/api/pedidos', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome: nome,
+                        telefone: tel,
+                        itens: itemParaBanco,
+                        total: totalFinal,
+                        endereco: (tipoEntrega === 'Entrega') ? (endereco + " | Mapa: " + linkMapaGoogle) : "Retirada na Loja"
+                    })
+                });
+            } catch(e) { console.error("Erro no BD:", e); }
+            // ----------------------------------------
+
+            let textoWhats = `*🍔 NOVO PEDIDO - MONTE SEU HAMBÚRGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
+            if(tipoEntrega === 'Entrega') { 
+                if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; 
+                if(linkMapaGoogle) textoWhats += `*📍 Mapa:* \n${linkMapaGoogle}\n`;
+            }
             
             textoWhats += `\n*🧾 COMPOSIÇÃO DO BURGER:* \n - Pão Coroa (Topo)\n`;
             listaIngredientes.forEach(item => { textoWhats += `${item}\n`; });
             textoWhats += ` - Pão Base\n\n`;
-
-            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00;
-            let totalFinal = valorTotal + taxaEntrega;
 
             textoWhats += `Subtotal Lanche: R$ ${valorTotal.toFixed(2).replace('.', ',')}\n`;
             if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
             const meuNumeroWhastapp = "5568992365649"; 
-            window.location.href = `https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`;
+            window.location.href = `index.html?rastreio=true&status=1`;
+            window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
         }
     </script>
 </body>
