@@ -18,16 +18,9 @@
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
         .tela { display: none; } .tela.ativo { display: block; }
         
-        /* CSS DA FÁBRICA COM ARRASTAR E SOLTAR */
         #visor-fabrica { 
-            position: relative; 
-            width: 300px; 
-            height: 300px; 
-            background-color: #f4d03f; 
-            border-radius: 20px; 
-            margin: 0 auto 20px auto; 
-            overflow: hidden; 
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1); 
+            position: relative; width: 300px; height: 300px; background-color: #f4d03f; 
+            border-radius: 20px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); 
         }
         .grid-ingredientes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .btn-ing-fabrica { background: #fff; border: 2px solid #ddd; padding: 10px; border-radius: 8px; font-weight: bold; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -74,13 +67,12 @@
             </div>
 
             <h3 style="margin-bottom: 10px; font-size: 16px;">1. Montar Lanche (Clique para adicionar):</h3>
-            <div class="grid-ingredientes" id="grid-ingredientes-fabrica">
-                </div>
+            <div class="grid-ingredientes" id="grid-ingredientes-fabrica"></div>
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">2. Adicionar Novos Ingredientes:</h3>
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
                 <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Ovo Frito)">
-                <input type="file" id="novo-ing-foto" accept="image/png, image/webp" style="background: #fff;">
+                <input type="file" id="novo-ing-foto" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
                 <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Novo Ingrediente</button>
             </div>
 
@@ -92,7 +84,6 @@
                 <button class="btn-salvar" id="btn-lancar-lanche" onclick="lancarLancheNoCardapio()">🚀 Lançar no Site Principal</button>
             </div>
         </div>
-
     </div>
 
     <div class="bottom-nav" id="menu-inferior">
@@ -123,6 +114,9 @@
             if(aba === 'fabrica') carregarIngredientesNaFabrica();
         }
 
+        // ===============================================
+        // FÁBRICA COM DRAG & DROP
+        // ===============================================
         let lancheAtual = [];
         let zIndexCounter = 10;
 
@@ -144,54 +138,36 @@
             img.style.width = '100%';
             img.style.pointerEvents = 'none'; 
             
-            div.appendChild(img);
-            canvas.appendChild(div);
-            
+            div.appendChild(img); canvas.appendChild(div);
             let obj = { id: idUnico, nome: nome, img: imagem, left: '80px', top: '100px', zIndex: div.style.zIndex };
             lancheAtual.push(obj);
-            
             tornarArrastavel(div, obj);
         }
 
         function tornarArrastavel(elemento, objMemoria) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            
             elemento.onmousedown = iniciarArrasto;
             elemento.addEventListener('touchstart', iniciarArrasto, {passive: false});
 
             function iniciarArrasto(e) {
                 e.preventDefault();
                 let eventoToque = e.touches ? e.touches[0] : e;
-                pos3 = eventoToque.clientX;
-                pos4 = eventoToque.clientY;
-                
-                document.onmouseup = pararArrasto;
-                document.addEventListener('touchend', pararArrasto, {passive: false});
-                
-                document.onmousemove = moverElemento;
-                document.addEventListener('touchmove', moverElemento, {passive: false});
+                pos3 = eventoToque.clientX; pos4 = eventoToque.clientY;
+                document.onmouseup = pararArrasto; document.addEventListener('touchend', pararArrasto, {passive: false});
+                document.onmousemove = moverElemento; document.addEventListener('touchmove', moverElemento, {passive: false});
             }
-
             function moverElemento(e) {
                 e.preventDefault();
                 let eventoToque = e.touches ? e.touches[0] : e;
-                pos1 = pos3 - eventoToque.clientX;
-                pos2 = pos4 - eventoToque.clientY;
-                pos3 = eventoToque.clientX;
-                pos4 = eventoToque.clientY;
-                
+                pos1 = pos3 - eventoToque.clientX; pos2 = pos4 - eventoToque.clientY;
+                pos3 = eventoToque.clientX; pos4 = eventoToque.clientY;
                 elemento.style.top = (elemento.offsetTop - pos2) + "px";
                 elemento.style.left = (elemento.offsetLeft - pos1) + "px";
-                
-                objMemoria.top = elemento.style.top;
-                objMemoria.left = elemento.style.left;
+                objMemoria.top = elemento.style.top; objMemoria.left = elemento.style.left;
             }
-
             function pararArrasto() {
-                document.onmouseup = null;
-                document.removeEventListener('touchend', pararArrasto);
-                document.onmousemove = null;
-                document.removeEventListener('touchmove', moverElemento);
+                document.onmouseup = null; document.removeEventListener('touchend', pararArrasto);
+                document.onmousemove = null; document.removeEventListener('touchmove', moverElemento);
             }
         }
 
@@ -204,14 +180,11 @@
         }
 
         function limparFabrica() {
-            lancheAtual = [];
-            document.getElementById('visor-fabrica').innerHTML = '';
-            zIndexCounter = 10;
+            lancheAtual = []; document.getElementById('visor-fabrica').innerHTML = ''; zIndexCounter = 10;
         }
 
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
-            
             let htmlBotoes = `
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button>
@@ -221,51 +194,82 @@
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>
             `;
-            
             try {
                 const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now());
                 const ingredientes = await res.json();
                 if(Array.isArray(ingredientes)) {
                     ingredientes.forEach(ing => {
-                        htmlBotoes += `
-                            <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')">
-                                <img src="${API_URL}/${ing.imagem}?t=${Date.now()}" width="25"> ${ing.nome}
-                            </button>
-                        `;
+                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${API_URL}/${ing.imagem}?t=${Date.now()}" width="25"> ${ing.nome}</button>`;
                     });
                 }
-            } catch(e) { console.log("Nenhum extra encontrado."); }
-
+            } catch(e) {}
             grid.innerHTML = htmlBotoes;
         }
 
+        // ===============================================
+        // MÁGICA: O COMPRESSOR DE FOTOS AUTOMÁTICO
+        // ===============================================
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
             const fileInput = document.getElementById('novo-ing-foto');
-            if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e foto PNG!'); return; }
+            if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha uma foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Criando e Salvando...'; btn.disabled = true;
+            btn.innerText = '⏳ Comprimindo imagem e salvando...'; btn.disabled = true;
 
-            const nomeArquivo = `ingred_${Date.now()}.png`;
+            const nomeArquivo = `ingred_${Date.now()}.webp`; // Arquivo minúsculo WebP
             const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const resUpload = await fetch(API_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nomeArquivo: nomeArquivo, base64: e.target.result }) });
-                    
-                    if(!resUpload.ok) throw new Error("Erro upload");
 
-                    const respostaDb = await fetch(API_URL + '/api/ingredientes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) });
-                    
-                    if(respostaDb.ok) {
-                        alert('✅ Ingrediente Criado! Agora você já pode usá-lo na lista abaixo.');
-                        document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
-                        carregarIngredientesNaFabrica(); 
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    // O Compressor cria um "Canvas" para reduzir o peso de 5MB para ~50KB
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 400; // Tamanho máximo de largura/altura
+                    let width = img.width; let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                     } else {
-                        alert('❌ Erro no banco de dados. Tente de novo.');
+                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                     }
-                } catch(err) { alert('❌ Erro de conexão com o servidor.'); }
-                btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Transforma na imagem leve para enviar
+                    const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
+
+                    try {
+                        // Envia para a Pasta
+                        const resUpload = await fetch(API_URL + '/api/upload', { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ nomeArquivo: nomeArquivo, base64: base64Reduzida }) 
+                        });
+                        
+                        if(!resUpload.ok) throw new Error("A conexão com o servidor caiu. Tente novamente.");
+
+                        // Salva no Banco de Dados
+                        const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) 
+                        });
+                        
+                        if(respostaDb.ok) {
+                            alert('✅ Ingrediente Criado! Já pode usá-lo na montagem.');
+                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
+                            carregarIngredientesNaFabrica(); 
+                        } else {
+                            throw new Error("Erro no banco de dados.");
+                        }
+                    } catch(err) { 
+                        alert('❌ Erro: ' + err.message); 
+                    }
+                    
+                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(fileInput.files[0]);
         }
@@ -286,7 +290,7 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual })
                 });
-                alert('🚀 Lanche Lançado com Sucesso!');
+                alert('🚀 Lanche Lançado com Sucesso! Volte na página do cliente para ver.');
                 document.getElementById('novo-lanche-nome').value = '';
                 document.getElementById('novo-lanche-desc').value = '';
                 document.getElementById('novo-lanche-preco').value = '';
@@ -295,9 +299,6 @@
             btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false;
         }
 
-        // ===============================================
-        // OUTRAS FUNÇÕES BASICAS DO ADMIN
-        // ===============================================
         async function carregarPedidos() {
             const container = document.getElementById('lista-pedidos-container');
             container.innerHTML = 'Carregando...';
@@ -305,12 +306,7 @@
                 const res = await fetch(API_URL + '/api/pedidos');
                 const pedidos = await res.json();
                 container.innerHTML = '';
-                
-                if(pedidos.length === 0) { 
-                    container.innerHTML = '<p style="text-align:center; color:#777; margin-top:20px; font-weight:bold;">Nenhum pedido pendente no momento.</p>'; 
-                    return; 
-                }
-
+                if(pedidos.length === 0) { container.innerHTML = '<p style="text-align:center; color:#777; margin-top:20px; font-weight:bold;">Nenhum pedido pendente.</p>'; return; }
                 pedidos.forEach(p => {
                     let itensHTML = ''; let listaItens = p.itens;
                     if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
