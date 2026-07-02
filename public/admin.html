@@ -84,7 +84,6 @@
                 <button class="btn-salvar" id="btn-lancar-lanche" onclick="lancarLancheNoCardapio()">🚀 Lançar no Site Principal</button>
             </div>
         </div>
-
     </div>
 
     <div class="bottom-nav" id="menu-inferior">
@@ -115,9 +114,6 @@
             if(aba === 'fabrica') carregarIngredientesNaFabrica();
         }
 
-        // ===============================================
-        // FÁBRICA COM DRAG & DROP
-        // ===============================================
         let lancheAtual = [];
         let zIndexCounter = 10;
 
@@ -135,13 +131,12 @@
             div.style.cursor = 'grab';
             
             let img = document.createElement('img');
-            // Verifica se é imagem do BD (Base64) ou local
-            let imgSrc = imagem.startsWith('data:') ? imagem : `${API_URL}/${imagem}`;
-            img.src = imgSrc;
+            img.src = `${API_URL}/${imagem}?v=${Date.now()}`;
             img.style.width = '100%';
             img.style.pointerEvents = 'none'; 
             
             div.appendChild(img); canvas.appendChild(div);
+            // Guarda o NOME na memória para o index ler depois!
             let obj = { id: idUnico, nome: nome, img: imagem, left: '80px', top: '100px', zIndex: div.style.zIndex };
             lancheAtual.push(obj);
             tornarArrastavel(div, obj);
@@ -189,82 +184,63 @@
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
             let htmlBotoes = `
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png" width="25"> Pão Topo</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png" width="25"> Pão Base</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Carne', 'carne.png')"><img src="${API_URL}/carne.png" width="25"> Carne</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Bacon', 'bacon.png')"><img src="${API_URL}/bacon.png" width="25"> Bacon</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Queijo', 'queijo.png')"><img src="${API_URL}/queijo.png" width="25"> Queijo</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png" width="25"> Alface</button>
-                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png" width="25"> Pepino</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Carne', 'carne.png')"><img src="${API_URL}/carne.png?v=1" width="25"> Carne</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Bacon', 'bacon.png')"><img src="${API_URL}/bacon.png?v=1" width="25"> Bacon</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Queijo', 'queijo.png')"><img src="${API_URL}/queijo.png?v=1" width="25"> Queijo</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button>
+                <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>
             `;
             try {
-                const res = await fetch(API_URL + '/api/ingredientes');
+                const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now());
                 const ingredientes = await res.json();
                 if(Array.isArray(ingredientes)) {
                     ingredientes.forEach(ing => {
-                        let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`;
-                        // Escapa as aspas da imagem em base64 para não quebrar o HTML do botão
-                        let imgSafe = ing.imagem.replace(/'/g, "\\'"); 
-                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${imgSafe}')"><img src="${imgSrc}" width="25"> ${ing.nome}</button>`;
+                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${API_URL}/${ing.imagem}?t=${Date.now()}" width="25"> ${ing.nome}</button>`;
                     });
                 }
             } catch(e) {}
             grid.innerHTML = htmlBotoes;
         }
 
-        // ===============================================
-        // MÁGICA: O COMPRESSOR BLINDADO + SALVAR NO BD
-        // ===============================================
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
             const fileInput = document.getElementById('novo-ing-foto');
             if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha uma foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Comprimindo e Salvando...'; btn.disabled = true;
+            btn.innerText = '⏳ Enviando para o servidor...'; btn.disabled = true;
+
+            const arquivo = fileInput.files[0];
+            const nomeArquivo = `ingred_${Date.now()}.png`;
 
             const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 300; // Tamanho super leve
-                    let width = img.width; let height = img.height;
-
-                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+            reader.onload = async function(e) {
+                const base64Direto = e.target.result;
+                try {
+                    const resUpload = await fetch(API_URL + '/api/upload', { 
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ nomeArquivo: nomeArquivo, base64: base64Direto }) 
+                    });
                     
-                    // Transforma em Texto Base64
-                    const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
+                    if(!resUpload.ok) { alert("❌ Falha no Upload. Imagem pode ser pesada."); btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false; return; }
 
-                    try {
-                        // Envia DIRETO para o Banco de Dados, não salva em pasta!
-                        const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
-                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify({ nome: nome, imagem: base64Reduzida }) 
-                        });
-                        
-                        if(respostaDb.ok) {
-                            alert('✅ Ingrediente Criado! Já está protegido no Banco de Dados.');
-                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
-                            carregarIngredientesNaFabrica(); 
-                        } else {
-                            throw new Error("Erro no banco de dados.");
-                        }
-                    } catch(err) { 
-                        alert('❌ Erro: ' + err.message); 
-                    }
+                    const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) 
+                    });
                     
-                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
-                };
-                img.src = e.target.result;
+                    if(respostaDb.ok) {
+                        alert('✅ Ingrediente Criado com Sucesso!');
+                        document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
+                        carregarIngredientesNaFabrica(); 
+                    } else { alert('❌ Falha ao salvar no Banco de Dados.'); }
+                } catch(err) { alert('❌ Ocorreu um erro na conexão.'); }
+                
+                btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
             };
-            reader.readAsDataURL(fileInput.files[0]);
+            reader.readAsDataURL(arquivo);
         }
 
         async function lancarLancheNoCardapio() {
@@ -283,7 +259,7 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual })
                 });
-                alert('🚀 Lanche Lançado com Sucesso! Volte na página do cliente para ver.');
+                alert('🚀 Lanche Lançado com Sucesso!');
                 document.getElementById('novo-lanche-nome').value = '';
                 document.getElementById('novo-lanche-desc').value = '';
                 document.getElementById('novo-lanche-preco').value = '';
@@ -314,7 +290,7 @@
                         </div>
                     `;
                 });
-            } catch(e) { container.innerHTML = '<p style="text-align:center; color:red;">Erro ao carregar pedidos.</p>'; }
+            } catch(e) {}
         }
 
         async function atualizarStatusPedido(idPedido, telefone) {
