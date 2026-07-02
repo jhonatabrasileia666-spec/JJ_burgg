@@ -87,8 +87,6 @@
     </style>
 </head>
 <body>
-    <audio id="somAlertaCliente" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
     <div id="clima-frio-overlay"></div>
     <div id="container-neve"></div>
 
@@ -149,6 +147,17 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
+    <!-- NOVO MODAL: PEDIR PERMISSÃO PARA AVISOS -->
+    <div id="modalNotificacao" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Notificações</h2>
+            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja receber avisos no seu celular sobre o status do seu pedido (Ex: "Em Preparo", "Saiu para Entrega")?</p>
+            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
+            <button class="btn-acao-modal btn-fechar" onclick="fecharModalNotificacao()">Agora não</button>
+        </div>
+    </div>
+
+    <!-- OUTROS MODAIS -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
@@ -198,21 +207,31 @@
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
 
         // ==========================================
-        // DESTRAVAR ÁUDIO NO TELEMÓVEL DO CLIENTE
+        // SISTEMA OFICIAL DE NOTIFICAÇÕES (COM AVISO)
         // ==========================================
-        let audioDesbloqueado = false;
-        document.addEventListener('click', function() {
-            if(!audioDesbloqueado) {
-                const som = document.getElementById('somAlertaCliente');
-                som.volume = 0; // Toca mutado só para o navegador liberar
-                som.play().then(() => {
-                    som.pause();
-                    som.currentTime = 0;
-                    som.volume = 1; // Restaura o volume para quando o alerta real for tocar
-                    audioDesbloqueado = true;
-                }).catch(()=>{});
+        function verificarPermissaoNotificacao() {
+            // Se o navegador suportar e ainda não tiver perguntado
+            if ("Notification" in window && Notification.permission === "default") {
+                setTimeout(() => {
+                    document.getElementById('modalNotificacao').classList.add('ativo');
+                }, 2000); // Abre o popup 2 segundos depois que o cliente entra no site
             }
-        });
+        }
+
+        function pedirPermissaoNotificacao() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    fecharModalNotificacao();
+                    if (permission === "granted") {
+                        new Notification("JJ Burguer", { body: "Notificações ativadas com sucesso! 🍔", icon: "logo.png" });
+                    }
+                });
+            }
+        }
+
+        function fecharModalNotificacao() {
+            document.getElementById('modalNotificacao').classList.remove('ativo');
+        }
 
         let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
 
@@ -314,10 +333,6 @@
             if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
 
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
-
             let subtotal = 0; 
             let itensLimpos = carrinho.map(item => {
                 let precoSeguro = parseFloat(item.preco) || 0;
@@ -392,31 +407,21 @@
         }
 
         // ==========================================
-        // TOCAR O SOM DE ALERTA NO CLIENTE
+        // DISPARAR NOTIFICAÇÃO OFICIAL
         // ==========================================
         function tocarNotificacao(status) {
             let msg = "";
-            if(status == 2) msg = "🍔 O seu pedido está a ser preparado na cozinha!";
+            if(status == 2) msg = "🍔 O seu pedido está sendo preparado na cozinha!";
             if(status == 3) msg = "🛵 O seu pedido saiu para entrega!";
             if(status == 4) msg = "✅ O seu pedido foi concluído!";
             
             if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("JJ Burguer", { body: msg, icon: "logo.png" });
+                new Notification("JJ Burguer - Atualização!", { body: msg, icon: "logo.png" });
             }
-            
-            try {
-                const som = document.getElementById('somAlertaCliente');
-                som.currentTime = 0;
-                som.play().catch(e => console.log("Som bloqueado: o utilizador ainda não tocou no ecrã."));
-            } catch(e) {}
         }
 
         function iniciarBuscaAoVivo() {
             if(!idRastreioAtual) return;
-
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
 
             async function buscar() {
                 try {
@@ -427,7 +432,7 @@
                     if (meuPedido) {
                         if(meuPedido.status > statusAtual) {
                             statusAtual = meuPedido.status;
-                            tocarNotificacao(statusAtual); 
+                            tocarNotificacao(statusAtual); // Aqui ele dispara a notificação limpa
                         }
                         atualizarStatusVisual(meuPedido.status);
                     } else {
@@ -465,9 +470,10 @@
         }
 
         window.addEventListener('load', () => {
+            verificarPermissaoNotificacao(); // Verifica e pede permissão se necessário
             atualizarCarrinhoUI(); 
+
             const parametrosURL = new URLSearchParams(window.location.search);
-            
             let urlRastreio = parametrosURL.get('rastreio');
             let localRastreio = localStorage.getItem('meu_pedido_jj');
             
