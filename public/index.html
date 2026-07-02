@@ -213,7 +213,7 @@
         }
         carregarPrecosDoBanco();
 
-        // 🧠 CARRINHO COM MEMÓRIA: Lê os lanches que vieram da tela montar.html
+        // CARRINHO COM MEMÓRIA
         let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
         let linkMapaGoogle = ""; let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
 
@@ -242,14 +242,12 @@
 
         function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
         
-        // Quando adiciona, guarda na memória
         function adicionarItemCardapio(nome, preco, obs) { 
             carrinho.push({ nome: nome, preco: preco, obs: obs }); 
             localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
             atualizarCarrinhoUI(); 
         }
 
-        // Quando remove, tira da memória
         function removerItem(i) { 
             carrinho.splice(i, 1); 
             localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
@@ -260,7 +258,7 @@
         function atualizarCarrinhoUI() {
             const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart');
             if (carrinho.length > 0) btnCart.style.display = 'block'; else btnCart.style.display = 'none';
-            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += item.preco);
+            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += parseFloat(item.preco) || 0);
             valorCart.textContent = total.toFixed(2).replace('.', ',');
         }
 
@@ -268,8 +266,9 @@
             const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
             listaHTML.innerHTML = ""; let total = 0;
             carrinho.forEach((item, index) => {
-                total += item.preco; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
-                listaHTML.innerHTML += `<div class="item-carrinho"><div class="item-info">1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${item.preco.toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
+                total += parseFloat(item.preco) || 0; 
+                let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
+                listaHTML.innerHTML += `<div class="item-carrinho"><div class="item-info">1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
             });
             subtotalModal.textContent = total.toFixed(2).replace('.', ','); document.getElementById('status-gps').style.display = 'none'; linkMapaGoogle = ""; modal.classList.add('ativo');
         }
@@ -297,7 +296,18 @@
             if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
 
-            let subtotal = 0; carrinho.forEach(i => subtotal += i.preco);
+            // MÁGICA DE LIMPEZA: Garante que todos os dados são seguros para o Banco de Dados
+            let subtotal = 0; 
+            let itensLimpos = carrinho.map(item => {
+                let precoSeguro = parseFloat(item.preco) || 0;
+                subtotal += precoSeguro;
+                return {
+                    nome: String(item.nome || "Item"),
+                    preco: precoSeguro,
+                    obs: item.obs ? String(item.obs) : ""
+                };
+            });
+
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; 
             let totalFinal = subtotal + taxaEntrega;
 
@@ -312,11 +322,11 @@
                     method: 'POST', 
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        nome: nome, 
-                        telefone: tel, 
-                        itens: carrinho, 
-                        total: totalFinal, 
-                        endereco: (tipoEntrega === 'Entrega') ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja" 
+                        nome: String(nome), 
+                        telefone: String(tel), 
+                        itens: itensLimpos, 
+                        total: parseFloat(totalFinal.toFixed(2)), 
+                        endereco: String(tipoEntrega === 'Entrega' ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja") 
                     })
                 });
                 
@@ -334,7 +344,7 @@
             }
             
             textoWhats += `\n*🧾 O PEDIDO:*\n`;
-            carrinho.forEach(item => { 
+            itensLimpos.forEach(item => { 
                 textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; 
                 if(item.obs) textoWhats += `      *Obs:* ${item.obs}\n`; 
             });
@@ -348,17 +358,15 @@
             
             setTimeout(() => {
                 carrinho = []; 
-                localStorage.removeItem('carrinho_jj'); // Limpa a memória quando a compra termina
+                localStorage.removeItem('carrinho_jj'); 
                 atualizarCarrinhoUI(); 
                 fecharModalCarrinho();
                 window.location.href = `index.html?rastreio=true&status=1`;
             }, 1000);
         }
 
-        // CARREGA A INTERFACE DO CARRINHO AO ABRIR O SITE
         window.addEventListener('load', () => {
-            atualizarCarrinhoUI(); // Se o cara voltar do "montar", o carrinho já aparece com as coisas dentro
-
+            atualizarCarrinhoUI(); 
             const parametrosURL = new URLSearchParams(window.location.search);
             if (parametrosURL.get('rastreio') === 'true') {
                 const statusPedido = parseInt(parametrosURL.get('status')) || 1;

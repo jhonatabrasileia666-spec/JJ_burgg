@@ -30,7 +30,6 @@
         .item-cardapio { display: flex; justify-content: space-between; align-items: center; }
         .input-preco { width: 90px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d35400; text-align: center; }
 
-        /* ESTILOS DO DASHBOARD FINANCEIRO */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .box-valor { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .box-valor h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
@@ -42,7 +41,6 @@
         .lucro-total h3 { color: #bdc3c7; }
         .lucro-total .valor { font-size: 26px; }
 
-        /* MENU INFERIOR */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: none; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { flex: 1; padding: 15px 0; text-align: center; color: #7f8c8d; font-size: 14px; font-weight: bold; cursor: pointer; border-top: 3px solid transparent; }
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
@@ -76,20 +74,10 @@
 
         <div id="tela-financeiro" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 15px;">📊 Caixa do Dia (Hoje)</h2>
-            
             <div class="dashboard-grid">
-                <div class="box-valor">
-                    <h3>Vendas Hoje</h3>
-                    <div class="valor valor-verde" id="val-vendas">R$ 0,00</div>
-                </div>
-                <div class="box-valor">
-                    <h3>Gastos Hoje</h3>
-                    <div class="valor valor-vermelho" id="val-gastos">R$ 0,00</div>
-                </div>
-                <div class="box-valor lucro-total">
-                    <h3>Lucro / Caixa Atual</h3>
-                    <div class="valor" id="val-lucro" style="color: #2ecc71;">R$ 0,00</div>
-                </div>
+                <div class="box-valor"><h3>Vendas Hoje</h3><div class="valor valor-verde" id="val-vendas">R$ 0,00</div></div>
+                <div class="box-valor"><h3>Gastos Hoje</h3><div class="valor valor-vermelho" id="val-gastos">R$ 0,00</div></div>
+                <div class="box-valor lucro-total"><h3>Lucro / Caixa Atual</h3><div class="valor" id="val-lucro" style="color: #2ecc71;">R$ 0,00</div></div>
             </div>
 
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
@@ -120,32 +108,24 @@
                 document.getElementById('menu-inferior').style.display = 'flex';
                 carregarPedidos();
                 carregarCardapio();
-                carregarFinanceiro(); // Já deixa o caixa pronto
-            } else {
-                alert("❌ Palavra-passe incorreta!");
-            }
+                carregarFinanceiro();
+            } else { alert("❌ Palavra-passe incorreta!"); }
         }
 
         function mudarAba(aba) {
             document.getElementById('tela-pedidos').classList.remove('ativo');
             document.getElementById('tela-cardapio').classList.remove('ativo');
             document.getElementById('tela-financeiro').classList.remove('ativo');
-            
             document.getElementById('tab-pedidos').classList.remove('ativo');
             document.getElementById('tab-cardapio').classList.remove('ativo');
             document.getElementById('tab-financeiro').classList.remove('ativo');
-
             document.getElementById('tela-' + aba).classList.add('ativo');
             document.getElementById('tab-' + aba).classList.add('ativo');
-            
             if(aba === 'pedidos') carregarPedidos();
             if(aba === 'cardapio') carregarCardapio();
             if(aba === 'financeiro') carregarFinanceiro();
         }
 
-        // ===============================================
-        // MÓDULO DE PEDIDOS
-        // ===============================================
         async function carregarPedidos() {
             const container = document.getElementById('lista-pedidos-container');
             container.innerHTML = '<p style="text-align:center;">A atualizar pedidos...</p>';
@@ -161,34 +141,44 @@
                 }
 
                 pedidos.forEach(p => {
-                    let itensHTML = '';
-                    let listaItens = p.itens;
-                    if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
+                    // BLINDAGEM: Se um pedido der problema, o catch isola o erro e ele continua lendo os outros
+                    try {
+                        let itensHTML = '';
+                        let listaItens = p.itens;
+                        if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
 
-                    if(Array.isArray(listaItens)) {
-                        listaItens.forEach(i => { 
-                            itensHTML += `- 1x ${i.nome}<br>`; 
-                            if(i.obs && i.obs.trim() !== '') { itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; }
-                        });
-                    } else { itensHTML = "Detalhes do lanche guardados com sucesso."; }
+                        if(Array.isArray(listaItens)) {
+                            listaItens.forEach(i => { 
+                                let nomeItem = i.nome || 'Item sem nome';
+                                itensHTML += `- 1x ${nomeItem}<br>`; 
+                                if(i.obs && typeof i.obs === 'string' && i.obs.trim() !== '') { 
+                                    itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; 
+                                }
+                            });
+                        } else { itensHTML = "Detalhes do lanche guardados com sucesso."; }
 
-                    container.innerHTML += `
-                        <div class="card" style="border-left: 5px solid ${p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60'};">
-                            <div class="pedido-nome">Cliente: ${p.cliente_nome} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
-                            <div class="pedido-detalhes">
-                                <strong>Itens:</strong><br>${itensHTML}
-                                <br><strong style="margin-top: 10px; display:block;">Entrega:</strong> ${p.endereco}
-                                <br><strong style="color:#27ae60; font-size:16px; margin-top: 5px; display:block;">Total: R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</strong>
+                        let totalTratado = parseFloat(p.total) || 0;
+
+                        container.innerHTML += `
+                            <div class="card" style="border-left: 5px solid ${p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60'};">
+                                <div class="pedido-nome">Cliente: ${p.cliente_nome || 'Desconhecido'} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
+                                <div class="pedido-detalhes">
+                                    <strong>Itens:</strong><br>${itensHTML}
+                                    <br><strong style="margin-top: 10px; display:block;">Entrega:</strong> ${p.endereco || 'Retirada'}
+                                    <br><strong style="color:#27ae60; font-size:16px; margin-top: 5px; display:block;">Total: R$ ${totalTratado.toFixed(2).replace('.', ',')}</strong>
+                                </div>
+                                <select id="status-${p.id}">
+                                    <option value="1" ${p.status == 1 ? 'selected' : ''}>⏳ Aguardando Confirmação</option>
+                                    <option value="2" ${p.status == 2 ? 'selected' : ''}>🍔 Em Preparo na Cozinha</option>
+                                    <option value="3" ${p.status == 3 ? 'selected' : ''}>🛵 Saiu para Entrega / Retirada</option>
+                                    <option value="4" ${p.status == 4 ? 'selected' : ''}>✅ Concluído (Remover da Lista)</option>
+                                </select>
+                                <button class="btn-salvar" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}')">Atualizar e Avisar Cliente</button>
                             </div>
-                            <select id="status-${p.id}">
-                                <option value="1" ${p.status == 1 ? 'selected' : ''}>⏳ Aguardando Confirmação</option>
-                                <option value="2" ${p.status == 2 ? 'selected' : ''}>🍔 Em Preparo na Cozinha</option>
-                                <option value="3" ${p.status == 3 ? 'selected' : ''}>🛵 Saiu para Entrega / Retirada</option>
-                                <option value="4" ${p.status == 4 ? 'selected' : ''}>✅ Concluído (Remover da Lista)</option>
-                            </select>
-                            <button class="btn-salvar" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}')">Atualizar e Avisar Cliente</button>
-                        </div>
-                    `;
+                        `;
+                    } catch (errLoop) {
+                        console.error("Pedido pulado por falha na leitura", p);
+                    }
                 });
             } catch(e) { container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">Erro ao carregar do servidor.</p>`; }
         }
@@ -197,7 +187,6 @@
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
             await fetch(`/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
             
-            // Se o pedido for marcado como concluído (4), recarregamos o caixa também
             if(novoStatus === "4") {
                 carregarPedidos();
                 carregarFinanceiro();
@@ -213,9 +202,6 @@
             carregarPedidos();
         }
 
-        // ===============================================
-        // MÓDULO DE CARDÁPIO
-        // ===============================================
         async function carregarCardapio() {
             try {
                 const res = await fetch('/api/cardapio');
@@ -223,15 +209,7 @@
                 const container = document.getElementById('lista-cardapio-container');
                 container.innerHTML = '';
                 cardapio.forEach(item => {
-                    container.innerHTML += `
-                        <div class="card item-cardapio">
-                            <div style="flex:1;"><strong>${item.nome}</strong></div>
-                            <div style="display:flex; gap:10px;">
-                                <input type="number" id="preco-edit-${item.id}" class="input-preco" value="${item.preco}">
-                                <button style="background:#2980b9; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="salvarNovoPreco(${item.id})">Salvar</button>
-                            </div>
-                        </div>
-                    `;
+                    container.innerHTML += `<div class="card item-cardapio"><div style="flex:1;"><strong>${item.nome}</strong></div><div style="display:flex; gap:10px;"><input type="number" id="preco-edit-${item.id}" class="input-preco" value="${item.preco}"><button style="background:#2980b9; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="salvarNovoPreco(${item.id})">Salvar</button></div></div>`;
                 });
             } catch(e) { console.error(e); }
         }
@@ -242,27 +220,18 @@
             alert('✅ Preço atualizado no site principal!');
         }
 
-        // ===============================================
-        // NOVO MÓDULO: CONTABILIDADE DO DIA 📊
-        // ===============================================
         async function carregarFinanceiro() {
             try {
                 const res = await fetch('/api/financeiro');
                 const data = await res.json();
-                
-                // Pegar a data de hoje (para filtrar apenas as vendas e gastos do dia)
                 const hoje = new Date().toLocaleDateString('pt-BR');
                 
-                // 1. Somar Vendas do Dia
                 let totalVendas = 0;
                 data.pedidos.forEach(p => {
                     const dataPedido = new Date(p.criado_em).toLocaleDateString('pt-BR');
-                    if(dataPedido === hoje) {
-                        totalVendas += parseFloat(p.total);
-                    }
+                    if(dataPedido === hoje) { totalVendas += parseFloat(p.total) || 0; }
                 });
 
-                // 2. Somar Gastos e Exibir Lista
                 let totalGastos = 0;
                 const listaHtml = document.getElementById('lista-gastos');
                 listaHtml.innerHTML = '';
@@ -271,55 +240,30 @@
                     const dataGasto = new Date(g.criado_em).toLocaleDateString('pt-BR');
                     if(dataGasto === hoje) {
                         totalGastos += parseFloat(g.valor);
-                        listaHtml.innerHTML += `
-                            <div class="card item-cardapio" style="padding: 12px; margin-bottom: 8px;">
-                                <div style="flex:1;"><strong>${g.descricao}</strong></div>
-                                <div style="color: #e74c3c; font-weight: bold;">- R$ ${parseFloat(g.valor).toFixed(2).replace('.',',')}</div>
-                                <button onclick="apagarGasto(${g.id})" style="background:transparent; border:none; color:#e74c3c; font-size:18px; margin-left:12px; cursor:pointer;">🗑️</button>
-                            </div>
-                        `;
+                        listaHtml.innerHTML += `<div class="card item-cardapio" style="padding: 12px; margin-bottom: 8px;"><div style="flex:1;"><strong>${g.descricao}</strong></div><div style="color: #e74c3c; font-weight: bold;">- R$ ${parseFloat(g.valor).toFixed(2).replace('.',',')}</div><button onclick="apagarGasto(${g.id})" style="background:transparent; border:none; color:#e74c3c; font-size:18px; margin-left:12px; cursor:pointer;">🗑️</button></div>`;
                     }
                 });
 
-                if(listaHtml.innerHTML === '') {
-                    listaHtml.innerHTML = '<p style="text-align:center; color:#777; font-size:14px;">Você não registrou nenhum gasto hoje.</p>';
-                }
+                if(listaHtml.innerHTML === '') { listaHtml.innerHTML = '<p style="text-align:center; color:#777; font-size:14px;">Você não registrou nenhum gasto hoje.</p>'; }
 
-                // 3. Calcular Lucro Real
                 const lucro = totalVendas - totalGastos;
 
-                // 4. Atualizar o Visual
                 document.getElementById('val-vendas').textContent = `R$ ${totalVendas.toFixed(2).replace('.', ',')}`;
                 document.getElementById('val-gastos').textContent = `R$ ${totalGastos.toFixed(2).replace('.', ',')}`;
                 
                 const lucroEl = document.getElementById('val-lucro');
                 lucroEl.textContent = `R$ ${lucro.toFixed(2).replace('.', ',')}`;
                 
-                // Muda de cor se der prejuízo
-                if(lucro < 0) {
-                    lucroEl.style.color = '#e74c3c'; // Fica vermelho se os gastos forem maiores
-                } else {
-                    lucroEl.style.color = '#2ecc71'; // Fica verde se tiver no lucro
-                }
-
+                if(lucro < 0) { lucroEl.style.color = '#e74c3c'; } else { lucroEl.style.color = '#2ecc71'; }
             } catch(e) { console.error("Erro no financeiro", e); }
         }
 
         async function salvarGasto() {
             const desc = document.getElementById('gasto-desc').value.trim();
             const val = document.getElementById('gasto-valor').value.trim();
-            
             if(!desc || !val) { alert("Preencha a descrição do gasto e o valor!"); return; }
-
-            await fetch('/api/gastos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ descricao: desc, valor: parseFloat(val) })
-            });
-
-            // Limpa os campos e recarrega a contabilidade
-            document.getElementById('gasto-desc').value = '';
-            document.getElementById('gasto-valor').value = '';
+            await fetch('/api/gastos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ descricao: desc, valor: parseFloat(val) }) });
+            document.getElementById('gasto-desc').value = ''; document.getElementById('gasto-valor').value = '';
             carregarFinanceiro();
         }
 
