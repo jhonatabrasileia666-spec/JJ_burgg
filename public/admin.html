@@ -153,7 +153,7 @@
                                 let nomeItem = i.nome || 'Item sem nome';
                                 itensHTML += `- 1x ${nomeItem}<br>`; 
                                 if(i.obs && typeof i.obs === 'string' && i.obs.trim() !== '') { 
-                                    itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; 
+                                    itensHTML += `  <small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; 
                                 }
                             });
                         } else { itensHTML = "Detalhes do lanche guardados com sucesso."; }
@@ -198,8 +198,10 @@
             }
 
             if(enviarWhatsApp && telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
+                // O LINK É ADICIONADO AQUI PARA A MENSAGEM DO RESTAURANTE
+                const linkMagico = "https://jj-burgg.vercel.app?rastreio=true";
                 let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
-                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo!`;
+                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo clicando aqui:\n${linkMagico}`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             } else {
                 alert('✅ Tela do cliente atualizada com sucesso!');
