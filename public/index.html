@@ -147,7 +147,6 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
-    <!-- MODAIS -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
@@ -194,7 +193,7 @@
     <div id="telaAnimacao" class="tela-animacao"><div class="animacao-carrinho"><img src="logo.png" id="img-mascote" class="logo-empurrando" alt="Mascote"><div class="icone-carrinho">🛒</div></div><div class="texto-buscando">Buscando seu pedido...</div></div>
 
     <script>
-        // MEMÓRIA DE PREÇOS (O botão já nasce funcionando, e atualiza quando a internet carrega)
+        // MEMÓRIA DE PREÇOS
         let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
 
         async function carregarPrecosDoBanco() {
@@ -217,7 +216,7 @@
 
         function abrirPersonalizacao(nomeLanche) {
             lancheSendoPersonalizado = nomeLanche; 
-            precoBaseSendoPersonalizado = precosDinamicos[nomeLanche]; // Pega o preço seguro da memória
+            precoBaseSendoPersonalizado = precosDinamicos[nomeLanche]; 
             document.getElementById('tituloCustomLanche').innerText = nomeLanche; 
             document.getElementById('txt-observacao').value = ""; 
             document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
@@ -272,36 +271,97 @@
             }
         }
 
+        // A NOVA FUNÇÃO BLINDADA
         async function enviarPedidoFinal() {
             const nome = document.getElementById('txt-nome').value.trim();
             const tel = document.getElementById('txt-telefone').value.trim();
-            const tipo = document.getElementById('select-entrega').value; 
-            const end = document.getElementById('txt-endereco').value.trim();
+            const tipoEntrega = document.getElementById('select-entrega').value; 
+            const endereco = document.getElementById('txt-endereco').value.trim();
             
             if (carrinho.length === 0) return; 
-            if (!nome || !tel) { alert('Informe o seu nome e telefone.'); return; }
-            if (tipo === 'Entrega' && !end && linkMapaGoogle === "") { alert('Informe endereço ou use o GPS.'); return; }
+            if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
+            if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
 
             let subtotal = 0; carrinho.forEach(i => subtotal += i.preco);
-            let taxa = tipo === 'Entrega' ? 5.00 : 0.00; let total = subtotal + taxa;
+            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; 
+            let totalFinal = subtotal + taxaEntrega;
 
+            // SALVAR NO BANCO DE DADOS À PROVA DE FALHAS
             try {
-                await fetch('/api/pedidos', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome: nome, telefone: tel, itens: carrinho, total: total, endereco: (tipo === 'Entrega') ? (end + " " + linkMapaGoogle) : "Retirada no Local" })
+                const botao = document.querySelector('.btn-enviar-whats');
+                const textoOriginal = botao.innerHTML;
+                botao.innerHTML = '⏳ Salvando pedido...';
+                botao.style.opacity = '0.7';
+                botao.disabled = true;
+
+                const resposta = await fetch('/api/pedidos', {
+                    method: 'POST', 
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ 
+                        nome: nome, 
+                        telefone: tel, 
+                        itens: carrinho, 
+                        total: totalFinal, 
+                        endereco: (tipoEntrega === 'Entrega') ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja" 
+                    })
                 });
-            } catch(e) { console.error(e); }
+                
+                await resposta.json();
+                
+                botao.innerHTML = textoOriginal;
+                botao.style.opacity = '1';
+                botao.disabled = false;
+            } catch(e) { 
+                console.error("Erro no BD:", e); 
+            }
 
-            let txt = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipo}\n`;
-            if(tipo === 'Entrega') { if(end) txt += `*Endereço:* ${end}\n`; if(linkMapaGoogle) txt += `*📍 Mapa:* \n${linkMapaGoogle}\n`; }
-            txt += `\n*🧾 O PEDIDO:*\n`;
-            carrinho.forEach(i => { txt += ` - 1x ${i.nome} (R$ ${i.preco.toFixed(2).replace('.', ',')})\n`; if(i.obs) txt += `      *Obs:* ${i.obs}\n`; });
-            txt += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`; if(taxa > 0) txt += `Taxa de Entrega: R$ ${taxa.toFixed(2).replace('.', ',')}\n`;
-            txt += `*TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}`;
+            // WHATSAPP E REDIRECIONAMENTO
+            let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
+            if(tipoEntrega === 'Entrega') { 
+                if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; 
+                if(linkMapaGoogle) textoWhats += `*📍 Mapa:* \n${linkMapaGoogle}\n`; 
+            }
+            
+            textoWhats += `\n*🧾 O PEDIDO:*\n`;
+            carrinho.forEach(item => { 
+                textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; 
+                if(item.obs) textoWhats += `      *Obs:* ${item.obs}\n`; 
+            });
+            
+            textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`; 
+            if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
+            textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
-            window.open(`https://wa.me/5568992365649?text=${encodeURIComponent(txt)}`, '_blank');
-            carrinho = []; atualizarCarrinhoUI(); fecharModalCarrinho();
+            const meuNumeroWhastapp = "5568992365649"; 
+            
+            window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            
+            setTimeout(() => {
+                carrinho = []; 
+                atualizarCarrinhoUI(); 
+                fecharModalCarrinho();
+                window.location.href = `index.html?rastreio=true&status=1`;
+            }, 1000);
         }
+
+        // RASTREIO E ANIMAÇÕES
+        window.addEventListener('load', () => {
+            const parametrosURL = new URLSearchParams(window.location.search);
+            if (parametrosURL.get('rastreio') === 'true') {
+                const statusPedido = parseInt(parametrosURL.get('status')) || 1;
+                document.getElementById('passo-1').classList.add('ativo');
+                if (statusPedido >= 1) { document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Confirmação no WhatsApp"; }
+                if (statusPedido >= 2) { document.getElementById('passo-3').classList.add('ativo'); }
+                if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
+                document.getElementById('btnRastreio').style.display = 'block';
+                iniciarAnimacaoRastreio();
+            }
+        });
+        function iniciarAnimacaoRastreio() { const telaAnimacao = document.getElementById('telaAnimacao'); const modalRastreio = document.getElementById('modalRastreio'); telaAnimacao.classList.add('ativo'); setTimeout(() => { telaAnimacao.classList.remove('ativo'); modalRastreio.classList.add('ativo'); }, 3000); }
+        function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); }
 
         const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve'); let intervaloNeve;
         function criarFloco() { const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); }
