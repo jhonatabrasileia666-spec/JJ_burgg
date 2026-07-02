@@ -65,8 +65,18 @@
         button { background-color: #e74c3c !important; color: white !important; -webkit-text-fill-color: white !important; border: none; padding: 10px 4px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         button.adicionar { background-color: #c0392b !important; }
 
-        .btn-finalizar { width: 100%; background-image: linear-gradient(135deg, #27ae60, #2ecc71) !important; color: white !important; padding: 14px; font-size: 16px; border-radius: 8px; text-transform: uppercase; font-weight: bold; border: none; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
-        .btn-voltar-home { display: block; margin-top: 15px; color: #777; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .btn-finalizar { width: 100%; background-image: linear-gradient(135deg, #27ae60, #2ecc71) !important; color: white !important; padding: 14px; font-size: 16px; border-radius: 8px; text-transform: uppercase; font-weight: bold; border: none; }
+
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000; padding:15px; }
+        .modal-overlay.ativo { display: flex; }
+        .modal-card { background-color: #ffffff !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align:left; }
+        .modal-card h2 { font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; color: #333 !important; -webkit-text-fill-color: #333 !important; }
+        .campo-grupo { margin-bottom: 12px; }
+        .campo-grupo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555 !important; -webkit-text-fill-color: #555 !important; }
+        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; -webkit-text-fill-color: #000 !important; }
+        
+        .btn-enviar-whats { width: 100%; background-color: #25d366 !important; color: white !important; padding: 12px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; }
+        .btn-fechar { background-color: #95a5a6 !important; width: 100%; margin-top: 8px; padding: 10px; border:none; font-weight:bold; border-radius: 6px; color:white !important; }
     </style>
 </head>
 <body>
@@ -93,13 +103,59 @@
             <button id="btn-alface" onclick="alternarIngrediente('alface', 'Alface', 1.00)" style="grid-column: span 2;">Remover Alface (R$ 1,00)</button>
         </div>
 
-        <button class="btn-finalizar" onclick="adicionarMontadoAoCarrinho()">ADICIONAR AO CARRINHO 🛒</button>
-        <a href="index.html" class="btn-voltar-home">← Voltar ao Cardápio</a>
+        <button class="btn-finalizar" onclick="abrirModal()">FINALIZAR PEDIDO ➔</button>
     </main>
 
+    <div id="modalPedido" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Dados do seu Pedido</h2>
+            <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
+            <div class="campo-grupo"><label>Seu Telefone (WhatsApp):</label><input type="number" id="txt-telefone" placeholder="DDD + Número"></div>
+
+            <div class="campo-grupo">
+                <label>Como deseja receber?</label>
+                <select id="select-entrega" onchange="mudarOpcaoEntrega()">
+                    <option value="Entrega">Delivery (Entrega em Casa)</option>
+                    <option value="Retirada">Retirar na Hamburgueria</option>
+                </select>
+            </div>
+            
+            <div class="campo-grupo" id="box-endereco">
+                <label>Endereço de Entrega:</label>
+                <input type="text" id="txt-endereco" placeholder="Rua, número e bairro">
+                <button type="button" onclick="obterLocalizacao()" style="width: 100%; background-color: #f39c12 !important; color: white !important; padding: 10px; border: none; border-radius: 6px; font-weight: bold; margin-top: 8px; cursor: pointer; font-size: 13px;">📍 Pegar minha localização exata (GPS)</button>
+                <small id="status-gps" style="display:none; color: #27ae60 !important; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small>
+            </div>
+            
+            <button class="btn-enviar-whats" onclick="enviarPedidoWhatsApp()">Enviar Pedido no WhatsApp 💬</button>
+            <button class="btn-fechar" onclick="fecharModal()">Voltar e Modificar lanche</button>
+        </div>
+    </div>
+
     <script>
+        const API_URL = "https://jjburgg-jjburg.up.railway.app";
         let valorTotal = 25.50;
         let ingredientesAtivos = { pepino: true, mussarela: true, bacon: true, carne: true, alface: true };
+        let linkMapaGoogle = ""; 
+
+        function abrirModal() { document.getElementById('modalPedido').classList.add('ativo'); }
+        function fecharModal() { document.getElementById('modalPedido').classList.remove('ativo'); }
+
+        function mudarOpcaoEntrega() {
+            const tipo = document.getElementById('select-entrega').value;
+            document.getElementById('box-endereco').style.display = (tipo === 'Retirada') ? 'none' : 'block';
+        }
+
+        function obterLocalizacao() {
+            const st = document.getElementById('status-gps'); 
+            st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...';
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; },
+                    (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }
+                );
+            }
+        }
 
         function alternarIngrediente(idCamada, nomeExibicao, precoIngrediente) {
             const container = document.getElementById(`container-${idCamada}`);
@@ -128,32 +184,82 @@
             precoExibicao.textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        // MÁGICA: Salva na memória do celular e volta pra página principal
-        function adicionarMontadoAoCarrinho() {
-            let listaIngredientes = [];
-            if (ingredientesAtivos.carne) listaIngredientes.push("Carne (Blend)");
-            if (ingredientesAtivos.bacon) listaIngredientes.push("Bacon");
-            if (ingredientesAtivos.mussarela) listaIngredientes.push("Queijo Mussarela");
-            if (ingredientesAtivos.pepino) listaIngredientes.push("Pepino");
-            if (ingredientesAtivos.alface) listaIngredientes.push("Alface");
-
-            if(listaIngredientes.length === 0) { listaIngredientes.push("Apenas Pão (Vazio)"); }
-
-            // Puxa o carrinho existente da memória (se houver)
-            let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || [];
+        async function enviarPedidoWhatsApp() {
+            const nome = document.getElementById('txt-nome').value.trim();
+            const tel = document.getElementById('txt-telefone') ? document.getElementById('txt-telefone').value.trim() : "";
+            const tipoEntrega = document.getElementById('select-entrega').value;
+            const endereco = document.getElementById('txt-endereco').value.trim();
             
-            // Adiciona o lanche montado à lista
-            carrinho.push({
-                nome: "🍔 Lanche Customizado (Montado)",
+            if (!nome || !tel) { alert('Por favor, informe seu nome e telefone antes de prosseguir.'); return; }
+            if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, preencha o endereço ou pegue a localização no GPS.'); return; }
+
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+
+            let listaIngredientes = [];
+            if (ingredientesAtivos.carne) listaIngredientes.push(" - Blend Bovino (Carne)");
+            if (ingredientesAtivos.bacon) listaIngredientes.push(" - Bacon Crocante");
+            if (ingredientesAtivos.mussarela) listaIngredientes.push(" - Queijo Mussarela");
+            if (ingredientesAtivos.pepino) listaIngredientes.push(" - Pepino");
+            if (ingredientesAtivos.alface) listaIngredientes.push(" - Alface Fresco");
+
+            if(listaIngredientes.length === 0) { listaIngredientes.push(" - Apenas o Pão (Lanche Vazio)"); }
+
+            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00;
+            let totalFinal = valorTotal + taxaEntrega;
+            
+            let idPedidoGerado = "";
+
+            const itemParaBanco = [{
+                nome: "Hambúrguer Customizado (Montado)",
                 preco: valorTotal,
-                obs: "Ingredientes: " + listaIngredientes.join(', ')
-            });
+                obs: "Ingredientes: " + listaIngredientes.join(', ').replace(/ - /g, '')
+            }];
 
-            // Guarda de volta na memória do celular
-            localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
+            try {
+                const botao = document.querySelector('.btn-enviar-whats');
+                const textoOriginal = botao.innerHTML;
+                botao.innerHTML = '⏳ Salvando pedido...';
+                botao.style.opacity = '0.7';
+                botao.disabled = true;
 
-            // Volta para a página principal
-            window.location.href = 'index.html';
+                const resposta = await fetch(API_URL + '/api/pedidos', {
+                    method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: nome, telefone: tel, itens: itemParaBanco, total: parseFloat(totalFinal.toFixed(2)), endereco: (tipoEntrega === 'Entrega') ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja" })
+                });
+                
+                const dados = await resposta.json();
+                idPedidoGerado = dados.id_pedido;
+                localStorage.setItem('meu_pedido_jj', idPedidoGerado);
+                
+                botao.innerHTML = textoOriginal;
+                botao.style.opacity = '1';
+                botao.disabled = false;
+            } catch(e) { console.error("Erro no BD:", e); }
+
+            let textoWhats = `*🍔 NOVO PEDIDO - MONTE SEU HAMBÚRGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
+            if(tipoEntrega === 'Entrega') { 
+                if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; 
+                if(linkMapaGoogle) textoWhats += `*📍 Mapa:* \n${linkMapaGoogle}\n`; 
+            }
+            
+            textoWhats += `\n*🧾 COMPOSIÇÃO DO BURGER:* \n - Pão Coroa (Topo)\n`;
+            listaIngredientes.forEach(item => { textoWhats += `${item}\n`; });
+            textoWhats += ` - Pão Base\n\n`;
+
+            textoWhats += `Subtotal Lanche: R$ ${valorTotal.toFixed(2).replace('.', ',')}\n`;
+            if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
+            textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+            
+            textoWhats += `\n\n*📍 Link para acompanhar o pedido ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=${idPedidoGerado}`;
+
+            const meuNumeroWhastapp = "5568992365649"; 
+            window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            
+            setTimeout(() => {
+                window.location.href = `index.html?rastreio=${idPedidoGerado}`;
+            }, 1000);
         }
     </script>
 </body>

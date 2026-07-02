@@ -8,13 +8,13 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #ecf0f1; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 80px; }
+        body { background-color: #ecf0f1; display: flex; flex-direction: column; min-height: 100vh; padding: 80px 0; }
 
-        header { background-color: #2c3e50; color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        header { background-color: #2c3e50; color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 100; }
         header h1 { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #f39c12; }
         header p { font-size: 13px; color: #bdc3c7; }
 
-        .container { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
+        .container { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; margin-top: 80px; }
 
         #tela-login { background: white; padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; margin-top: 50px; }
         #tela-login input { width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #ccc; border-radius: 8px; font-size: 16px; text-align: center; }
@@ -162,7 +162,7 @@
 
                         container.innerHTML += `
                             <div class="card" style="border-left: 5px solid ${p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60'};">
-                                <div class="pedido-nome">Cliente: ${p.cliente_nome || 'Desconhecido'} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
+                                <div class="pedido-nome">ID: #${p.id} | Cliente: ${p.cliente_nome || 'Desconhecido'} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
                                 <div class="pedido-detalhes">
                                     <strong>Itens:</strong><br>${itensHTML}
                                     <br><strong style="margin-top: 10px; display:block;">Entrega:</strong> ${p.endereco || 'Retirada'}
@@ -198,13 +198,12 @@
             }
 
             if(enviarWhatsApp && telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
-                // O LINK É ADICIONADO AQUI PARA A MENSAGEM DO RESTAURANTE
-                const linkMagico = "https://jj-burgg.vercel.app?rastreio=true";
+                const linkMagico = "https://jj-burgg.vercel.app?rastreio=" + idPedido; // O LINK AGORA É ÚNICO!
                 let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
                 let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo clicando aqui:\n${linkMagico}`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             } else {
-                alert('✅ Tela do cliente atualizada com sucesso!');
+                alert('✅ Tela do cliente atualizada com sucesso e alarme disparado no telemóvel dele!');
             }
             
             carregarPedidos();

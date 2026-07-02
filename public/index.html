@@ -299,7 +299,10 @@
             if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
             if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
 
-            localStorage.setItem('meu_telefone_jj', tel);
+            // Pede permissão para mostrar notificações no telemóvel!
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
 
             let subtotal = 0; 
             let itensLimpos = carrinho.map(item => {
@@ -310,6 +313,8 @@
 
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; 
             let totalFinal = subtotal + taxaEntrega;
+            
+            let idPedidoGerado = "";
 
             try {
                 const botao = document.querySelector('.btn-enviar-whats');
@@ -324,7 +329,9 @@
                     body: JSON.stringify({ nome: String(nome), telefone: String(tel), itens: itensLimpos, total: parseFloat(totalFinal.toFixed(2)), endereco: String(tipoEntrega === 'Entrega' ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja") })
                 });
                 
-                await resposta.json();
+                const dados = await resposta.json();
+                idPedidoGerado = dados.id_pedido; // GUARDA A ETIQUETA ÚNICA
+                localStorage.setItem('meu_pedido_jj', idPedidoGerado); // Salva na memória do telemóvel
                 
                 botao.innerHTML = textoOriginal;
                 botao.style.opacity = '1';
@@ -339,8 +346,7 @@
             if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
             
-            // O LINK DO RASTREIO É ADICIONADO AQUI NA MENSAGEM DO CLIENTE
-            textoWhats += `\n\n*📍 Link para acompanhar o pedido ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=true`;
+            textoWhats += `\n\n*📍 Link para acompanhar o pedido ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=${idPedidoGerado}`;
 
             const meuNumeroWhastapp = "5568992365649"; 
             window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
@@ -350,11 +356,16 @@
                 localStorage.removeItem('carrinho_jj'); 
                 atualizarCarrinhoUI(); 
                 fecharModalCarrinho();
-                window.location.href = `index.html?rastreio=true`;
+                window.location.href = `index.html?rastreio=${idPedidoGerado}`;
             }, 1000);
         }
 
+        // ==========================================
+        // MÁGICA: NOTIFICAÇÕES E ETIQUETA ÚNICA
+        // ==========================================
         let intervalRastreio = null;
+        let idRastreioAtual = null;
+        let statusAtual = 1;
 
         function atualizarStatusVisual(statusPedido) {
             document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo'));
@@ -369,22 +380,45 @@
             if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
         }
 
+        function tocarNotificacao(status) {
+            let msg = "";
+            if(status == 2) msg = "🍔 O seu pedido está a ser preparado na cozinha!";
+            if(status == 3) msg = "🛵 O seu pedido saiu para entrega!";
+            if(status == 4) msg = "✅ O seu pedido foi concluído!";
+            
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("JJ Burguer", { body: msg, icon: "logo.png" });
+            }
+            try {
+                // Toca um som de alerta
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                audio.play();
+            } catch(e) {}
+        }
+
         function iniciarBuscaAoVivo() {
-            const meuTel = localStorage.getItem('meu_telefone_jj');
-            if(!meuTel) return;
+            if(!idRastreioAtual) return;
+
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
 
             async function buscar() {
                 try {
                     const res = await fetch(API_URL + '/api/pedidos');
                     const pedidos = await res.json();
-                    const meuPedido = pedidos.find(p => p.cliente_telefone === meuTel);
+                    const meuPedido = pedidos.find(p => p.id == idRastreioAtual); // Agora procura pela Etiqueta Única!
                     
                     if (meuPedido) {
+                        if(meuPedido.status > statusAtual) {
+                            statusAtual = meuPedido.status;
+                            tocarNotificacao(statusAtual); // Dispara pop-up e som!
+                        }
                         atualizarStatusVisual(meuPedido.status);
                     } else {
                         atualizarStatusVisual(4);
                         document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!";
-                        localStorage.removeItem('meu_telefone_jj');
+                        localStorage.removeItem('meu_pedido_jj'); // Limpa a memória
                         if(intervalRastreio) clearInterval(intervalRastreio);
                         
                         setTimeout(() => {
@@ -418,23 +452,30 @@
         window.addEventListener('load', () => {
             atualizarCarrinhoUI(); 
             const parametrosURL = new URLSearchParams(window.location.search);
-            const temTelefone = localStorage.getItem('meu_telefone_jj');
             
-            if (parametrosURL.get('rastreio') === 'true') {
+            let urlRastreio = parametrosURL.get('rastreio');
+            let localRastreio = localStorage.getItem('meu_pedido_jj');
+            
+            if(urlRastreio && urlRastreio !== 'true') {
+                idRastreioAtual = urlRastreio;
+                localStorage.setItem('meu_pedido_jj', idRastreioAtual);
                 document.getElementById('btnRastreio').style.display = 'block';
                 iniciarAnimacaoRastreio();
-            } else if (temTelefone) {
+            } else if (localRastreio) {
+                idRastreioAtual = localRastreio;
                 document.getElementById('btnRastreio').style.display = 'block';
+                
                 fetch(API_URL + '/api/pedidos').then(res => res.json()).then(pedidos => {
-                    const achou = pedidos.find(p => p.cliente_telefone === temTelefone);
+                    const achou = pedidos.find(p => p.id == idRastreioAtual);
                     if(!achou) {
-                        localStorage.removeItem('meu_telefone_jj');
+                        localStorage.removeItem('meu_pedido_jj');
                         document.getElementById('btnRastreio').style.display = 'none';
                     }
                 }).catch(()=>{});
             }
         });
 
+        // Neve
         const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve'); let intervaloNeve;
         function criarFloco() { const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); }
         const observador = new IntersectionObserver((entradas) => { entradas.forEach(entrada => { if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } else { overlayFrio.classList.remove('ativo'); tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; } }); }, { threshold: 0.1 }); observador.observe(secaoBebidas);
