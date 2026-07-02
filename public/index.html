@@ -4,96 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JJ Burguer - Cardápio</title>
-    
     <style>
         :root { color-scheme: light; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #ffffff !important; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px 15px; padding-bottom: 140px; overflow-x: hidden; position: relative; }
-        #clima-frio-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: linear-gradient(180deg, rgba(178, 235, 242, 0.95) 0%, rgba(41, 182, 246, 0.95) 100%) !important; opacity: 0; transition: opacity 1.2s ease-in-out; pointer-events: none; z-index: 0; }
-        #clima-frio-overlay.ativo { opacity: 1; }
-        #container-neve { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; }
         .app-container { width: 100%; max-width: 450px; position: relative; z-index: 1; }
         header { text-align: center; margin-bottom: 25px; }
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; }
-        h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; }
 
         .banner-montar { background-color: #f4d03f !important; padding: 30px 20px; border-radius: 20px; text-align: center; box-shadow: 0 8px 20px rgba(244, 208, 63, 0.4); margin-bottom: 30px; text-decoration: none; display: block; }
         .banner-montar h2 { color: #2c3e50 !important; font-size: 22px; margin-bottom: 10px; font-weight: 900; }
         .banner-montar p { color: #555 !important; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .btn-banner { display: inline-block; background: #ff6b00 !important; color: white !important; padding: 12px 25px; border-radius: 30px; font-weight: bold; text-transform: uppercase; }
-        .titulo-secao { font-size: 20px; color: #333 !important; margin-bottom: 15px; border-bottom: 3px solid #f4d03f; display: inline-block; padding-bottom: 5px; transition: all 1s ease; }
-        .congelado .titulo-frio { color: #ffffff !important; border-bottom-color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        .titulo-secao { font-size: 20px; color: #333 !important; margin-bottom: 15px; border-bottom: 3px solid #f4d03f; display: inline-block; padding-bottom: 5px; }
+        
         .card-lanche { background-color: #ffffff !important; border: 2px solid #f4f4f4; border-radius: 25px; padding: 20px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        /* A VITRINE ORIGINAL PARA OS CLÁSSICOS */
         .vitrine-hamburguer { background-color: #f4d03f !important; border-radius: 20px; padding: 40px 5px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
         @keyframes respirar { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
         .mini-camada { width: 100%; height: 26px; display: flex; justify-content: center; align-items: center; position: relative; animation: respirar 3.5s ease-in-out infinite; }
         .mini-camada img { width: 140px; height: auto; position: relative; z-index: 10; }
         .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
         .z-pepino { z-index: 8; } .z-queijo { z-index: 7; } .z-alface { z-index: 6; } .z-bacon { z-index: 5; } .z-carne { z-index: 4; }
-        .etiqueta-esq, .etiqueta-dir { position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: #d35400 !important; text-transform: uppercase; display: flex; align-items: center; z-index: 20; white-space: nowrap; }
-        .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
-        .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
+        
+        /* A VITRINE GIGANTE PARA OS DINÂMICOS (TAMANHO EXATO DO ADMIN 300x300) */
+        .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; overflow: hidden; border-radius: 20px; }
+
         .card-lanche h3 { color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
         .card-lanche p { color: #777 !important; font-size: 14px; line-height: 1.4; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px; }
         .preco-card { font-size: 20px; color: #27ae60 !important; font-weight: 900; }
         .btn-add { background: #ff6b00 !important; color: white !important; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
-        #secao-bebidas { width: 100%; margin-top: 20px; }
-        .card-bebida { background-color: #ffffff !important; border-radius: 15px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.06); border: 2px solid #f4f4f4; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
-        .info-bebida h3 { color: #2c3e50 !important; font-size: 18px; font-weight: 900; }
-        .info-bebida p { color: #777 !important; font-size: 13px; margin-top: 3px; }
-        .preco-bebida { font-size: 16px; font-weight: 900; color: #00838f !important; display: block; margin-top: 6px;}
-        .btn-add-frio { background: #00838f !important; color: white !important; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
-        .floco { position: absolute; top: -20px; color: #ffffff; user-select: none; text-shadow: 0 0 8px rgba(255,255,255,1); animation: nevada linear forwards; }
-        @keyframes nevada { 0% { transform: translate(0, -10px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-80px, 105vh) rotate(360deg); opacity: 0; } }
+
         .btn-flutuante { position: fixed; left: 50%; transform: translateX(-50%); color: white !important; padding: 15px 30px; border-radius: 30px; font-weight: 900; font-size: 16px; border: none; cursor: pointer; z-index: 990; white-space: nowrap; transition: 0.3s; }
         #btnCarrinho { bottom: 20px; background-color: #27ae60 !important; display: none; }
-        #btnRastreio { bottom: 80px; background-color: #2980b9 !important; display: none; }
         
+        /* Modal básico */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000; padding:15px; }
         .modal-overlay.ativo { display: flex; }
         .modal-card { background: #ffffff !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align: left; max-height: 90vh; overflow-y: auto; }
         .modal-card h2 { color: #333 !important; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; }
-        .header-personaliza { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4d03f; padding-bottom: 10px; margin-bottom: 15px; }
-        .preco-base-modal { color: #27ae60 !important; font-weight: 900; font-size: 18px; }
-        .item-extra { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9 !important; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee; }
-        .item-extra label { display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer; font-weight: bold; color: #444 !important; font-size: 14px; }
-        .item-extra input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ff6b00; cursor: pointer; }
-        .preco-extra { color: #d35400 !important; font-weight: bold; font-size: 13px; }
-        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; margin-top: 5px; background: #fff !important; color: #000 !important; }
         .lista-itens { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: #555 !important; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
-        .obs-item { font-size: 11px; color: #e74c3c !important; display: block; margin-top: 2px; }
         .btn-remover { background: #e74c3c !important; color: white !important; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 10px; }
         .subtotal-texto { font-weight: 900; color: #27ae60 !important; font-size: 18px; text-align: right; margin-bottom: 15px; }
-        .campo-grupo { margin-bottom: 12px; } .campo-grupo label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555 !important; }
-        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; background: #fff !important; color: #000 !important; }
+        input, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; outline:none; }
         .btn-acao-modal { width: 100%; padding: 14px; font-size: 15px; border-radius: 6px; margin-top: 10px; border:none; font-weight:bold; cursor: pointer; color: white !important; }
-        .btn-confirmar { background-color: #ff6b00 !important; } .btn-enviar-whats { background-color: #25d366 !important; } .btn-fechar { background-color: #95a5a6 !important; margin-top: 8px; }
-        .btn-gps { width: 100%; background-color: #f39c12 !important; color: white !important; padding: 10px; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; margin-bottom: 5px; cursor: pointer; font-size: 13px; }
-        .tela-animacao { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff !important; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
-        .tela-animacao.ativo { display: flex; }
-        .animacao-carrinho { display: flex; align-items: flex-end; animation: deslizarTela 3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .logo-empurrando { width: 120px; height: auto; position: relative; z-index: 2; }
-        .icone-carrinho { font-size: 45px; margin-left: -15px; z-index: 1; position: relative; top: -10px; }
-        .texto-buscando { margin-top: 25px; font-size: 18px; font-weight: 900; color: #d35400 !important; animation: piscar 1s infinite alternate; text-transform: uppercase; }
-        @keyframes deslizarTela { 0% { transform: translateX(-120vw); } 35% { transform: translateX(0); } 75% { transform: translateX(0); } 100% { transform: translateX(120vw); } }
-        @keyframes piscar { 0% { opacity: 0.4; } 100% { opacity: 1; } }
-        .timeline { margin: 20px 0; padding-left: 10px; }
-        .passo { position: relative; padding-left: 25px; margin-bottom: 15px; color: #ccc !important; font-size: 15px; font-weight: bold; }
-        .passo::before { content: ''; position: absolute; left: 0; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: #eee; z-index: 2; }
-        .passo::after { content: ''; position: absolute; left: 5px; top: 15px; width: 2px; height: 25px; background: #eee; z-index: 1; }
-        .passo:last-child::after { display: none; }
-        .passo.ativo { color: #27ae60 !important; }
-        .passo.ativo::before { background: #27ae60; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
+        .btn-enviar-whats { background-color: #25d366 !important; } .btn-fechar { background-color: #95a5a6 !important; margin-top: 8px; }
     </style>
 </head>
 <body>
-    <!-- ÁUDIO BASE -->
-    <audio id="somAlertaCliente" src="preparo.mp3" preload="auto"></audio>
-
-    <div id="clima-frio-overlay"></div>
-    <div id="container-neve"></div>
 
     <div class="app-container">
         <header>
@@ -103,248 +65,113 @@
 
         <a href="montar.html" class="banner-montar"><h2>Chef por um dia! 🍔</h2><p>Escolha ingredientes e monte do seu jeito.</p><div class="btn-banner">Montar Hambúrguer ➔</div></a>
 
+        <div id="lanches-dinamicos-container"></div>
+
         <h2 class="titulo-secao">Nossos Clássicos</h2>
 
         <div class="card-lanche">
             <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
+                <div class="mini-camada mini-topo"><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><img src="queijo.png"></div>
+                <div class="mini-camada z-alface"><img src="alface.png"></div>
+                <div class="mini-camada z-carne"><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><img src="pao_base.png"></div>
             </div>
             <h3>Classic Burger</h3><p>Blend bovino 160g, queijo derretido e alface.</p>
-            <div class="card-footer"><span class="preco-card" id="preco-classic">R$ 22,00</span><button class="btn-add" onclick="abrirPersonalizacao('Classic Burger')">Adicionar 🛒</button></div>
+            <div class="card-footer"><span class="preco-card" id="preco-classic">R$ 22,00</span><button class="btn-add" onclick="adicionarItemCardapio('Classic Burger', precosDinamicos['Classic Burger'], '')">Adicionar 🛒</button></div>
         </div>
 
         <div class="card-lanche">
             <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
-                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
+                <div class="mini-camada mini-topo"><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><img src="queijo.png"></div>
+                <div class="mini-camada z-bacon"><img src="bacon.png"></div>
+                <div class="mini-camada z-carne"><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><img src="pao_base.png"></div>
             </div>
             <h3>Bacon Master</h3><p>Blend 160g, queijo mussarela e muito bacon premium.</p>
-            <div class="card-footer"><span class="preco-card" id="preco-bacon">R$ 27,00</span><button class="btn-add" onclick="abrirPersonalizacao('Bacon Master')">Adicionar 🛒</button></div>
-        </div>
-
-        <div class="card-lanche">
-            <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div>
-                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
-            </div>
-            <h3>O Monstrão</h3><p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
-            <div class="card-footer"><span class="preco-card" id="preco-monstrao">R$ 32,50</span><button class="btn-add" onclick="abrirPersonalizacao('O Monstrão')">Adicionar 🛒</button></div>
-        </div>
-
-        <div id="secao-bebidas">
-            <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
-            <div class="card-bebida"><div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida" id="preco-coca">R$ 6,00</span></div><button class="btn-add-frio" onclick="adicionarItemCardapio('Coca-Cola (Lata)', precosDinamicos['Coca-Cola (Lata)'], '')">Add 🛒</button></div>
+            <div class="card-footer"><span class="preco-card" id="preco-bacon">R$ 27,00</span><button class="btn-add" onclick="adicionarItemCardapio('Bacon Master', precosDinamicos['Bacon Master'], '')">Adicionar 🛒</button></div>
         </div>
     </div>
 
-    <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
-
-    <!-- POP-UP GIGANTE DE STATUS -->
-    <div id="modalAvisoStatus" class="modal-overlay">
-        <div class="modal-card" style="text-align: center; border: 4px solid #27ae60;">
-            <div style="font-size: 50px; margin-bottom: 10px;" id="iconeAvisoStatus">🔔</div>
-            <h2 style="color: #2c3e50 !important; border-bottom: none; margin-bottom: 5px;">Atualização do Pedido!</h2>
-            <p id="textoAvisoStatus" style="color: #333 !important; font-size: 18px; font-weight: bold; margin-bottom: 20px;"></p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="fecharAvisoStatus()">Entendido 👍</button>
-        </div>
-    </div>
-
-    <!-- MODAL DE PERMISSÃO DE ÁUDIO E AVISOS -->
-    <div id="modalNotificacao" class="modal-overlay">
-        <div class="modal-card" style="text-align: center;">
-            <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
-            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado (Ex: "Saiu para Entrega")?</p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado por voz</button>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharModalNotificacao()">Agora não</button>
-        </div>
-    </div>
-
-    <!-- MODAIS DE COMPRA -->
-    <div id="modalPersonalizar" class="modal-overlay">
-        <div class="modal-card">
-            <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
-            <p style="font-weight: bold; margin-bottom: 10px; color: #555;">Deseja adicionar algum extra?</p>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label><span class="preco-extra">+ R$ 4,00</span></div>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label><span class="preco-extra">+ R$ 3,50</span></div>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label><span class="preco-extra">+ R$ 8,00</span></div>
-            <div class="campo-grupo" style="margin-top: 15px;"><label>Alguma observação?</label><textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles..."></textarea></div>
-            <button id="btnConfirmarCustom" class="btn-acao-modal btn-confirmar" onclick="confirmarPersonalizacao()">Adicionar ao Carrinho</button>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharPersonalizacao()">Cancelar</button>
-        </div>
-    </div>
 
     <div id="modalPedido" class="modal-overlay">
         <div class="modal-card">
             <h2>Seu Pedido 🛒</h2>
             <div class="lista-itens" id="listaItensHTML"></div>
             <p class="subtotal-texto">Subtotal: R$ <span id="subtotalModal">0,00</span></p>
-            <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
-            <div class="campo-grupo"><label>Seu Telefone:</label><input type="number" id="txt-telefone" placeholder="DDD + Número"></div>
-            <div class="campo-grupo"><label>Como deseja receber?</label><select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select></div>
-            <div class="campo-grupo" id="box-endereco">
-                <label>Endereço de Entrega (Referência):</label><input type="text" id="txt-endereco" placeholder="Ex: Rua das Flores, 123">
-                <button class="btn-gps" onclick="obterLocalizacao()">📍 Pegar minha localização exata (GPS)</button>
-                <small id="status-gps" style="display:none; color: #27ae60; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small>
-            </div>
+            <input type="text" id="txt-nome" placeholder="Digite seu nome completo">
+            <input type="number" id="txt-telefone" placeholder="Telefone com DDD">
+            <select id="select-entrega"><option value="Entrega">Delivery</option><option value="Retirada">Retirar no local</option></select>
+            <input type="text" id="txt-endereco" placeholder="Endereço de Entrega (Se Delivery)">
+            
             <button class="btn-acao-modal btn-enviar-whats" onclick="enviarPedidoFinal()">Concluir via WhatsApp 💬</button>
             <button class="btn-acao-modal btn-fechar" onclick="fecharModalCarrinho()">Continuar Comprando</button>
         </div>
     </div>
 
-    <div id="modalRastreio" class="modal-overlay">
-        <div class="modal-card">
-            <h2>Status do Pedido 🛵</h2>
-            <div class="timeline" id="linha-do-tempo">
-                <div class="passo" id="passo-1">✅ Pedido Criado e Enviado</div>
-                <div class="passo" id="passo-2">⏳ Aguardando Confirmação</div>
-                <div class="passo" id="passo-3">🍔 Em Preparo na Cozinha</div>
-                <div class="passo" id="passo-4">🛵 Saiu para Entrega (ou Retirada)</div>
-            </div>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharRastreio()">Voltar ao Cardápio</button>
-        </div>
-    </div>
-    <div id="telaAnimacao" class="tela-animacao"><div class="animacao-carrinho"><img src="logo.png" id="img-mascote" class="logo-empurrando" alt="Mascote"><div class="icone-carrinho">🛒</div></div><div class="texto-buscando">Buscando seu pedido...</div></div>
-
     <script>
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
-
-        const audiosPersonalizados = {
-            preparo: "preparo.mp3", 
-            entrega: "entrega.mp3",
-            concluido: "concluido.mp3"
-        };
-
-        function mostrarAvisoStatus(msg, icone) {
-            document.getElementById('textoAvisoStatus').innerText = msg;
-            document.getElementById('iconeAvisoStatus').innerText = icone;
-            document.getElementById('modalAvisoStatus').classList.add('ativo');
-        }
-
-        function fecharAvisoStatus() {
-            document.getElementById('modalAvisoStatus').classList.remove('ativo');
-        }
-
-        function verificarPermissaoNotificacao() {
-            if (!localStorage.getItem('permissao_aviso_jj')) {
-                setTimeout(() => {
-                    document.getElementById('modalNotificacao').classList.add('ativo');
-                }, 2000);
-            }
-        }
-
-        function pedirPermissaoNotificacao() {
-            fecharModalNotificacao();
-            localStorage.setItem('permissao_aviso_jj', 'sim');
-            
-            const som = document.getElementById('somAlertaCliente');
-            som.volume = 0; 
-            som.play().then(() => {
-                som.pause();
-                som.currentTime = 0;
-                som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
-            }).catch(e => console.log("Erro ao destrancar som", e));
-        }
-
-        function fecharModalNotificacao() {
-            localStorage.setItem('permissao_aviso_jj', 'nao');
-            document.getElementById('modalNotificacao').classList.remove('ativo');
-        }
-
-        function tocarNotificacao(status) {
-            let msg = "";
-            let icone = "🔔";
-            let linkAudio = audiosPersonalizados.preparo; 
-
-            if(status == 2) { msg = "O seu pedido está sendo preparado na cozinha!"; icone = "🍔"; linkAudio = audiosPersonalizados.preparo; }
-            if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; linkAudio = audiosPersonalizados.entrega; }
-            if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
-
-            mostrarAvisoStatus(msg, icone);
-            
-            if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
-                try {
-                    const som = document.getElementById('somAlertaCliente');
-                    som.src = linkAudio; 
-                    som.currentTime = 0;
-                    som.play().catch(e=>{}); 
-                } catch(e) {}
-            }
-        }
-
-        // ==========================================
-        // RESTANTE DO SISTEMA
-        // ==========================================
         let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
+        let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
 
         async function carregarPrecosDoBanco() {
             try {
                 const res = await fetch(API_URL + '/api/cardapio');
                 const cardapio = await res.json();
+                
+                const lanchesDinamicosContainer = document.getElementById('lanches-dinamicos-container');
+                lanchesDinamicosContainer.innerHTML = '';
+
                 cardapio.forEach(item => {
                     precosDinamicos[item.nome] = parseFloat(item.preco);
-                    const pf = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
-                    if(item.nome === 'Classic Burger') document.getElementById('preco-classic').innerText = pf;
-                    if(item.nome === 'Bacon Master') document.getElementById('preco-bacon').innerText = pf;
-                    if(item.nome === 'O Monstrão') document.getElementById('preco-monstrao').innerText = pf;
-                    if(item.nome === 'Coca-Cola (Lata)') document.getElementById('preco-coca').innerText = pf;
+                    if(item.nome === 'Classic Burger') document.getElementById('preco-classic').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
+                    if(item.nome === 'Bacon Master') document.getElementById('preco-bacon').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
+
+                    // REPRODUÇÃO EXATA DA SUA FÁBRICA
+                    if(item.tipo === 'dinamico' && item.composicao) {
+                        let composicaoArray = typeof item.composicao === 'string' ? JSON.parse(item.composicao) : item.composicao;
+                        let pilhasHTML = '';
+                        
+                        // Ele lê as posições absolutas que você arrastou (top, left)
+                        composicaoArray.forEach(camada => {
+                            pilhasHTML += `
+                                <div style="position: absolute; top: ${camada.top}; left: ${camada.left}; z-index: ${camada.zIndex}; width: 140px; animation: respirar 3.5s ease-in-out infinite;">
+                                    <img src="${API_URL}/${camada.img}" style="width: 100%; display: block;">
+                                </div>
+                            `;
+                        });
+
+                        lanchesDinamicosContainer.innerHTML += `
+                            <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
+                            <div class="card-lanche">
+                                <div class="vitrine-dinamica">
+                                    ${pilhasHTML}
+                                </div>
+                                <h3>${item.nome}</h3><p>${item.descricao || ''}</p>
+                                <div class="card-footer">
+                                    <span class="preco-card">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span>
+                                    <button class="btn-add" onclick="adicionarItemCardapio('${item.nome}', ${item.preco}, '')">Adicionar 🛒</button>
+                                </div>
+                            </div>
+                        `;
+                    }
                 });
-            } catch(e) { console.error("Erro", e); }
-        }
-        carregarPrecosDoBanco();
-
-        let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
-        let linkMapaGoogle = ""; let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
-
-        function abrirPersonalizacao(nomeLanche) {
-            lancheSendoPersonalizado = nomeLanche; 
-            precoBaseSendoPersonalizado = precosDinamicos[nomeLanche]; 
-            document.getElementById('tituloCustomLanche').innerText = nomeLanche; 
-            document.getElementById('txt-observacao').value = ""; 
-            document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
-            atualizarPrecoCustom(); 
-            document.getElementById('modalPersonalizar').classList.add('ativo');
+            } catch(e) {}
         }
 
-        function atualizarPrecoCustom() {
-            let total = precoBaseSendoPersonalizado; document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); });
-            document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`; document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`;
-        }
+        window.addEventListener('load', () => { carregarPrecosDoBanco(); atualizarCarrinhoUI(); });
 
-        function confirmarPersonalizacao() {
-            let pTotal = precoBaseSendoPersonalizado; let extras = [];
-            document.querySelectorAll('.check-extra:checked').forEach(cb => { pTotal += parseFloat(cb.value); extras.push(cb.getAttribute('data-nome')); });
-            let obs = document.getElementById('txt-observacao').value.trim(); let nomeF = lancheSendoPersonalizado;
-            if (extras.length > 0) nomeF += ` (+ ${extras.join(', ')})`; 
-            adicionarItemCardapio(nomeF, pTotal, obs); fecharPersonalizacao();
-        }
-
-        function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
-        
         function adicionarItemCardapio(nome, preco, obs) { 
             carrinho.push({ nome: nome, preco: preco, obs: obs }); 
             localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
-            atualizarCarrinhoUI(); 
+            atualizarCarrinhoUI(); alert('🍔 Adicionado ao Carrinho!');
         }
 
         function removerItem(i) { 
-            carrinho.splice(i, 1); 
-            localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
-            atualizarCarrinhoUI(); 
-            if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); }
+            carrinho.splice(i, 1); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
+            atualizarCarrinhoUI(); if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); }
         }
 
         function atualizarCarrinhoUI() {
@@ -358,195 +185,33 @@
             const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
             listaHTML.innerHTML = ""; let total = 0;
             carrinho.forEach((item, index) => {
-                total += parseFloat(item.preco) || 0; 
-                let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
-                listaHTML.innerHTML += `<div class="item-carrinho"><div class="item-info">1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
+                total += parseFloat(item.preco) || 0; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
+                listaHTML.innerHTML += `<div class="item-carrinho"><div>1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
             });
-            subtotalModal.textContent = total.toFixed(2).replace('.', ','); document.getElementById('status-gps').style.display = 'none'; linkMapaGoogle = ""; modal.classList.add('ativo');
+            subtotalModal.textContent = total.toFixed(2).replace('.', ','); modal.classList.add('ativo');
         }
 
         function fecharModalCarrinho() { document.getElementById('modalPedido').classList.remove('ativo'); }
-        function mudarOpcaoEntrega() { document.getElementById('box-endereco').style.display = (document.getElementById('select-entrega').value === 'Retirada') ? 'none' : 'block'; }
-
-        function obterLocalizacao() {
-            const st = document.getElementById('status-gps'); st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...';
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; },
-                    (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }
-                );
-            }
-        }
 
         async function enviarPedidoFinal() {
-            const nome = document.getElementById('txt-nome').value.trim();
-            const tel = document.getElementById('txt-telefone').value.trim();
-            const tipoEntrega = document.getElementById('select-entrega').value; 
-            const endereco = document.getElementById('txt-endereco').value.trim();
+            const nome = document.getElementById('txt-nome').value.trim(); const tel = document.getElementById('txt-telefone').value.trim(); const tipoEntrega = document.getElementById('select-entrega').value; const endereco = document.getElementById('txt-endereco').value.trim();
+            if (carrinho.length === 0 || !nome || !tel) { alert('Preencha os dados.'); return; }
+            let subtotal = 0; let itensLimpos = carrinho.map(item => { let precoSeguro = parseFloat(item.preco) || 0; subtotal += precoSeguro; return { nome: String(item.nome || "Item"), preco: precoSeguro, obs: item.obs ? String(item.obs) : "" }; });
+            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; let totalFinal = subtotal + taxaEntrega;
             
-            if (carrinho.length === 0) return; 
-            if (!nome || !tel) { alert('Por favor, informe o seu nome e telefone.'); return; }
-            if (tipoEntrega === 'Entrega' && !endereco && linkMapaGoogle === "") { alert('Por favor, informe um endereço ou use o GPS.'); return; }
-
-            let subtotal = 0; 
-            let itensLimpos = carrinho.map(item => {
-                let precoSeguro = parseFloat(item.preco) || 0;
-                subtotal += precoSeguro;
-                return { nome: String(item.nome || "Item"), preco: precoSeguro, obs: item.obs ? String(item.obs) : "" };
-            });
-
-            let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; 
-            let totalFinal = subtotal + taxaEntrega;
-            
-            let idPedidoGerado = "";
-
             try {
-                const botao = document.querySelector('.btn-enviar-whats');
-                const textoOriginal = botao.innerHTML;
-                botao.innerHTML = '⏳ Salvando pedido...';
-                botao.style.opacity = '0.7';
-                botao.disabled = true;
+                const botao = document.querySelector('.btn-enviar-whats'); botao.innerHTML = '⏳ Salvando...'; botao.disabled = true;
+                await fetch(API_URL + '/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, telefone: tel, itens: itensLimpos, total: parseFloat(totalFinal.toFixed(2)), endereco: tipoEntrega === 'Entrega' ? endereco : "Retirada na Loja" }) });
+            } catch(e) {}
 
-                const resposta = await fetch(API_URL + '/api/pedidos', {
-                    method: 'POST', 
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome: String(nome), telefone: String(tel), itens: itensLimpos, total: parseFloat(totalFinal.toFixed(2)), endereco: String(tipoEntrega === 'Entrega' ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja") })
-                });
-                
-                const dados = await resposta.json();
-                idPedidoGerado = dados.id_pedido; 
-                localStorage.setItem('meu_pedido_jj', idPedidoGerado); 
-                
-                botao.innerHTML = textoOriginal;
-                botao.style.opacity = '1';
-                botao.disabled = false;
-            } catch(e) { console.error("Erro no BD:", e); }
-
-            let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
-            if(tipoEntrega === 'Entrega') { if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; if(linkMapaGoogle) textoWhats += `*📍 Mapa:* \n${linkMapaGoogle}\n`; }
+            let textoWhats = `*🍔 NOVO PEDIDO* \n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
+            if(tipoEntrega === 'Entrega' && endereco) textoWhats += `*Endereço:* ${endereco}\n`;
             textoWhats += `\n*🧾 O PEDIDO:*\n`;
-            itensLimpos.forEach(item => { textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; if(item.obs) textoWhats += `      *Obs:* ${item.obs}\n`; });
-            textoWhats += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`; 
-            if(taxaEntrega > 0) { textoWhats += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`; }
-            textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
-            
-            textoWhats += `\n\n*📍 Link para acompanhar o pedido ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=${idPedidoGerado}`;
-
-            const meuNumeroWhastapp = "5568992365649"; 
-            window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
-            
-            setTimeout(() => {
-                carrinho = []; 
-                localStorage.removeItem('carrinho_jj'); 
-                atualizarCarrinhoUI(); 
-                fecharModalCarrinho();
-                window.location.href = `index.html?rastreio=${idPedidoGerado}`;
-            }, 1000);
+            itensLimpos.forEach(item => { textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; });
+            textoWhats += `\n*TOTAL:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+            window.open(`https://wa.me/5568992365649?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            setTimeout(() => { carrinho = []; localStorage.removeItem('carrinho_jj'); atualizarCarrinhoUI(); fecharModalCarrinho(); }, 1000);
         }
-
-        let intervalRastreio = null;
-        let idRastreioAtual = null;
-        let statusAtual = 1;
-
-        function atualizarStatusVisual(statusPedido) {
-            document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo'));
-            document.getElementById('passo-1').classList.add('ativo');
-            if (statusPedido >= 1) { 
-                document.getElementById('passo-2').classList.add('ativo'); 
-                document.getElementById('passo-2').innerText = "✅ Pedido Confirmado"; 
-            } else {
-                document.getElementById('passo-2').innerText = "⏳ Aguardando Confirmação"; 
-            }
-            if (statusPedido >= 2) { document.getElementById('passo-3').classList.add('ativo'); }
-            if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
-        }
-
-        function iniciarBuscaAoVivo() {
-            if(!idRastreioAtual) return;
-
-            async function buscar() {
-                try {
-                    const res = await fetch(API_URL + '/api/pedidos');
-                    const pedidos = await res.json();
-                    const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
-                    
-                    if (meuPedido) {
-                        if(meuPedido.status > statusAtual) {
-                            statusAtual = meuPedido.status;
-                            tocarNotificacao(statusAtual); 
-                        }
-                        atualizarStatusVisual(meuPedido.status);
-                    } else {
-                        // CORREÇÃO: Dispara a notificação de concluído antes de fechar a tela
-                        if (statusAtual < 4) {
-                            statusAtual = 4;
-                            tocarNotificacao(4);
-                        }
-
-                        atualizarStatusVisual(4);
-                        document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!";
-                        localStorage.removeItem('meu_pedido_jj'); 
-                        if(intervalRastreio) clearInterval(intervalRastreio);
-                        
-                        setTimeout(() => {
-                            document.getElementById('btnRastreio').style.display = 'none';
-                            fecharRastreio();
-                        }, 5000); // Aguarda 5 segundos para o áudio tocar e o cliente ler antes de fechar o rastreio
-                    }
-                } catch(e){}
-            }
-            buscar();
-            if(intervalRastreio) clearInterval(intervalRastreio);
-            intervalRastreio = setInterval(buscar, 5000);
-        }
-
-        function iniciarAnimacaoRastreio() { 
-            const telaAnimacao = document.getElementById('telaAnimacao'); 
-            const modalRastreio = document.getElementById('modalRastreio'); 
-            telaAnimacao.classList.add('ativo'); 
-            setTimeout(() => { 
-                telaAnimacao.classList.remove('ativo'); 
-                modalRastreio.classList.add('ativo'); 
-                iniciarBuscaAoVivo();
-            }, 3000); 
-        }
-
-        function fecharRastreio() { 
-            document.getElementById('modalRastreio').classList.remove('ativo'); 
-            if(intervalRastreio) clearInterval(intervalRastreio); 
-        }
-
-        window.addEventListener('load', () => {
-            verificarPermissaoNotificacao(); 
-            atualizarCarrinhoUI(); 
-
-            const parametrosURL = new URLSearchParams(window.location.search);
-            let urlRastreio = parametrosURL.get('rastreio');
-            let localRastreio = localStorage.getItem('meu_pedido_jj');
-            
-            if(urlRastreio && urlRastreio !== 'true') {
-                idRastreioAtual = urlRastreio;
-                localStorage.setItem('meu_pedido_jj', idRastreioAtual);
-                document.getElementById('btnRastreio').style.display = 'block';
-                iniciarAnimacaoRastreio();
-            } else if (localRastreio) {
-                idRastreioAtual = localRastreio;
-                document.getElementById('btnRastreio').style.display = 'block';
-                
-                fetch(API_URL + '/api/pedidos').then(res => res.json()).then(pedidos => {
-                    const achou = pedidos.find(p => p.id == idRastreioAtual);
-                    if(!achou) {
-                        localStorage.removeItem('meu_pedido_jj');
-                        document.getElementById('btnRastreio').style.display = 'none';
-                    }
-                }).catch(()=>{});
-            }
-        });
-
-        // Neve
-        const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve'); let intervaloNeve;
-        function criarFloco() { const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); }
-        const observador = new IntersectionObserver((entradas) => { entradas.forEach(entrada => { if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } else { overlayFrio.classList.remove('ativo'); tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; } }); }, { threshold: 0.1 }); observador.observe(secaoBebidas);
     </script>
 </body>
 </html>
