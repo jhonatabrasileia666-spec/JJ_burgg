@@ -8,21 +8,18 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #ecf0f1; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
+        body { background-color: #ecf0f1; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 80px; }
 
-        /* HEADER */
         header { background-color: #2c3e50; color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         header h1 { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #f39c12; }
         header p { font-size: 13px; color: #bdc3c7; }
 
         .container { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
 
-        /* TELA DE LOGIN */
         #tela-login { background: white; padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; margin-top: 50px; }
         #tela-login input { width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #ccc; border-radius: 8px; font-size: 16px; text-align: center; }
         #tela-login button { width: 100%; padding: 15px; margin-top: 15px; background: #f39c12; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
 
-        /* ÁREA DE PEDIDOS E CARDÁPIO */
         .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .pedido-nome { font-size: 18px; font-weight: bold; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
         .pedido-detalhes { font-size: 14px; color: #555; margin-bottom: 15px; }
@@ -30,11 +27,22 @@
         select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; }
         .btn-salvar { width: 100%; background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-        /* CARDÁPIO ESPECÍFICO */
         .item-cardapio { display: flex; justify-content: space-between; align-items: center; }
         .input-preco { width: 90px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d35400; text-align: center; }
 
-        /* NAV INFERIOR */
+        /* ESTILOS DO DASHBOARD FINANCEIRO */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .box-valor { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .box-valor h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
+        .box-valor .valor { font-size: 20px; font-weight: 900; }
+        .valor-verde { color: #27ae60; }
+        .valor-vermelho { color: #e74c3c; }
+        
+        .lucro-total { grid-column: span 2; background: #2c3e50; color: white; border: none; }
+        .lucro-total h3 { color: #bdc3c7; }
+        .lucro-total .valor { font-size: 26px; }
+
+        /* MENU INFERIOR */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: none; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { flex: 1; padding: 15px 0; text-align: center; color: #7f8c8d; font-size: 14px; font-weight: bold; cursor: pointer; border-top: 3px solid transparent; }
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
@@ -58,16 +66,41 @@
 
         <div id="tela-pedidos" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 15px;">A Receber Pedidos 🛵</h2>
-            <div id="lista-pedidos-container">
-                <p style="text-align:center;">A carregar pedidos do banco de dados...</p>
-            </div>
+            <div id="lista-pedidos-container"><p style="text-align:center;">A carregar pedidos...</p></div>
         </div>
 
         <div id="tela-cardapio" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 15px;">Gerir Preços 💰</h2>
-            <div id="lista-cardapio-container">
-                <p style="text-align:center;">A carregar cardápio...</p>
+            <div id="lista-cardapio-container"><p style="text-align:center;">A carregar cardápio...</p></div>
+        </div>
+
+        <div id="tela-financeiro" class="tela">
+            <h2 style="color: #2c3e50; margin-bottom: 15px;">📊 Caixa do Dia (Hoje)</h2>
+            
+            <div class="dashboard-grid">
+                <div class="box-valor">
+                    <h3>Vendas Hoje</h3>
+                    <div class="valor valor-verde" id="val-vendas">R$ 0,00</div>
+                </div>
+                <div class="box-valor">
+                    <h3>Gastos Hoje</h3>
+                    <div class="valor valor-vermelho" id="val-gastos">R$ 0,00</div>
+                </div>
+                <div class="box-valor lucro-total">
+                    <h3>Lucro / Caixa Atual</h3>
+                    <div class="valor" id="val-lucro" style="color: #2ecc71;">R$ 0,00</div>
+                </div>
             </div>
+
+            <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
+                <h3 style="margin-bottom: 10px; font-size: 16px; color: #d35400;">💸 Lançar Gasto / Despesa</h3>
+                <input type="text" id="gasto-desc" placeholder="Ex: Carne, Pão, Gasolina..." style="margin-bottom: 5px;">
+                <input type="number" id="gasto-valor" placeholder="Valor (Ex: 50.00)" style="margin-bottom: 10px;">
+                <button class="btn-salvar" style="background: #e74c3c;" onclick="salvarGasto()">Adicionar Despesa</button>
+            </div>
+
+            <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 16px;">Histórico de Gastos (Hoje)</h3>
+            <div id="lista-gastos"></div>
         </div>
 
     </div>
@@ -75,17 +108,19 @@
     <div class="bottom-nav" id="menu-inferior">
         <div id="tab-pedidos" class="nav-item ativo" onclick="mudarAba('pedidos')">🛒 Pedidos</div>
         <div id="tab-cardapio" class="nav-item" onclick="mudarAba('cardapio')">🍔 Preços</div>
+        <div id="tab-financeiro" class="nav-item" onclick="mudarAba('financeiro')">📊 Caixa</div>
     </div>
 
     <script>
         function fazerLogin() {
             const senha = document.getElementById('input-senha').value;
-            if(senha === 'jj123') { // SUA SENHA AQUI
+            if(senha === 'jj123') { 
                 document.getElementById('tela-login').classList.remove('ativo');
                 document.getElementById('tela-pedidos').classList.add('ativo');
                 document.getElementById('menu-inferior').style.display = 'flex';
                 carregarPedidos();
                 carregarCardapio();
+                carregarFinanceiro(); // Já deixa o caixa pronto
             } else {
                 alert("❌ Palavra-passe incorreta!");
             }
@@ -94,18 +129,22 @@
         function mudarAba(aba) {
             document.getElementById('tela-pedidos').classList.remove('ativo');
             document.getElementById('tela-cardapio').classList.remove('ativo');
+            document.getElementById('tela-financeiro').classList.remove('ativo');
+            
             document.getElementById('tab-pedidos').classList.remove('ativo');
             document.getElementById('tab-cardapio').classList.remove('ativo');
+            document.getElementById('tab-financeiro').classList.remove('ativo');
 
             document.getElementById('tela-' + aba).classList.add('ativo');
             document.getElementById('tab-' + aba).classList.add('ativo');
             
             if(aba === 'pedidos') carregarPedidos();
             if(aba === 'cardapio') carregarCardapio();
+            if(aba === 'financeiro') carregarFinanceiro();
         }
 
         // ===============================================
-        // LEITURA DE PEDIDOS (AGORA À PROVA DE BALAS)
+        // MÓDULO DE PEDIDOS
         // ===============================================
         async function carregarPedidos() {
             const container = document.getElementById('lista-pedidos-container');
@@ -123,24 +162,15 @@
 
                 pedidos.forEach(p => {
                     let itensHTML = '';
-                    
-                    // TRATAMENTO DE ERRO: O salvador da pátria para evitar o bug do JSON
                     let listaItens = p.itens;
-                    if(typeof listaItens === 'string') {
-                        try { listaItens = JSON.parse(listaItens); } catch(e) {}
-                    }
+                    if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
 
                     if(Array.isArray(listaItens)) {
                         listaItens.forEach(i => { 
                             itensHTML += `- 1x ${i.nome}<br>`; 
-                            // Se tiver observações ou ingredientes extras
-                            if(i.obs && i.obs.trim() !== '') {
-                                itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`;
-                            }
+                            if(i.obs && i.obs.trim() !== '') { itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; }
                         });
-                    } else {
-                        itensHTML = "Detalhes do lanche guardados com sucesso.";
-                    }
+                    } else { itensHTML = "Detalhes do lanche guardados com sucesso."; }
 
                     container.innerHTML += `
                         <div class="card" style="border-left: 5px solid ${p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60'};">
@@ -160,47 +190,38 @@
                         </div>
                     `;
                 });
-            } catch(e) { 
-                console.error("Erro", e); 
-                container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">Erro ao carregar do servidor. Recarregue a página.</p>`;
-            }
+            } catch(e) { container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">Erro ao carregar do servidor.</p>`; }
         }
 
         async function atualizarStatusPedido(idPedido, telefoneCliente) {
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
+            await fetch(`/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
             
-            await fetch(`/api/pedidos/${idPedido}/status`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: parseInt(novoStatus) })
-            });
-
-            alert('✅ Status gravado no Banco de Dados!');
-            
-            // Se concluiu, remove da lista
+            // Se o pedido for marcado como concluído (4), recarregamos o caixa também
             if(novoStatus === "4") {
                 carregarPedidos();
+                carregarFinanceiro();
                 return;
             }
 
-            // Manda o rastreio pro cliente se ele tiver telefone
             if(telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
                 const linkMagico = window.location.origin + "/index.html?rastreio=true&status=" + novoStatus;
                 let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : "🛵 *SAIU PARA ENTREGA*";
                 let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site:\n${linkMagico}`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             }
-            
             carregarPedidos();
         }
 
+        // ===============================================
+        // MÓDULO DE CARDÁPIO
+        // ===============================================
         async function carregarCardapio() {
             try {
                 const res = await fetch('/api/cardapio');
                 const cardapio = await res.json();
                 const container = document.getElementById('lista-cardapio-container');
                 container.innerHTML = '';
-
                 cardapio.forEach(item => {
                     container.innerHTML += `
                         <div class="card item-cardapio">
@@ -217,12 +238,96 @@
 
         async function salvarNovoPreco(idProduto) {
             const precoNovo = document.getElementById(`preco-edit-${idProduto}`).value;
-            await fetch(`/api/cardapio/${idProduto}`, {
-                method: 'PUT',
+            await fetch(`/api/cardapio/${idProduto}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preco: parseFloat(precoNovo) }) });
+            alert('✅ Preço atualizado no site principal!');
+        }
+
+        // ===============================================
+        // NOVO MÓDULO: CONTABILIDADE DO DIA 📊
+        // ===============================================
+        async function carregarFinanceiro() {
+            try {
+                const res = await fetch('/api/financeiro');
+                const data = await res.json();
+                
+                // Pegar a data de hoje (para filtrar apenas as vendas e gastos do dia)
+                const hoje = new Date().toLocaleDateString('pt-BR');
+                
+                // 1. Somar Vendas do Dia
+                let totalVendas = 0;
+                data.pedidos.forEach(p => {
+                    const dataPedido = new Date(p.criado_em).toLocaleDateString('pt-BR');
+                    if(dataPedido === hoje) {
+                        totalVendas += parseFloat(p.total);
+                    }
+                });
+
+                // 2. Somar Gastos e Exibir Lista
+                let totalGastos = 0;
+                const listaHtml = document.getElementById('lista-gastos');
+                listaHtml.innerHTML = '';
+
+                data.gastos.forEach(g => {
+                    const dataGasto = new Date(g.criado_em).toLocaleDateString('pt-BR');
+                    if(dataGasto === hoje) {
+                        totalGastos += parseFloat(g.valor);
+                        listaHtml.innerHTML += `
+                            <div class="card item-cardapio" style="padding: 12px; margin-bottom: 8px;">
+                                <div style="flex:1;"><strong>${g.descricao}</strong></div>
+                                <div style="color: #e74c3c; font-weight: bold;">- R$ ${parseFloat(g.valor).toFixed(2).replace('.',',')}</div>
+                                <button onclick="apagarGasto(${g.id})" style="background:transparent; border:none; color:#e74c3c; font-size:18px; margin-left:12px; cursor:pointer;">🗑️</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if(listaHtml.innerHTML === '') {
+                    listaHtml.innerHTML = '<p style="text-align:center; color:#777; font-size:14px;">Você não registrou nenhum gasto hoje.</p>';
+                }
+
+                // 3. Calcular Lucro Real
+                const lucro = totalVendas - totalGastos;
+
+                // 4. Atualizar o Visual
+                document.getElementById('val-vendas').textContent = `R$ ${totalVendas.toFixed(2).replace('.', ',')}`;
+                document.getElementById('val-gastos').textContent = `R$ ${totalGastos.toFixed(2).replace('.', ',')}`;
+                
+                const lucroEl = document.getElementById('val-lucro');
+                lucroEl.textContent = `R$ ${lucro.toFixed(2).replace('.', ',')}`;
+                
+                // Muda de cor se der prejuízo
+                if(lucro < 0) {
+                    lucroEl.style.color = '#e74c3c'; // Fica vermelho se os gastos forem maiores
+                } else {
+                    lucroEl.style.color = '#2ecc71'; // Fica verde se tiver no lucro
+                }
+
+            } catch(e) { console.error("Erro no financeiro", e); }
+        }
+
+        async function salvarGasto() {
+            const desc = document.getElementById('gasto-desc').value.trim();
+            const val = document.getElementById('gasto-valor').value.trim();
+            
+            if(!desc || !val) { alert("Preencha a descrição do gasto e o valor!"); return; }
+
+            await fetch('/api/gastos', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ preco: parseFloat(precoNovo) })
+                body: JSON.stringify({ descricao: desc, valor: parseFloat(val) })
             });
-            alert('✅ Preço atualizado com sucesso! O site principal já mostra o novo preço.');
+
+            // Limpa os campos e recarrega a contabilidade
+            document.getElementById('gasto-desc').value = '';
+            document.getElementById('gasto-valor').value = '';
+            carregarFinanceiro();
+        }
+
+        async function apagarGasto(id) {
+            if(confirm("Tem a certeza que apagou este gasto? O valor voltará para o lucro.")) {
+                await fetch(`/api/gastos/${id}`, { method: 'DELETE' });
+                carregarFinanceiro();
+            }
         }
     </script>
 </body>
