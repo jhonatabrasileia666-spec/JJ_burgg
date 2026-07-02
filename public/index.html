@@ -8,6 +8,14 @@
         :root { color-scheme: light; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #ffffff !important; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px 15px; padding-bottom: 140px; overflow-x: hidden; position: relative; }
+        
+        /* EFEITO NEVE E FRIO */
+        #clima-frio-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: linear-gradient(180deg, rgba(178, 235, 242, 0.95) 0%, rgba(41, 182, 246, 0.95) 100%) !important; opacity: 0; transition: opacity 1.2s ease-in-out; pointer-events: none; z-index: 0; }
+        #clima-frio-overlay.ativo { opacity: 1; }
+        #container-neve { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; }
+        .floco { position: absolute; top: -20px; color: #ffffff; user-select: none; text-shadow: 0 0 8px rgba(255,255,255,1); animation: nevada linear forwards; }
+        @keyframes nevada { 0% { transform: translate(0, -10px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-80px, 105vh) rotate(360deg); opacity: 0; } }
+
         .app-container { width: 100%; max-width: 450px; position: relative; z-index: 1; }
         header { text-align: center; margin-bottom: 25px; }
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; }
@@ -17,11 +25,13 @@
         .banner-montar h2 { color: #2c3e50 !important; font-size: 22px; margin-bottom: 10px; font-weight: 900; }
         .banner-montar p { color: #555 !important; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .btn-banner { display: inline-block; background: #ff6b00 !important; color: white !important; padding: 12px 25px; border-radius: 30px; font-weight: bold; text-transform: uppercase; }
-        .titulo-secao { font-size: 20px; color: #333 !important; margin-bottom: 15px; border-bottom: 3px solid #f4d03f; display: inline-block; padding-bottom: 5px; }
+        
+        .titulo-secao { font-size: 20px; color: #333 !important; margin-bottom: 15px; border-bottom: 3px solid #f4d03f; display: inline-block; padding-bottom: 5px; transition: all 1s ease; }
+        .congelado .titulo-frio { color: #ffffff !important; border-bottom-color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
         
         .card-lanche { background-color: #ffffff !important; border: 2px solid #f4f4f4; border-radius: 25px; padding: 20px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        /* A VITRINE ORIGINAL PARA OS CLÁSSICOS */
+        /* VITRINE COM ANIMAÇÃO E ETIQUETAS */
         .vitrine-hamburguer { background-color: #f4d03f !important; border-radius: 20px; padding: 40px 5px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
         @keyframes respirar { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
         .mini-camada { width: 100%; height: 26px; display: flex; justify-content: center; align-items: center; position: relative; animation: respirar 3.5s ease-in-out infinite; }
@@ -29,7 +39,11 @@
         .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
         .z-pepino { z-index: 8; } .z-queijo { z-index: 7; } .z-alface { z-index: 6; } .z-bacon { z-index: 5; } .z-carne { z-index: 4; }
         
-        /* A VITRINE GIGANTE PARA OS DINÂMICOS DA FÁBRICA */
+        /* AS ETIQUETAS (LINHAS GUIAS) QUE TINHAM SUMIDO */
+        .etiqueta-esq, .etiqueta-dir { position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: #d35400 !important; text-transform: uppercase; display: flex; align-items: center; z-index: 20; white-space: nowrap; }
+        .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
+        .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
+        
         .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; overflow: hidden; border-radius: 20px; }
 
         .card-lanche h3 { color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
@@ -49,13 +63,12 @@
         #btnCarrinho { bottom: 20px; background-color: #27ae60 !important; display: none; }
         #btnRastreio { bottom: 80px; background-color: #2980b9 !important; display: none; }
         
-        /* MODAIS */
+        /* Modais */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index: 1000; padding:15px; }
         .modal-overlay.ativo { display: flex; }
         .modal-card { background: #ffffff !important; width:100%; max-width:400px; padding:20px; border-radius:15px; text-align: left; max-height: 90vh; overflow-y: auto; }
         .modal-card h2 { color: #333 !important; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #f4d03f; padding-bottom: 5px; }
         
-        /* Estilos do Modal de Personalizar Extras */
         .header-personaliza { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4d03f; padding-bottom: 10px; margin-bottom: 15px; }
         .preco-base-modal { color: #27ae60 !important; font-weight: 900; font-size: 18px; }
         .item-extra { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9 !important; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee; }
@@ -96,6 +109,9 @@
 </head>
 <body>
 
+    <div id="clima-frio-overlay"></div>
+    <div id="container-neve"></div>
+
     <audio id="somAlertaCliente" src="preparo.mp3" preload="auto"></audio>
 
     <div class="app-container">
@@ -112,11 +128,11 @@
 
         <div class="card-lanche">
             <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><img src="alface.png"></div>
-                <div class="mini-camada z-carne"><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><img src="pao_base.png"></div>
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
+                <div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
             <h3>Classic Burger</h3><p>Blend bovino 160g, queijo derretido e alface.</p>
             <div class="card-footer">
@@ -127,11 +143,11 @@
 
         <div class="card-lanche">
             <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><img src="queijo.png"></div>
-                <div class="mini-camada z-bacon"><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><img src="pao_base.png"></div>
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
+                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
             <h3>Bacon Master</h3><p>Blend 160g, queijo mussarela e muito bacon premium.</p>
             <div class="card-footer">
@@ -142,13 +158,13 @@
 
         <div class="card-lanche">
             <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><img src="pao_topo.png"></div>
-                <div class="mini-camada z-pepino"><img src="pepino.png"></div>
-                <div class="mini-camada z-queijo"><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><img src="alface.png"></div>
-                <div class="mini-camada z-bacon"><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><img src="pao_base.png"></div>
+                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
+                <div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div>
+                <div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div>
+                <div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div>
+                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
+                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
+                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
             <h3>O Monstrão</h3><p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
             <div class="card-footer">
@@ -158,7 +174,7 @@
         </div>
 
         <div id="secao-bebidas">
-            <div id="container-titulo-bebidas"><h2 class="titulo-secao">Bebidas ❄️</h2></div>
+            <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
             <div class="card-bebida">
                 <div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida" id="preco-coca">R$ 6,00</span></div>
                 <button class="btn-add-frio" onclick="adicionarItemCardapio('Coca-Cola (Lata)', precosDinamicos['Coca-Cola (Lata)'], '')">Add 🛒</button>
@@ -246,11 +262,9 @@
         let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
         let linkMapaGoogle = ""; 
 
-        // Variáveis do Modal de Extras
         let lancheSendoPersonalizado = ""; 
         let precoBaseSendoPersonalizado = 0;
 
-        // Variáveis de Áudio e Rastreio
         const audiosPersonalizados = { preparo: "preparo.mp3", entrega: "entrega.mp3", concluido: "concluido.mp3" };
         let intervalRastreio = null;
         let idRastreioAtual = null;
@@ -306,7 +320,7 @@
         }
 
         // ===============================================
-        // MÁGICA DOS EXTRAS E ADICIONAIS (RESTAURADA!)
+        // MÁGICA DOS EXTRAS E ADICIONAIS
         // ===============================================
         function abrirPersonalizacao(nomeLanche) {
             lancheSendoPersonalizado = nomeLanche; 
@@ -369,7 +383,6 @@
                             pilhasHTML += `<div class="mini-camada" style="z-index: ${zIndex}; margin-bottom: ${mt};"><img src="${API_URL}/${camada.img}"></div>`;
                         });
 
-                        // ATENÇÃO AQUI: As novidades do Chef agora também abrem a aba de Adicionais!
                         lanchesDinamicosContainer.innerHTML += `
                             <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
                             <div class="card-lanche">
@@ -392,7 +405,6 @@
             carrinho.push({ nome: nome, preco: preco, obs: obs }); 
             localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
             atualizarCarrinhoUI(); 
-            // ALERTA REMOVIDO! A tela apenas atualiza o botão suavemente
         }
 
         function removerItem(i) { 
@@ -509,6 +521,44 @@
                 }).catch(()=>{});
             }
         });
+
+        // ===============================================
+        // A NEVE E O CLIMA FRIO DAS BEBIDAS (RESTAURADOS!)
+        // ===============================================
+        const secaoBebidas = document.getElementById('secao-bebidas'); 
+        const overlayFrio = document.getElementById('clima-frio-overlay'); 
+        const tituloContainer = document.getElementById('container-titulo-bebidas'); 
+        const containerNeve = document.getElementById('container-neve'); 
+        let intervaloNeve;
+        
+        function criarFloco() { 
+            const floco = document.createElement('div'); 
+            floco.classList.add('floco'); 
+            floco.innerText = '❄'; 
+            floco.style.left = (Math.random() * 150 - 25) + 'vw'; 
+            floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; 
+            floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; 
+            floco.style.opacity = Math.random() * 0.8 + 0.2; 
+            containerNeve.appendChild(floco); 
+            setTimeout(() => { floco.remove(); }, 5000); 
+        }
+        
+        const observador = new IntersectionObserver((entradas) => { 
+            entradas.forEach(entrada => { 
+                if (entrada.isIntersecting) { 
+                    overlayFrio.classList.add('ativo'); 
+                    if(tituloContainer) tituloContainer.classList.add('congelado'); 
+                    if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } 
+                } else { 
+                    overlayFrio.classList.remove('ativo'); 
+                    if(tituloContainer) tituloContainer.classList.remove('congelado'); 
+                    clearInterval(intervaloNeve); 
+                    intervaloNeve = null; 
+                } 
+            }); 
+        }, { threshold: 0.1 }); 
+        
+        if(secaoBebidas) observador.observe(secaoBebidas);
     </script>
 </body>
 </html>
