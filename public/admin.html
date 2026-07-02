@@ -100,6 +100,8 @@
     </div>
 
     <script>
+        const API_URL = "https://jjburgg-jjburg.up.railway.app";
+
         function fazerLogin() {
             const senha = document.getElementById('input-senha').value;
             if(senha === 'jj123') { 
@@ -131,7 +133,7 @@
             container.innerHTML = '<p style="text-align:center;">A atualizar pedidos...</p>';
             
             try {
-                const res = await fetch('/api/pedidos');
+                const res = await fetch(API_URL + '/api/pedidos');
                 const pedidos = await res.json();
                 container.innerHTML = '';
 
@@ -172,8 +174,6 @@
                                     <option value="3" ${p.status == 3 ? 'selected' : ''}>🛵 Saiu para Entrega / Retirada</option>
                                     <option value="4" ${p.status == 4 ? 'selected' : ''}>✅ Concluído (Remover da Lista)</option>
                                 </select>
-                                
-                                <!-- NOVOS BOTÕES: SILENCIOSO E WHATSAPP -->
                                 <div style="display: flex; gap: 8px; margin-top: 10px;">
                                     <button class="btn-salvar" style="background:#3498db; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', false)">Atualizar App</button>
                                     <button class="btn-salvar" style="background:#25d366; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', true)">Atualizar + Whats</button>
@@ -188,7 +188,7 @@
         async function atualizarStatusPedido(idPedido, telefoneCliente, enviarWhatsApp) {
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
             
-            await fetch(`/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
+            await fetch(API_URL + `/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
             
             if(novoStatus === "4") {
                 carregarPedidos();
@@ -197,11 +197,9 @@
                 return;
             }
 
-            // Manda o WhatsApp apenas se você apertou o botão Verde (enviarWhatsApp = true)
             if(enviarWhatsApp && telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
-                const linkMagico = window.location.origin + "/index.html?rastreio=true";
                 let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
-                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo:\n${linkMagico}`;
+                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo!`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             } else {
                 alert('✅ Tela do cliente atualizada com sucesso!');
@@ -212,7 +210,7 @@
 
         async function carregarCardapio() {
             try {
-                const res = await fetch('/api/cardapio');
+                const res = await fetch(API_URL + '/api/cardapio');
                 const cardapio = await res.json();
                 const container = document.getElementById('lista-cardapio-container');
                 container.innerHTML = '';
@@ -224,13 +222,13 @@
 
         async function salvarNovoPreco(idProduto) {
             const precoNovo = document.getElementById(`preco-edit-${idProduto}`).value;
-            await fetch(`/api/cardapio/${idProduto}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preco: parseFloat(precoNovo) }) });
+            await fetch(API_URL + `/api/cardapio/${idProduto}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preco: parseFloat(precoNovo) }) });
             alert('✅ Preço atualizado no site principal!');
         }
 
         async function carregarFinanceiro() {
             try {
-                const res = await fetch('/api/financeiro');
+                const res = await fetch(API_URL + '/api/financeiro');
                 const data = await res.json();
                 const hoje = new Date().toLocaleDateString('pt-BR');
                 
@@ -270,14 +268,14 @@
             const desc = document.getElementById('gasto-desc').value.trim();
             const val = document.getElementById('gasto-valor').value.trim();
             if(!desc || !val) { alert("Preencha a descrição do gasto e o valor!"); return; }
-            await fetch('/api/gastos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ descricao: desc, valor: parseFloat(val) }) });
+            await fetch(API_URL + '/api/gastos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ descricao: desc, valor: parseFloat(val) }) });
             document.getElementById('gasto-desc').value = ''; document.getElementById('gasto-valor').value = '';
             carregarFinanceiro();
         }
 
         async function apagarGasto(id) {
             if(confirm("Tem a certeza que apagou este gasto? O valor voltará para o lucro.")) {
-                await fetch(`/api/gastos/${id}`, { method: 'DELETE' });
+                await fetch(API_URL + `/api/gastos/${id}`, { method: 'DELETE' });
                 carregarFinanceiro();
             }
         }
