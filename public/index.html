@@ -89,6 +89,7 @@
     </style>
 </head>
 <body>
+    <!-- ÁUDIO BASE -->
     <audio id="somAlertaCliente" src="preparo.mp3" preload="auto"></audio>
 
     <div id="clima-frio-overlay"></div>
@@ -151,6 +152,7 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
+    <!-- POP-UP GIGANTE DE STATUS -->
     <div id="modalAvisoStatus" class="modal-overlay">
         <div class="modal-card" style="text-align: center; border: 4px solid #27ae60;">
             <div style="font-size: 50px; margin-bottom: 10px;" id="iconeAvisoStatus">🔔</div>
@@ -160,6 +162,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE PERMISSÃO DE ÁUDIO E AVISOS -->
     <div id="modalNotificacao" class="modal-overlay">
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
@@ -169,6 +172,7 @@
         </div>
     </div>
 
+    <!-- MODAIS DE COMPRA -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
@@ -217,9 +221,6 @@
     <script>
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
 
-        // =========================================================
-        // MÁGICA DOS ÁUDIOS LOCAIS (PREPARO.MP3, ENTREGA.MP3, ETC)
-        // =========================================================
         const audiosPersonalizados = {
             preparo: "preparo.mp3", 
             entrega: "entrega.mp3",
@@ -254,7 +255,7 @@
                 som.pause();
                 som.currentTime = 0;
                 som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! O sistema usará as vozes da pasta.", "🎙️");
+                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
@@ -277,7 +278,7 @@
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
                 try {
                     const som = document.getElementById('somAlertaCliente');
-                    som.src = linkAudio; // PUXA O ARQUIVO MP3 DIRETO DA SUA PASTA DO GITHUB!
+                    som.src = linkAudio; 
                     som.currentTime = 0;
                     som.play().catch(e=>{}); 
                 } catch(e) {}
@@ -285,7 +286,7 @@
         }
 
         // ==========================================
-        // RESTANTE DO SISTEMA (Cardápio, Carrinho, Rastreio)
+        // RESTANTE DO SISTEMA
         // ==========================================
         let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
 
@@ -476,6 +477,12 @@
                         }
                         atualizarStatusVisual(meuPedido.status);
                     } else {
+                        // CORREÇÃO: Dispara a notificação de concluído antes de fechar a tela
+                        if (statusAtual < 4) {
+                            statusAtual = 4;
+                            tocarNotificacao(4);
+                        }
+
                         atualizarStatusVisual(4);
                         document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!";
                         localStorage.removeItem('meu_pedido_jj'); 
@@ -484,7 +491,7 @@
                         setTimeout(() => {
                             document.getElementById('btnRastreio').style.display = 'none';
                             fecharRastreio();
-                        }, 4000);
+                        }, 5000); // Aguarda 5 segundos para o áudio tocar e o cliente ler antes de fechar o rastreio
                     }
                 } catch(e){}
             }
