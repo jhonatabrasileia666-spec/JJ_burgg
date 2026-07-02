@@ -147,6 +147,7 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
+    <!-- MODAIS -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
@@ -212,7 +213,9 @@
         }
         carregarPrecosDoBanco();
 
-        let carrinho = []; let linkMapaGoogle = ""; let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
+        // 🧠 CARRINHO COM MEMÓRIA: Lê os lanches que vieram da tela montar.html
+        let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
+        let linkMapaGoogle = ""; let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
 
         function abrirPersonalizacao(nomeLanche) {
             lancheSendoPersonalizado = nomeLanche; 
@@ -238,8 +241,21 @@
         }
 
         function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
-        function adicionarItemCardapio(nome, preco, obs) { carrinho.push({ nome: nome, preco: preco, obs: obs }); atualizarCarrinhoUI(); }
-        function removerItem(i) { carrinho.splice(i, 1); atualizarCarrinhoUI(); if(carrinho.length === 0) fecharModalCarrinho(); }
+        
+        // Quando adiciona, guarda na memória
+        function adicionarItemCardapio(nome, preco, obs) { 
+            carrinho.push({ nome: nome, preco: preco, obs: obs }); 
+            localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
+            atualizarCarrinhoUI(); 
+        }
+
+        // Quando remove, tira da memória
+        function removerItem(i) { 
+            carrinho.splice(i, 1); 
+            localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
+            atualizarCarrinhoUI(); 
+            if(carrinho.length === 0) fecharModalCarrinho(); 
+        }
 
         function atualizarCarrinhoUI() {
             const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart');
@@ -271,7 +287,6 @@
             }
         }
 
-        // A NOVA FUNÇÃO BLINDADA
         async function enviarPedidoFinal() {
             const nome = document.getElementById('txt-nome').value.trim();
             const tel = document.getElementById('txt-telefone').value.trim();
@@ -286,7 +301,6 @@
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; 
             let totalFinal = subtotal + taxaEntrega;
 
-            // SALVAR NO BANCO DE DADOS À PROVA DE FALHAS
             try {
                 const botao = document.querySelector('.btn-enviar-whats');
                 const textoOriginal = botao.innerHTML;
@@ -296,10 +310,7 @@
 
                 const resposta = await fetch('/api/pedidos', {
                     method: 'POST', 
-                    headers: { 
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
-                    },
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         nome: nome, 
                         telefone: tel, 
@@ -314,11 +325,8 @@
                 botao.innerHTML = textoOriginal;
                 botao.style.opacity = '1';
                 botao.disabled = false;
-            } catch(e) { 
-                console.error("Erro no BD:", e); 
-            }
+            } catch(e) { console.error("Erro no BD:", e); }
 
-            // WHATSAPP E REDIRECIONAMENTO
             let textoWhats = `*🍔 NOVO PEDIDO - JJ BURGUER* \n\n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
             if(tipoEntrega === 'Entrega') { 
                 if(endereco) textoWhats += `*Endereço:* ${endereco}\n`; 
@@ -336,19 +344,21 @@
             textoWhats += `*TOTAL DO PEDIDO:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
 
             const meuNumeroWhastapp = "5568992365649"; 
-            
             window.open(`https://wa.me/${meuNumeroWhastapp}?text=${encodeURIComponent(textoWhats)}`, '_blank');
             
             setTimeout(() => {
                 carrinho = []; 
+                localStorage.removeItem('carrinho_jj'); // Limpa a memória quando a compra termina
                 atualizarCarrinhoUI(); 
                 fecharModalCarrinho();
                 window.location.href = `index.html?rastreio=true&status=1`;
             }, 1000);
         }
 
-        // RASTREIO E ANIMAÇÕES
+        // CARREGA A INTERFACE DO CARRINHO AO ABRIR O SITE
         window.addEventListener('load', () => {
+            atualizarCarrinhoUI(); // Se o cara voltar do "montar", o carrinho já aparece com as coisas dentro
+
             const parametrosURL = new URLSearchParams(window.location.search);
             if (parametrosURL.get('rastreio') === 'true') {
                 const statusPedido = parseInt(parametrosURL.get('status')) || 1;
