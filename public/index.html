@@ -89,8 +89,7 @@
     </style>
 </head>
 <body>
-    <!-- ÁUDIO OFICIAL E PERMITIDO -->
-    <audio id="somAlertaCliente" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <audio id="somAlertaCliente" src="preparo.mp3" preload="auto"></audio>
 
     <div id="clima-frio-overlay"></div>
     <div id="container-neve"></div>
@@ -152,7 +151,6 @@
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
     <button id="btnCarrinho" class="btn-flutuante" onclick="abrirCarrinho()">🛒 Ver Carrinho (<span id="qtdCart">0</span>) - R$ <span id="valorCart">0,00</span></button>
 
-    <!-- POP-UP GIGANTE DE STATUS (Substitui o antigo aviso invisível) -->
     <div id="modalAvisoStatus" class="modal-overlay">
         <div class="modal-card" style="text-align: center; border: 4px solid #27ae60;">
             <div style="font-size: 50px; margin-bottom: 10px;" id="iconeAvisoStatus">🔔</div>
@@ -162,17 +160,15 @@
         </div>
     </div>
 
-    <!-- MODAL DE PERMISSÃO -->
     <div id="modalNotificacao" class="modal-overlay">
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
-            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um som e um aviso na tela quando o seu pedido for atualizado (Ex: "Saiu para Entrega")?</p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
+            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado (Ex: "Saiu para Entrega")?</p>
+            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado por voz</button>
             <button class="btn-acao-modal btn-fechar" onclick="fecharModalNotificacao()">Agora não</button>
         </div>
     </div>
 
-    <!-- MODAIS DE COMPRA -->
     <div id="modalPersonalizar" class="modal-overlay">
         <div class="modal-card">
             <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
@@ -221,9 +217,15 @@
     <script>
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
 
-        // ==========================================
-        // SISTEMA DE NOTIFICAÇÃO (POP-UP GIGANTE)
-        // ==========================================
+        // =========================================================
+        // MÁGICA DOS ÁUDIOS LOCAIS (PREPARO.MP3, ENTREGA.MP3, ETC)
+        // =========================================================
+        const audiosPersonalizados = {
+            preparo: "preparo.mp3", 
+            entrega: "entrega.mp3",
+            concluido: "concluido.mp3"
+        };
+
         function mostrarAvisoStatus(msg, icone) {
             document.getElementById('textoAvisoStatus').innerText = msg;
             document.getElementById('iconeAvisoStatus').innerText = icone;
@@ -252,7 +254,7 @@
                 som.pause();
                 som.currentTime = 0;
                 som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui.", "✅");
+                mostrarAvisoStatus("Avisos sonoros ativados! O sistema usará as vozes da pasta.", "🎙️");
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
@@ -264,22 +266,18 @@
         function tocarNotificacao(status) {
             let msg = "";
             let icone = "🔔";
-            if(status == 2) { msg = "O seu pedido está sendo preparado na cozinha!"; icone = "🍔"; }
-            if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; }
-            if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; }
-            
-            // Tenta a Notificação Oficial do Sistema
-            if ("Notification" in window && Notification.permission === "granted") {
-                try { new Notification("JJ Burguer - Atualização!", { body: msg, icon: "logo.png" }); } catch(e){}
-            }
+            let linkAudio = audiosPersonalizados.preparo; 
 
-            // Exibe a tela GIGANTE e travada para o cliente ver!
+            if(status == 2) { msg = "O seu pedido está sendo preparado na cozinha!"; icone = "🍔"; linkAudio = audiosPersonalizados.preparo; }
+            if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; linkAudio = audiosPersonalizados.entrega; }
+            if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
+
             mostrarAvisoStatus(msg, icone);
             
-            // Toca o som de alerta
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
                 try {
                     const som = document.getElementById('somAlertaCliente');
+                    som.src = linkAudio; // PUXA O ARQUIVO MP3 DIRETO DA SUA PASTA DO GITHUB!
                     som.currentTime = 0;
                     som.play().catch(e=>{}); 
                 } catch(e) {}
