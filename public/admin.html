@@ -18,11 +18,13 @@
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
         .tela { display: none; } .tela.ativo { display: block; }
         
-        /* CSS DA FÁBRICA: A altura agora é dinâmica */
+        .pedido-nome { font-size: 18px; font-weight: bold; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .pedido-detalhes { font-size: 14px; color: #555; margin-bottom: 15px; }
+        
         #visor-fabrica { 
             position: relative; width: 300px; height: 300px; background-color: #f4d03f; 
             border-radius: 20px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); 
-            transition: height 0.2s ease; /* Animação de crescer suave */
+            transition: height 0.2s ease; 
         }
         .grid-ingredientes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .btn-ing-fabrica { background: #fff; border: 2px solid #ddd; padding: 10px; border-radius: 8px; font-weight: bold; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -78,13 +80,10 @@
                 <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Novo Ingrediente</button>
             </div>
 
-            <!-- MÁGICA: O NOVO ESTÚDIO DE EDIÇÃO -->
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">🔄 Substituir Foto de um Ingrediente:</h3>
             <div class="card" style="background: #e8f8f5; border: 1px solid #1abc9c;">
                 <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Cansou do Bacon ou do Ovo antigo? Escolha o ingrediente e mande uma foto nova para atualizar!</p>
-                <select id="select-substituir-ing">
-                    <!-- Preenchido via Javascript -->
-                </select>
+                <select id="select-substituir-ing"></select>
                 <input type="file" id="foto-substituir" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
                 <button class="btn-salvar" id="btn-sub-img" style="background: #1abc9c;" onclick="substituirImagemIngrediente()">Atualizar Foto 🔄</button>
             </div>
@@ -129,6 +128,83 @@
         }
 
         // ===============================================
+        // LÓGICA LOGÍSTICA DOS PEDIDOS (RESTAURADA)
+        // ===============================================
+        async function carregarPedidos() {
+            const container = document.getElementById('lista-pedidos-container');
+            container.innerHTML = '<p style="text-align:center;">Carregando pedidos...</p>';
+            try {
+                const res = await fetch(API_URL + '/api/pedidos');
+                const pedidos = await res.json();
+                container.innerHTML = '';
+                
+                if(pedidos.length === 0) { 
+                    container.innerHTML = '<p style="text-align:center; color:#777; margin-top:20px; font-weight:bold;">Nenhum pedido pendente.</p>'; 
+                    return; 
+                }
+
+                pedidos.forEach(p => {
+                    let itensHTML = ''; let listaItens = p.itens;
+                    if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
+                    if(Array.isArray(listaItens)) { 
+                        listaItens.forEach(i => { 
+                            itensHTML += `- 1x ${i.nome}<br>`; 
+                            if(i.obs && typeof i.obs === 'string' && i.obs.trim() !== '') { 
+                                itensHTML += `&nbsp;&nbsp;<small style="color:#d35400; font-weight:bold;">${i.obs}</small><br>`; 
+                            }
+                        }); 
+                    }
+                    
+                    let corBorda = p.status == 1 ? '#e74c3c' : p.status == 2 ? '#f39c12' : '#27ae60';
+
+                    container.innerHTML += `
+                        <div class="card" style="border-left: 5px solid ${corBorda};">
+                            <div class="pedido-nome">ID: #${p.id} | Cliente: ${p.cliente_nome} <br><span style="font-size:12px; color:#777;">📱 ${p.cliente_telefone || 'Não informado'}</span></div>
+                            <div class="pedido-detalhes">
+                                <strong>Itens:</strong><br>${itensHTML}
+                                <br><strong style="margin-top: 10px; display:block;">Entrega:</strong> ${p.endereco || 'Retirada'}
+                                <br><strong style="color:#27ae60; font-size:16px; margin-top: 5px; display:block;">Total: R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</strong>
+                            </div>
+                            <select id="status-${p.id}">
+                                <option value="1" ${p.status == 1 ? 'selected' : ''}>⏳ Aguardando Confirmação</option>
+                                <option value="2" ${p.status == 2 ? 'selected' : ''}>🍔 Em Preparo na Cozinha</option>
+                                <option value="3" ${p.status == 3 ? 'selected' : ''}>🛵 Saiu para Entrega / Retirada</option>
+                                <option value="4" ${p.status == 4 ? 'selected' : ''}>✅ Concluído (Remover da Lista)</option>
+                            </select>
+                            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                <button class="btn-salvar" style="background:#3498db; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', false)">Atualizar App</button>
+                                <button class="btn-salvar" style="background:#25d366; flex: 1; font-size:12px; padding: 10px;" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}', true)">Atualizar + Whats</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) { container.innerHTML = '<p style="text-align:center; color:red;">Erro ao carregar pedidos.</p>'; }
+        }
+
+        async function atualizarStatusPedido(idPedido, telefoneCliente, enviarWhatsApp) {
+            const novoStatus = document.getElementById(`status-${idPedido}`).value;
+            
+            await fetch(API_URL + `/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
+            
+            if(novoStatus === "4") {
+                alert('✅ Status atualizado e pedido arquivado!');
+                carregarPedidos();
+                return;
+            }
+
+            if(enviarWhatsApp && telefoneCliente && telefoneCliente !== 'null' && telefoneCliente !== 'Não informado') {
+                const linkMagico = "https://jj-burgg.vercel.app?rastreio=" + idPedido;
+                let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA/RETIRADA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
+                let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo clicando aqui:\n${linkMagico}`;
+                window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
+            } else {
+                alert('✅ Status atualizado com sucesso no App do cliente!');
+            }
+            
+            carregarPedidos();
+        }
+
+        // ===============================================
         // FÁBRICA: ARRASTAR + EXPANDIR ALTURA
         // ===============================================
         let lancheAtual = [];
@@ -136,14 +212,12 @@
 
         function atualizarAlturaCanvas() {
             let canvas = document.getElementById('visor-fabrica');
-            let maxH = 300; // O quadro nunca fica menor que 300
-            
+            let maxH = 300; 
             lancheAtual.forEach(item => {
                 let el = document.getElementById(item.id);
                 if(el) {
-                    // Pega a posição "Y" (top) + o tamanho da imagem
                     let bottom = el.offsetTop + el.offsetHeight;
-                    if(bottom + 20 > maxH) maxH = bottom + 20; // +20px para dar uma margem bonita embaixo
+                    if(bottom + 20 > maxH) maxH = bottom + 20; 
                 }
             });
             canvas.style.height = maxH + 'px';
@@ -152,28 +226,19 @@
         function adicionarNaFabrica(nome, imagem) {
             let canvas = document.getElementById('visor-fabrica');
             let idUnico = 'ing_' + Date.now();
-            
             let div = document.createElement('div');
-            div.id = idUnico;
-            div.style.position = 'absolute';
-            div.style.width = '140px'; 
-            div.style.left = '80px'; 
-            div.style.top = '50px'; 
-            div.style.zIndex = zIndexCounter++;
-            div.style.cursor = 'grab';
+            div.id = idUnico; div.style.position = 'absolute'; div.style.width = '140px'; 
+            div.style.left = '80px'; div.style.top = '50px'; div.style.zIndex = zIndexCounter++; div.style.cursor = 'grab';
             
             let img = document.createElement('img');
             let imgSrc = imagem.startsWith('data:') ? imagem : `${API_URL}/${imagem}?v=${Date.now()}`;
-            img.src = imgSrc;
-            img.style.width = '100%';
-            img.style.pointerEvents = 'none'; 
+            img.src = imgSrc; img.style.width = '100%'; img.style.pointerEvents = 'none'; 
             
             div.appendChild(img); canvas.appendChild(div);
             let obj = { id: idUnico, nome: nome, img: imagem, left: '80px', top: '50px', zIndex: div.style.zIndex };
             lancheAtual.push(obj);
             
-            tornarArrastavel(div, obj);
-            atualizarAlturaCanvas();
+            tornarArrastavel(div, obj); atualizarAlturaCanvas();
         }
 
         function tornarArrastavel(elemento, objMemoria) {
@@ -195,10 +260,7 @@
                 pos3 = eventoToque.clientX; pos4 = eventoToque.clientY;
                 elemento.style.top = (elemento.offsetTop - pos2) + "px";
                 elemento.style.left = (elemento.offsetLeft - pos1) + "px";
-                
                 objMemoria.top = elemento.style.top; objMemoria.left = elemento.style.left;
-                
-                // MÁGICA: O quadro cresce ao vivo enquanto você puxa a carne pra baixo!
                 atualizarAlturaCanvas();
             }
             function pararArrasto() {
@@ -216,10 +278,7 @@
             }
         }
 
-        function limparFabrica() {
-            lancheAtual = []; document.getElementById('visor-fabrica').innerHTML = ''; 
-            zIndexCounter = 10; atualizarAlturaCanvas();
-        }
+        function limparFabrica() { lancheAtual = []; document.getElementById('visor-fabrica').innerHTML = ''; zIndexCounter = 10; atualizarAlturaCanvas(); }
 
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
@@ -257,13 +316,9 @@
                 }
             } catch(e) {}
             
-            grid.innerHTML = htmlBotoes;
-            selectSub.innerHTML = htmlOpcoesSubstituir;
+            grid.innerHTML = htmlBotoes; selectSub.innerHTML = htmlOpcoesSubstituir;
         }
 
-        // ===============================================
-        // MÁGICA 1: COMPRESSOR + SALVAR INGREDIENTE NOVO
-        // ===============================================
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
             const fileInput = document.getElementById('novo-ing-foto');
@@ -277,8 +332,7 @@
                 const img = new Image();
                 img.onload = async function() {
                     try {
-                        const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 300; 
+                        const canvas = document.createElement('canvas'); const MAX_SIZE = 300; 
                         let width = img.width; let height = img.height;
                         if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
                         else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
@@ -302,9 +356,6 @@
             reader.readAsDataURL(fileInput.files[0]);
         }
 
-        // ===============================================
-        // MÁGICA 2: SUBSTITUIR IMAGEM (EDITAR EXISTENTES)
-        // ===============================================
         async function substituirImagemIngrediente() {
             const selectVal = document.getElementById('select-substituir-ing').value;
             const fileInput = document.getElementById('foto-substituir');
@@ -317,8 +368,7 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 300; 
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 300; 
                     let width = img.width; let height = img.height;
                     if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
                     else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
@@ -327,21 +377,11 @@
                     const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
 
                     try {
-                        let partes = selectVal.split('|');
-                        let tipo = partes[0]; let idOuNome = partes[1];
-
+                        let partes = selectVal.split('|'); let tipo = partes[0]; let idOuNome = partes[1];
                         if (tipo === 'file') {
-                            // Atualiza os clássicos substituindo a foto no servidor
-                            await fetch(API_URL + '/api/upload', { 
-                                method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                                body: JSON.stringify({ nomeArquivo: idOuNome, base64: base64Reduzida }) 
-                            });
+                            await fetch(API_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nomeArquivo: idOuNome, base64: base64Reduzida }) });
                         } else if (tipo === 'db') {
-                            // Atualiza os novos ingredientes no Banco de Dados
-                            await fetch(API_URL + '/api/ingredientes/' + idOuNome, { 
-                                method: 'PUT', headers: { 'Content-Type': 'application/json' }, 
-                                body: JSON.stringify({ imagem: base64Reduzida }) 
-                            });
+                            await fetch(API_URL + '/api/ingredientes/' + idOuNome, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imagem: base64Reduzida }) });
                         }
                         alert('✅ A foto deste ingrediente foi atualizada com sucesso!');
                         fileInput.value = ''; carregarIngredientesNaFabrica(); 
@@ -361,8 +401,7 @@
             if(!nome || isNaN(preco)) { alert("Preencha Nome e Preço!"); return; }
             if(lancheAtual.length === 0) { alert("⚠️ O lanche está vazio!"); return; }
 
-            const btn = document.getElementById('btn-lancar-lanche');
-            btn.innerText = '⏳ Lançando...'; btn.disabled = true;
+            const btn = document.getElementById('btn-lancar-lanche'); btn.innerText = '⏳ Lançando...'; btn.disabled = true;
 
             try {
                 await fetch(API_URL + '/api/cardapio', {
@@ -370,46 +409,10 @@
                     body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual })
                 });
                 alert('🚀 Lanche Lançado com Sucesso! Volte na página do cliente para ver.');
-                document.getElementById('novo-lanche-nome').value = '';
-                document.getElementById('novo-lanche-desc').value = '';
-                document.getElementById('novo-lanche-preco').value = '';
+                document.getElementById('novo-lanche-nome').value = ''; document.getElementById('novo-lanche-desc').value = ''; document.getElementById('novo-lanche-preco').value = '';
                 limparFabrica();
             } catch(e) { alert("Erro"); }
             btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false;
-        }
-
-        // ===============================================
-        // OUTRAS FUNÇÕES BASICAS DO ADMIN
-        // ===============================================
-        async function carregarPedidos() {
-            const container = document.getElementById('lista-pedidos-container');
-            container.innerHTML = 'Carregando...';
-            try {
-                const res = await fetch(API_URL + '/api/pedidos');
-                const pedidos = await res.json();
-                container.innerHTML = '';
-                if(pedidos.length === 0) { container.innerHTML = '<p style="text-align:center; color:#777; margin-top:20px; font-weight:bold;">Nenhum pedido pendente.</p>'; return; }
-                pedidos.forEach(p => {
-                    let itensHTML = ''; let listaItens = p.itens;
-                    if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
-                    if(Array.isArray(listaItens)) { listaItens.forEach(i => { itensHTML += `- 1x ${i.nome}<br>`; }); }
-                    
-                    container.innerHTML += `
-                        <div class="card" style="border-left: 5px solid #3498db;">
-                            <div class="pedido-nome">Cliente: ${p.cliente_nome} <br>📱 ${p.cliente_telefone}</div>
-                            <div class="pedido-detalhes">${itensHTML}<br>Total: R$ ${parseFloat(p.total).toFixed(2)}</div>
-                            <select id="status-${p.id}"><option value="1">⏳ Confirmação</option><option value="4">✅ Concluído</option></select>
-                            <button class="btn-salvar" onclick="atualizarStatusPedido(${p.id}, '${p.cliente_telefone}')">Atualizar Status</button>
-                        </div>
-                    `;
-                });
-            } catch(e) { container.innerHTML = '<p style="text-align:center; color:red;">Erro ao carregar pedidos.</p>'; }
-        }
-
-        async function atualizarStatusPedido(idPedido, telefone) {
-            const status = document.getElementById(`status-${idPedido}`).value;
-            await fetch(API_URL + `/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(status) }) });
-            alert("Status atualizado!"); carregarPedidos();
         }
 
         async function carregarCardapio() {
