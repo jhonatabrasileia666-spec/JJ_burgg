@@ -18,10 +18,10 @@
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
         .tela { display: none; } .tela.ativo { display: block; }
         
-        .pedido-nome { font-size: 18px; font-weight: bold; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .pedido-nome { font-size: 16px; font-weight: bold; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
         .pedido-detalhes { font-size: 14px; color: #555; margin-bottom: 15px; }
 
-        /* CSS DO CAIXA/FINANCEIRO (RESTAURADO!) */
+        /* CSS DO CAIXA COM CALENDÁRIO */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .box-valor { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .box-valor h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
@@ -32,7 +32,6 @@
         .lucro-total h3 { color: #bdc3c7; }
         .lucro-total .valor { font-size: 26px; }
         
-        /* CSS DA FÁBRICA */
         #visor-fabrica { 
             position: relative; width: 300px; height: 300px; background-color: #f4d03f; 
             border-radius: 20px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); 
@@ -67,11 +66,15 @@
         </div>
 
         <div id="tela-financeiro" class="tela">
-            <h2 style="color: #2c3e50; margin-bottom: 15px;">📊 Caixa do Dia (Hoje)</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="color: #2c3e50; margin: 0;">📊 Caixa</h2>
+                <input type="date" id="data-caixa" onchange="carregarFinanceiro()" style="width: 140px; margin: 0; padding: 6px; border-radius: 6px; border: 2px solid #27ae60; background: #e8f8f5; color: #2c3e50; font-weight: bold; font-size: 13px;">
+            </div>
+
             <div class="dashboard-grid">
-                <div class="box-valor"><h3>Vendas Hoje</h3><div class="valor valor-verde" id="val-vendas">R$ 0,00</div></div>
-                <div class="box-valor"><h3>Gastos Hoje</h3><div class="valor valor-vermelho" id="val-gastos">R$ 0,00</div></div>
-                <div class="box-valor lucro-total"><h3>Lucro / Caixa Atual</h3><div class="valor" id="val-lucro" style="color: #2ecc71;">R$ 0,00</div></div>
+                <div class="box-valor"><h3>Vendas</h3><div class="valor valor-verde" id="val-vendas">R$ 0,00</div></div>
+                <div class="box-valor"><h3>Gastos</h3><div class="valor valor-vermelho" id="val-gastos">R$ 0,00</div></div>
+                <div class="box-valor lucro-total"><h3>Lucro / Em Caixa</h3><div class="valor" id="val-lucro" style="color: #2ecc71;">R$ 0,00</div></div>
             </div>
 
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
@@ -81,7 +84,7 @@
                 <button class="btn-salvar" style="background: #e74c3c;" onclick="salvarGasto()">Adicionar Despesa</button>
             </div>
             
-            <h3 style="margin-bottom: 10px; font-size: 16px;">Histórico de Gastos Hoje:</h3>
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Histórico de Gastos da Data Selecionada:</h3>
             <div id="lista-gastos"></div>
         </div>
 
@@ -101,10 +104,17 @@
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">2. Adicionar Novo Ingrediente (do zero):</h3>
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
-                <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Faça o upload da imagem no GitHub e digite o nome exato do arquivo abaixo.</p>
-                <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Ovo Frito)">
-                <input type="text" id="novo-ing-arquivo" placeholder="Nome no GitHub (Ex: Ovo.png)">
-                <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Link do Ingrediente</button>
+                <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Cebola Roxa)">
+                <input type="file" id="novo-ing-foto" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
+                <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Novo Ingrediente</button>
+            </div>
+
+            <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">🔄 Substituir Foto de um Ingrediente:</h3>
+            <div class="card" style="background: #e8f8f5; border: 1px solid #1abc9c;">
+                <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Cansou do Bacon ou do Ovo antigo? Escolha o ingrediente e mande uma foto nova para atualizar!</p>
+                <select id="select-substituir-ing"></select>
+                <input type="file" id="foto-substituir" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
+                <button class="btn-salvar" id="btn-sub-img" style="background: #1abc9c;" onclick="substituirImagemIngrediente()">Atualizar Foto 🔄</button>
             </div>
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 20px;">3. Lançar no Site:</h3>
@@ -133,6 +143,14 @@
                 document.getElementById('tela-login').classList.remove('ativo');
                 document.getElementById('tela-pedidos').classList.add('ativo');
                 document.getElementById('menu-inferior').style.display = 'flex';
+                
+                // MÁGICA: Configura o calendário automaticamente para o dia de hoje ao entrar
+                const hoje = new Date();
+                const yyyy = hoje.getFullYear();
+                const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+                const dd = String(hoje.getDate()).padStart(2, '0');
+                document.getElementById('data-caixa').value = `${yyyy}-${mm}-${dd}`;
+
                 carregarPedidos(); carregarCardapio(); carregarFinanceiro();
             } else { alert("❌ Senha incorreta!"); }
         }
@@ -144,21 +162,36 @@
             if(aba === 'pedidos') carregarPedidos();
             if(aba === 'cardapio') carregarCardapio();
             if(aba === 'fabrica') carregarIngredientesNaFabrica();
-            if(aba === 'financeiro') carregarFinanceiro(); // Chama a função que agora TEM as caixas visuais!
+            if(aba === 'financeiro') carregarFinanceiro();
         }
 
         // ===============================================
-        // MÁGICA DO FINANCEIRO / CAIXA DO DIA
+        // MÁGICA DO FINANCEIRO / CAIXA COM CALENDÁRIO
         // ===============================================
         async function carregarFinanceiro() {
             try {
                 const res = await fetch(API_URL + '/api/financeiro');
                 const data = await res.json();
-                const hoje = new Date().toLocaleDateString('pt-BR');
+                
+                // Pega a data que está no calendário
+                const dataInput = document.getElementById('data-caixa').value;
+                let dateStr = "";
+                if (dataInput) {
+                    const partes = dataInput.split('-');
+                    dateStr = `${partes[2]}/${partes[1]}/${partes[0]}`; // Fica no formato DD/MM/YYYY
+                }
+
+                // Função auxiliar para ter certeza que as datas batem perfeito
+                const formatarDataIso = (isoString) => {
+                    const d = new Date(isoString);
+                    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                };
+
                 let totalVendas = 0; let totalGastos = 0;
                 
+                // Conta só as vendas da data escolhida no calendário
                 data.pedidos.forEach(p => { 
-                    if(new Date(p.criado_em).toLocaleDateString('pt-BR') === hoje) {
+                    if(formatarDataIso(p.criado_em) === dateStr) {
                         totalVendas += parseFloat(p.total) || 0; 
                     }
                 });
@@ -166,8 +199,9 @@
                 const listaHtml = document.getElementById('lista-gastos'); 
                 listaHtml.innerHTML = '';
                 
+                // Puxa só as despesas da data escolhida no calendário
                 data.gastos.forEach(g => {
-                    if(new Date(g.criado_em).toLocaleDateString('pt-BR') === hoje) {
+                    if(formatarDataIso(g.criado_em) === dateStr) {
                         totalGastos += parseFloat(g.valor);
                         listaHtml.innerHTML += `
                             <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 12px; margin-bottom: 8px;">
@@ -179,7 +213,7 @@
                     }
                 });
                 
-                if(listaHtml.innerHTML === '') { listaHtml.innerHTML = '<p style="text-align:center; color:#777; font-size:14px;">Nenhum gasto registrado hoje.</p>'; }
+                if(listaHtml.innerHTML === '') { listaHtml.innerHTML = '<p style="text-align:center; color:#777; font-size:14px;">Nenhum gasto nesta data.</p>'; }
                 
                 const lucro = totalVendas - totalGastos;
                 document.getElementById('val-vendas').textContent = `R$ ${totalVendas.toFixed(2).replace('.', ',')}`;
@@ -274,12 +308,11 @@
 
         async function atualizarStatusPedido(idPedido, telefoneCliente, enviarWhatsApp) {
             const novoStatus = document.getElementById(`status-${idPedido}`).value;
-            
             await fetch(API_URL + `/api/pedidos/${idPedido}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: parseInt(novoStatus) }) });
             
             if(novoStatus === "4") {
                 alert('✅ Status atualizado e pedido arquivado!');
-                carregarPedidos(); carregarFinanceiro(); // Atualiza o caixa também!
+                carregarPedidos(); carregarFinanceiro();
                 return;
             }
 
@@ -288,18 +321,14 @@
                 let nomeStatus = novoStatus === "2" ? "🍔 *EM PREPARO*" : (novoStatus === "3" ? "🛵 *SAIU PARA ENTREGA/RETIRADA*" : "⏳ *AGUARDANDO CONFIRMAÇÃO*");
                 let textoWhats = `*ATUALIZAÇÃO DO SEU PEDIDO* 🚀\n\nBoas notícias! O status do seu pedido mudou para:\n${nomeStatus}\n\nAcompanhe no site ao vivo clicando aqui:\n${linkMagico}`;
                 window.open(`https://wa.me/55${telefoneCliente}?text=${encodeURIComponent(textoWhats)}`, '_blank');
-            } else {
-                alert('✅ Status atualizado com sucesso no App do cliente!');
-            }
-            
+            } else { alert('✅ Status atualizado com sucesso no App do cliente!'); }
             carregarPedidos();
         }
 
         // ===============================================
         // FÁBRICA: ARRASTAR + EXPANDIR ALTURA
         // ===============================================
-        let lancheAtual = [];
-        let zIndexCounter = 10;
+        let lancheAtual = []; let zIndexCounter = 10;
 
         function atualizarAlturaCanvas() {
             let canvas = document.getElementById('visor-fabrica');
@@ -373,6 +402,8 @@
 
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
+            const selectSub = document.getElementById('select-substituir-ing');
+            
             let htmlBotoes = `
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button>
@@ -382,6 +413,16 @@
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>
             `;
+
+            let htmlOpcoesSubstituir = `
+                <option value="file|pao_topo.png">Pão Topo (Clássico)</option>
+                <option value="file|pao_base.png">Pão Base (Clássico)</option>
+                <option value="file|carne.png">Carne (Clássico)</option>
+                <option value="file|bacon.png">Bacon (Clássico)</option>
+                <option value="file|queijo.png">Queijo (Clássico)</option>
+                <option value="file|alface.png">Alface (Clássico)</option>
+                <option value="file|pepino.png">Pepino (Clássico)</option>
+            `;
             
             try {
                 const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now());
@@ -390,44 +431,86 @@
                     ingredientes.forEach(ing => {
                         let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`;
                         htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${imgSrc}" onerror="this.style.display='none'" width="25"> ${ing.nome}</button>`;
+                        htmlOpcoesSubstituir += `<option value="db|${ing.id}">${ing.nome} (Criado por ti)</option>`;
                     });
                 }
             } catch(e) {}
             
-            grid.innerHTML = htmlBotoes;
+            grid.innerHTML = htmlBotoes; selectSub.innerHTML = htmlOpcoesSubstituir;
         }
 
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
-            const nomeArquivo = document.getElementById('novo-ing-arquivo').value.trim();
-            
-            if(!nome || !nomeArquivo) { 
-                alert('⚠️ Preencha o nome do ingrediente e o nome exato do arquivo no GitHub!'); 
-                return; 
-            }
+            const fileInput = document.getElementById('novo-ing-foto');
+            if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha a foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Salvando Link...'; btn.disabled = true;
+            btn.innerText = '⏳ Comprimindo e Salvando...'; btn.disabled = true;
 
-            try {
-                const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) 
-                });
-                
-                if(respostaDb.ok) {
-                    alert('✅ Sucesso! O Banco de Dados agora sabe que este ingrediente chama-se "' + nomeArquivo + '".');
-                    document.getElementById('novo-ing-nome').value = ''; 
-                    document.getElementById('novo-ing-arquivo').value = '';
-                    carregarIngredientesNaFabrica(); 
-                } else {
-                    alert('❌ Falha ao salvar no Banco de Dados.');
-                }
-            } catch(err) { 
-                alert('❌ Ocorreu um erro na conexão.'); 
-            }
-            
-            btn.innerText = 'Salvar Link do Ingrediente'; btn.disabled = false;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    try {
+                        const canvas = document.createElement('canvas'); const MAX_SIZE = 300; 
+                        let width = img.width; let height = img.height;
+                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                        const base64Reduzida = canvas.toDataURL('image/webp', 0.7);
+
+                        const respostaDb = await fetch(API_URL + '/api/ingredientes', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, imagem: base64Reduzida })
+                        });
+
+                        if(respostaDb.ok) {
+                            alert('✅ Ingrediente Criado! Não sumirá mais, pois está gravado no Banco de Dados.');
+                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = ''; carregarIngredientesNaFabrica();
+                        } else { alert('❌ Erro no banco de dados. Tente novamente.'); }
+                    } catch (err) { alert('❌ Erro ao comprimir: ' + err.message); }
+                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        async function substituirImagemIngrediente() {
+            const selectVal = document.getElementById('select-substituir-ing').value;
+            const fileInput = document.getElementById('foto-substituir');
+            if(!fileInput.files[0]) { alert('⚠️ Escolha a NOVA foto da sua galeria primeiro!'); return; }
+
+            const btn = document.getElementById('btn-sub-img');
+            btn.innerText = '⏳ Atualizando...'; btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 300; 
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
+
+                    try {
+                        let partes = selectVal.split('|'); let tipo = partes[0]; let idOuNome = partes[1];
+                        if (tipo === 'file') {
+                            await fetch(API_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nomeArquivo: idOuNome, base64: base64Reduzida }) });
+                        } else if (tipo === 'db') {
+                            await fetch(API_URL + '/api/ingredientes/' + idOuNome, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imagem: base64Reduzida }) });
+                        }
+                        alert('✅ A foto deste ingrediente foi atualizada com sucesso!');
+                        fileInput.value = ''; carregarIngredientesNaFabrica(); 
+                    } catch (err) { alert('❌ Erro: ' + err.message); }
+                    btn.innerText = 'Atualizar Foto 🔄'; btn.disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
         }
 
         async function lancarLancheNoCardapio() {
@@ -438,8 +521,7 @@
             if(!nome || isNaN(preco)) { alert("Preencha Nome e Preço!"); return; }
             if(lancheAtual.length === 0) { alert("⚠️ O lanche está vazio!"); return; }
 
-            const btn = document.getElementById('btn-lancar-lanche');
-            btn.innerText = '⏳ Lançando...'; btn.disabled = true;
+            const btn = document.getElementById('btn-lancar-lanche'); btn.innerText = '⏳ Lançando...'; btn.disabled = true;
 
             try {
                 await fetch(API_URL + '/api/cardapio', {
@@ -447,9 +529,7 @@
                     body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual })
                 });
                 alert('🚀 Lanche Lançado com Sucesso! Volte na página do cliente para ver.');
-                document.getElementById('novo-lanche-nome').value = '';
-                document.getElementById('novo-lanche-desc').value = '';
-                document.getElementById('novo-lanche-preco').value = '';
+                document.getElementById('novo-lanche-nome').value = ''; document.getElementById('novo-lanche-desc').value = ''; document.getElementById('novo-lanche-preco').value = '';
                 limparFabrica();
             } catch(e) { alert("Erro"); }
             btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false;
