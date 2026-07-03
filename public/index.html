@@ -41,7 +41,7 @@
         .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
         .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
         
-        .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; border-radius: 20px; }
+        .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; overflow: hidden; border-radius: 20px; }
 
         .card-lanche h3 { color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
         .card-lanche p { color: #777 !important; font-size: 14px; line-height: 1.4; }
@@ -274,7 +274,7 @@
             const som = document.getElementById('somAlertaCliente');
             som.volume = 0; som.play().then(() => {
                 som.pause(); som.currentTime = 0; som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui.", "🎙️");
+                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
@@ -343,6 +343,7 @@
                                 else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; }
                             }
 
+                            // Lê de forma segura: Imagens Base64 ou Imagens da URL
                             let imgSrc = camada.img.startsWith('data:') ? camada.img : `${API_URL}/${camada.img}`;
 
                             pilhasHTML += `
@@ -432,7 +433,7 @@
             if(idPedidoGerado) textoWhats += `\n\n*📍 Acompanhar ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=${idPedidoGerado}`;
             
             window.open(`https://wa.me/5568992365649?text=${encodeURIComponent(textoWhats)}`, '_blank');
-            setTimeout(() => { carrinho = []; localStorage.removeItem('carrinho_jj'); atualizarCarrinhoUI(); fecharModalCarrinho(); if(idPedidoGerado) window.history.replaceState({}, document.title, window.location.pathname); window.location.href = `index.html?rastreio=${idPedidoGerado}`; }, 1000);
+            setTimeout(() => { carrinho = []; localStorage.removeItem('carrinho_jj'); atualizarCarrinhoUI(); fecharModalCarrinho(); if(idPedidoGerado) { window.history.replaceState({}, document.title, window.location.pathname); window.location.href = `index.html?rastreio=${idPedidoGerado}`; } }, 1000);
         }
 
         function atualizarStatusVisual(statusPedido) {

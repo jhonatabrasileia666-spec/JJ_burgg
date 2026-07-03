@@ -71,11 +71,9 @@
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">2. Adicionar Novos Ingredientes:</h3>
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
-                <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Faça o upload da imagem no GitHub e digite o nome exato do arquivo abaixo.</p>
                 <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Ovo Frito)">
-                <!-- MUDANÇA AQUI: Agora ele pede o texto com o nome do arquivo em vez de tentar enviar a foto! -->
-                <input type="text" id="novo-ing-arquivo" placeholder="Nome no GitHub (Ex: Ovo.png)">
-                <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Link do Ingrediente</button>
+                <input type="file" id="novo-ing-foto" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
+                <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Novo Ingrediente</button>
             </div>
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 20px;">3. Lançar no Site:</h3>
@@ -134,7 +132,8 @@
             div.style.cursor = 'grab';
             
             let img = document.createElement('img');
-            img.src = `${API_URL}/${imagem}?v=${Date.now()}`;
+            let imgSrc = imagem.startsWith('data:') ? imagem : `${API_URL}/${imagem}?v=${Date.now()}`;
+            img.src = imgSrc;
             img.style.width = '100%';
             img.style.pointerEvents = 'none'; 
             
@@ -199,47 +198,68 @@
                 const ingredientes = await res.json();
                 if(Array.isArray(ingredientes)) {
                     ingredientes.forEach(ing => {
-                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${API_URL}/${ing.imagem}?t=${Date.now()}" onerror="this.style.display='none'" width="25"> ${ing.nome}</button>`;
+                        let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`;
+                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${imgSrc}" width="25"> ${ing.nome}</button>`;
                     });
                 }
             } catch(e) {}
             grid.innerHTML = htmlBotoes;
         }
 
-        // ===============================================
-        // MÁGICA: APENAS LINKAR COM O NOME NO GITHUB
-        // ===============================================
+        // MÁGICA: O COMPRESSOR QUE SALVA DIRETO NO BANCO DE DADOS
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
-            const nomeArquivo = document.getElementById('novo-ing-arquivo').value.trim();
-            
-            if(!nome || !nomeArquivo) { 
-                alert('⚠️ Preencha o nome do ingrediente e o nome exato do arquivo no GitHub!'); 
-                return; 
-            }
+            const fileInput = document.getElementById('novo-ing-foto');
+            if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha a foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Salvando Link...'; btn.disabled = true;
+            btn.innerText = '⏳ Processando Imagem...'; btn.disabled = true;
 
-            try {
-                const respostaDb = await fetch(API_URL + '/api/ingredientes', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ nome: nome, imagem: nomeArquivo }) 
-                });
-                
-                if(respostaDb.ok) {
-                    alert('✅ Sucesso! O Banco de Dados agora sabe que este ingrediente chama-se "' + nomeArquivo + '".');
-                    document.getElementById('novo-ing-nome').value = ''; 
-                    document.getElementById('novo-ing-arquivo').value = '';
-                    carregarIngredientesNaFabrica(); 
-                } else {
-                    alert('❌ Falha ao salvar no Banco de Dados.');
-                }
-            } catch(err) { 
-                alert('❌ Ocorreu um erro na conexão.'); 
-            }
-            
-            btn.innerText = 'Salvar Link do Ingrediente'; btn.disabled = false;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 300; // Reduz bastante para não pesar no BD
+                        let width = img.width; let height = img.height;
+
+                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Comprime para webp com qualidade 0.7 (Fica levezinho, sem perder qualidade visível no telemóvel)
+                        const base64Reduzida = canvas.toDataURL('image/webp', 0.7);
+
+                        btn.innerText = '⏳ Salvando no Banco de Dados...';
+
+                        const respostaDb = await fetch(API_URL + '/api/ingredientes', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ nome: nome, imagem: base64Reduzida })
+                        });
+
+                        if(respostaDb.ok) {
+                            alert('✅ Ingrediente Criado e Salvo com Sucesso! (Não sumirá mais)');
+                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
+                            carregarIngredientesNaFabrica();
+                        } else {
+                            alert('❌ Erro no banco de dados. Tente novamente.');
+                        }
+                    } catch (err) {
+                        alert('❌ Erro ao comprimir ou enviar: ' + err.message);
+                    }
+                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+                };
+                img.onerror = function() {
+                    alert('❌ Arquivo de imagem inválido.');
+                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
         }
 
         async function lancarLancheNoCardapio() {
