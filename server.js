@@ -23,8 +23,9 @@ async function arrumarBanco() {
         await client.query(`CREATE TABLE IF NOT EXISTS cardapio (id SERIAL PRIMARY KEY, nome VARCHAR(100) NOT NULL, descricao TEXT, preco NUMERIC(10,2) NOT NULL, tipo VARCHAR(50) DEFAULT 'lanche');`);
         await client.query(`CREATE TABLE IF NOT EXISTS pedidos (id SERIAL PRIMARY KEY, cliente_nome VARCHAR(100) NOT NULL, itens JSONB NOT NULL, total NUMERIC(10,2) NOT NULL, status INTEGER DEFAULT 1, endereco TEXT, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
         await client.query(`CREATE TABLE IF NOT EXISTS gastos (id SERIAL PRIMARY KEY, descricao VARCHAR(255), valor NUMERIC(10,2), criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-        await client.query(`CREATE TABLE IF NOT EXISTS ingredientes (id SERIAL PRIMARY KEY, nome VARCHAR(100) NOT NULL, imagem VARCHAR(255));`);
+        await client.query(`CREATE TABLE IF NOT EXISTS ingredientes (id SERIAL PRIMARY KEY, nome VARCHAR(100) NOT NULL, imagem TEXT);`);
         
+        try { await client.query(`ALTER TABLE ingredientes ALTER COLUMN imagem TYPE TEXT;`); } catch(e) {}
         try { await client.query(`ALTER TABLE ingredientes ADD COLUMN preco NUMERIC(10,2) DEFAULT 0;`); } catch(e) {}
         try { await client.query(`ALTER TABLE ingredientes ADD COLUMN ordem INTEGER DEFAULT 5;`); } catch(e) {}
         try { await client.query(`ALTER TABLE pedidos ADD COLUMN cliente_telefone VARCHAR(20);`); } catch(e) {}
@@ -39,15 +40,12 @@ app.post('/api/upload', (req, res) => {
     try {
         const { nomeArquivo, base64 } = req.body;
         if (!base64) return res.status(400).json({erro: "Arquivo vazio"});
-
         const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
         const buffer = Buffer.from(base64Data, 'base64');
         const filePath = path.join(__dirname, 'public', nomeArquivo);
         fs.writeFileSync(filePath, buffer);
         res.json({ sucesso: true });
-    } catch (e) { 
-        res.status(500).json({ erro: "Erro ao salvar imagem no servidor." }); 
-    }
+    } catch (e) { res.status(500).json({ erro: "Erro" }); }
 });
 
 app.get('/api/ingredientes', async (req, res) => {
@@ -63,9 +61,7 @@ app.post('/api/ingredientes', async (req, res) => {
             await pool.query('INSERT INTO ingredientes (nome, imagem) VALUES ($1, $2)', [nome, imagem]);
         }
         res.json({ sucesso: true });
-    } catch (err) {
-        res.status(500).json({ sucesso: false, erro: err.message });
-    }
+    } catch (err) { res.status(500).json({ sucesso: false, erro: err.message }); }
 });
 
 app.get('/api/cardapio', async (req, res) => {
@@ -90,7 +86,7 @@ app.post('/api/pedidos', async (req, res) => {
         const { nome, telefone, itens, total, endereco } = req.body;
         const result = await pool.query('INSERT INTO pedidos (cliente_nome, cliente_telefone, itens, total, endereco) VALUES ($1, $2, $3, $4, $5) RETURNING id', [nome, telefone || 'Não informado', JSON.stringify(itens), total, endereco]);
         res.json({ sucesso: true, id_pedido: result.rows[0].id });
-    } catch (err) { res.status(500).json({ erro: "Erro" }); }
+    } catch (err) {}
 });
 app.get('/api/pedidos', async (req, res) => {
     try { const result = await pool.query('SELECT * FROM pedidos WHERE status < 4 ORDER BY id DESC'); res.json(result.rows); } catch (err) {}
