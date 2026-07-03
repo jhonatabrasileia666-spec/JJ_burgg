@@ -48,6 +48,7 @@ app.post('/api/upload', (req, res) => {
     } catch (e) { res.status(500).json({ erro: "Erro" }); }
 });
 
+// === ROTAS DE INGREDIENTES ===
 app.get('/api/ingredientes', async (req, res) => {
     try { const result = await pool.query('SELECT * FROM ingredientes ORDER BY id ASC'); res.json(result.rows); } catch (err) {}
 });
@@ -55,15 +56,21 @@ app.get('/api/ingredientes', async (req, res) => {
 app.post('/api/ingredientes', async (req, res) => {
     try {
         const { nome, imagem } = req.body;
-        try {
-            await pool.query('INSERT INTO ingredientes (nome, imagem, preco, ordem) VALUES ($1, $2, 0, 5)', [nome, imagem]);
-        } catch(e1) {
-            await pool.query('INSERT INTO ingredientes (nome, imagem) VALUES ($1, $2)', [nome, imagem]);
-        }
+        try { await pool.query('INSERT INTO ingredientes (nome, imagem, preco, ordem) VALUES ($1, $2, 0, 5)', [nome, imagem]); } 
+        catch(e1) { await pool.query('INSERT INTO ingredientes (nome, imagem) VALUES ($1, $2)', [nome, imagem]); }
         res.json({ sucesso: true });
     } catch (err) { res.status(500).json({ sucesso: false, erro: err.message }); }
 });
 
+// MÁGICA: Permite editar a imagem de um ingrediente que já existe!
+app.put('/api/ingredientes/:id', async (req, res) => {
+    try {
+        await pool.query('UPDATE ingredientes SET imagem = $1 WHERE id = $2', [req.body.imagem, req.params.id]);
+        res.json({ sucesso: true });
+    } catch (err) { res.status(500).json({ sucesso: false }); }
+});
+
+// === ROTAS DO CARDÁPIO ===
 app.get('/api/cardapio', async (req, res) => {
     try { const result = await pool.query('SELECT * FROM cardapio ORDER BY id ASC'); res.json(result.rows); } catch (err) {}
 });
@@ -81,6 +88,7 @@ app.delete('/api/cardapio/:id', async (req, res) => {
     try { await pool.query('DELETE FROM cardapio WHERE id = $1', [req.params.id]); res.json({ sucesso: true }); } catch (err) {}
 });
 
+// === ROTAS DE PEDIDOS E FINANÇAS ===
 app.post('/api/pedidos', async (req, res) => {
     try {
         const { nome, telefone, itens, total, endereco } = req.body;
