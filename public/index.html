@@ -37,11 +37,13 @@
         .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
         .z-pepino { z-index: 8; } .z-queijo { z-index: 7; } .z-alface { z-index: 6; } .z-bacon { z-index: 5; } .z-carne { z-index: 4; }
         
+        /* AJUSTE MÁGICO DAS ETIQUETAS: Margens menores para não cortar nas bordas do telemóvel */
         .etiqueta-esq, .etiqueta-dir { position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: #d35400 !important; text-transform: uppercase; display: flex; align-items: center; z-index: 20; white-space: nowrap; }
-        .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
-        .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
+        .etiqueta-esq { right: 50%; margin-right: 55px; } .etiqueta-dir { left: 50%; margin-left: 55px; }
+        .linha-curva { width: 15px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 3px; position: relative; top: -4px; }
         
-        .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; overflow: hidden; border-radius: 20px; }
+        /* AJUSTE MÁGICO DA FÁBRICA: Fundo amarelo expansível e sem cortar conteúdo fora dele */
+        .vitrine-dinamica { position: relative; width: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; border-radius: 20px; overflow: visible !important; }
 
         .card-lanche h3 { color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
         .card-lanche p { color: #777 !important; font-size: 14px; line-height: 1.4; }
@@ -274,7 +276,7 @@
             const som = document.getElementById('somAlertaCliente');
             som.volume = 0; som.play().then(() => {
                 som.pause(); som.currentTime = 0; som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
+                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui.", "🎙️");
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
@@ -286,7 +288,6 @@
             if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; linkAudio = audiosPersonalizados.entrega; }
             if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
             mostrarAvisoStatus(msg, icone);
-            
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
                 try { const som = document.getElementById('somAlertaCliente'); som.src = linkAudio; som.currentTime = 0; som.play().catch(e=>{}); } catch(e) {}
             }
@@ -333,9 +334,18 @@
                         let composicaoArray = typeof item.composicao === 'string' ? JSON.parse(item.composicao) : item.composicao;
                         let pilhasHTML = '';
                         
+                        // MÁGICA 1: Calcula a altura para a caixa amarela se esticar sem cortar nada!
+                        let alturaMaximaQuadro = 300; 
+                        
                         [...composicaoArray].reverse().forEach((camada, idx) => {
                             let zIndex = composicaoArray.length - idx; 
                             
+                            // Calcula se a imagem passou do quadro de 300px
+                            let topY = parseInt(camada.top.replace('px', '')) || 0;
+                            if(topY + 120 > alturaMaximaQuadro) {
+                                alturaMaximaQuadro = topY + 140; // Dá uma margem de segurança no fundo
+                            }
+
                             let etiquetaHTML = "";
                             if (camada.nome) {
                                 let nomeFormatado = camada.nome.toUpperCase();
@@ -343,7 +353,6 @@
                                 else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; }
                             }
 
-                            // Lê de forma segura: Imagens Base64 ou Imagens da URL
                             let imgSrc = camada.img.startsWith('data:') ? camada.img : `${API_URL}/${camada.img}`;
 
                             pilhasHTML += `
@@ -354,10 +363,11 @@
                             `;
                         });
 
+                        // Aplica a altura calculada na vitrine (height: ${alturaMaximaQuadro}px;)
                         lanchesDinamicosContainer.innerHTML += `
                             <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
                             <div class="card-lanche">
-                                <div class="vitrine-dinamica">
+                                <div class="vitrine-dinamica" style="height: ${alturaMaximaQuadro}px;">
                                     ${pilhasHTML}
                                 </div>
                                 <h3>${item.nome}</h3><p>${item.descricao || ''}</p>

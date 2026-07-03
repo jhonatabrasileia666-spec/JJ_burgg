@@ -18,9 +18,11 @@
         .nav-item.ativo { color: #d35400; border-top-color: #d35400; background: #fdf2e9; }
         .tela { display: none; } .tela.ativo { display: block; }
         
+        /* CSS DA FÁBRICA: A altura agora é dinâmica */
         #visor-fabrica { 
             position: relative; width: 300px; height: 300px; background-color: #f4d03f; 
             border-radius: 20px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); 
+            transition: height 0.2s ease; /* Animação de crescer suave */
         }
         .grid-ingredientes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .btn-ing-fabrica { background: #fff; border: 2px solid #ddd; padding: 10px; border-radius: 8px; font-weight: bold; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -57,7 +59,7 @@
 
         <div id="tela-fabrica" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 5px;">🏭 Fábrica de Lanches</h2>
-            <p style="font-size: 13px; color: #777; margin-bottom: 15px;">Clique num ingrediente abaixo e **arraste-o com o dedo** no quadro amarelo para montar o lanche!</p>
+            <p style="font-size: 13px; color: #777; margin-bottom: 15px;">Arraste os ingredientes com o dedo. **O fundo amarelo crescerá sozinho!**</p>
             
             <div id="visor-fabrica"></div>
 
@@ -69,11 +71,22 @@
             <h3 style="margin-bottom: 10px; font-size: 16px;">1. Montar Lanche (Clique para adicionar):</h3>
             <div class="grid-ingredientes" id="grid-ingredientes-fabrica"></div>
 
-            <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">2. Adicionar Novos Ingredientes:</h3>
+            <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">2. Adicionar Novo Ingrediente (do zero):</h3>
             <div class="card" style="background: #fff3e0; border: 1px solid #f39c12;">
-                <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Ovo Frito)">
+                <input type="text" id="novo-ing-nome" placeholder="Nome (Ex: Cebola Roxa)">
                 <input type="file" id="novo-ing-foto" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
                 <button class="btn-salvar" id="btn-criar-ing" onclick="criarIngrediente()">Salvar Novo Ingrediente</button>
+            </div>
+
+            <!-- MÁGICA: O NOVO ESTÚDIO DE EDIÇÃO -->
+            <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 10px;">🔄 Substituir Foto de um Ingrediente:</h3>
+            <div class="card" style="background: #e8f8f5; border: 1px solid #1abc9c;">
+                <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Cansou do Bacon ou do Ovo antigo? Escolha o ingrediente e mande uma foto nova para atualizar!</p>
+                <select id="select-substituir-ing">
+                    <!-- Preenchido via Javascript -->
+                </select>
+                <input type="file" id="foto-substituir" accept="image/png, image/jpeg, image/webp" style="background: #fff;">
+                <button class="btn-salvar" id="btn-sub-img" style="background: #1abc9c;" onclick="substituirImagemIngrediente()">Atualizar Foto 🔄</button>
             </div>
 
             <h3 style="margin-bottom: 10px; font-size: 16px; margin-top: 20px;">3. Lançar no Site:</h3>
@@ -115,8 +128,26 @@
             if(aba === 'fabrica') carregarIngredientesNaFabrica();
         }
 
+        // ===============================================
+        // FÁBRICA: ARRASTAR + EXPANDIR ALTURA
+        // ===============================================
         let lancheAtual = [];
         let zIndexCounter = 10;
+
+        function atualizarAlturaCanvas() {
+            let canvas = document.getElementById('visor-fabrica');
+            let maxH = 300; // O quadro nunca fica menor que 300
+            
+            lancheAtual.forEach(item => {
+                let el = document.getElementById(item.id);
+                if(el) {
+                    // Pega a posição "Y" (top) + o tamanho da imagem
+                    let bottom = el.offsetTop + el.offsetHeight;
+                    if(bottom + 20 > maxH) maxH = bottom + 20; // +20px para dar uma margem bonita embaixo
+                }
+            });
+            canvas.style.height = maxH + 'px';
+        }
 
         function adicionarNaFabrica(nome, imagem) {
             let canvas = document.getElementById('visor-fabrica');
@@ -127,7 +158,7 @@
             div.style.position = 'absolute';
             div.style.width = '140px'; 
             div.style.left = '80px'; 
-            div.style.top = '100px'; 
+            div.style.top = '50px'; 
             div.style.zIndex = zIndexCounter++;
             div.style.cursor = 'grab';
             
@@ -138,9 +169,11 @@
             img.style.pointerEvents = 'none'; 
             
             div.appendChild(img); canvas.appendChild(div);
-            let obj = { id: idUnico, nome: nome, img: imagem, left: '80px', top: '100px', zIndex: div.style.zIndex };
+            let obj = { id: idUnico, nome: nome, img: imagem, left: '80px', top: '50px', zIndex: div.style.zIndex };
             lancheAtual.push(obj);
+            
             tornarArrastavel(div, obj);
+            atualizarAlturaCanvas();
         }
 
         function tornarArrastavel(elemento, objMemoria) {
@@ -162,7 +195,11 @@
                 pos3 = eventoToque.clientX; pos4 = eventoToque.clientY;
                 elemento.style.top = (elemento.offsetTop - pos2) + "px";
                 elemento.style.left = (elemento.offsetLeft - pos1) + "px";
+                
                 objMemoria.top = elemento.style.top; objMemoria.left = elemento.style.left;
+                
+                // MÁGICA: O quadro cresce ao vivo enquanto você puxa a carne pra baixo!
+                atualizarAlturaCanvas();
             }
             function pararArrasto() {
                 document.onmouseup = null; document.removeEventListener('touchend', pararArrasto);
@@ -175,15 +212,19 @@
                 let ultimoItem = lancheAtual.pop(); 
                 let divParaApagar = document.getElementById(ultimoItem.id);
                 if(divParaApagar) divParaApagar.remove(); 
+                atualizarAlturaCanvas();
             }
         }
 
         function limparFabrica() {
-            lancheAtual = []; document.getElementById('visor-fabrica').innerHTML = ''; zIndexCounter = 10;
+            lancheAtual = []; document.getElementById('visor-fabrica').innerHTML = ''; 
+            zIndexCounter = 10; atualizarAlturaCanvas();
         }
 
         async function carregarIngredientesNaFabrica() {
             const grid = document.getElementById('grid-ingredientes-fabrica');
+            const selectSub = document.getElementById('select-substituir-ing');
+            
             let htmlBotoes = `
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button>
@@ -193,27 +234,43 @@
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button>
                 <button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>
             `;
+
+            let htmlOpcoesSubstituir = `
+                <option value="file|pao_topo.png">Pão Topo (Clássico)</option>
+                <option value="file|pao_base.png">Pão Base (Clássico)</option>
+                <option value="file|carne.png">Carne (Clássico)</option>
+                <option value="file|bacon.png">Bacon (Clássico)</option>
+                <option value="file|queijo.png">Queijo (Clássico)</option>
+                <option value="file|alface.png">Alface (Clássico)</option>
+                <option value="file|pepino.png">Pepino (Clássico)</option>
+            `;
+            
             try {
                 const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now());
                 const ingredientes = await res.json();
                 if(Array.isArray(ingredientes)) {
                     ingredientes.forEach(ing => {
                         let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`;
-                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${imgSrc}" width="25"> ${ing.nome}</button>`;
+                        htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${imgSrc}" onerror="this.style.display='none'" width="25"> ${ing.nome}</button>`;
+                        htmlOpcoesSubstituir += `<option value="db|${ing.id}">${ing.nome} (Criado por ti)</option>`;
                     });
                 }
             } catch(e) {}
+            
             grid.innerHTML = htmlBotoes;
+            selectSub.innerHTML = htmlOpcoesSubstituir;
         }
 
-        // MÁGICA: O COMPRESSOR QUE SALVA DIRETO NO BANCO DE DADOS
+        // ===============================================
+        // MÁGICA 1: COMPRESSOR + SALVAR INGREDIENTE NOVO
+        // ===============================================
         async function criarIngrediente() {
             const nome = document.getElementById('novo-ing-nome').value.trim();
             const fileInput = document.getElementById('novo-ing-foto');
             if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha a foto!'); return; }
 
             const btn = document.getElementById('btn-criar-ing');
-            btn.innerText = '⏳ Processando Imagem...'; btn.disabled = true;
+            btn.innerText = '⏳ Comprimindo e Salvando...'; btn.disabled = true;
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -221,41 +278,75 @@
                 img.onload = async function() {
                     try {
                         const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 300; // Reduz bastante para não pesar no BD
+                        const MAX_SIZE = 300; 
                         let width = img.width; let height = img.height;
-
                         if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
                         else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-
                         canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        // Comprime para webp com qualidade 0.7 (Fica levezinho, sem perder qualidade visível no telemóvel)
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                         const base64Reduzida = canvas.toDataURL('image/webp', 0.7);
 
-                        btn.innerText = '⏳ Salvando no Banco de Dados...';
-
                         const respostaDb = await fetch(API_URL + '/api/ingredientes', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ nome: nome, imagem: base64Reduzida })
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, imagem: base64Reduzida })
                         });
 
                         if(respostaDb.ok) {
-                            alert('✅ Ingrediente Criado e Salvo com Sucesso! (Não sumirá mais)');
-                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = '';
-                            carregarIngredientesNaFabrica();
-                        } else {
-                            alert('❌ Erro no banco de dados. Tente novamente.');
-                        }
-                    } catch (err) {
-                        alert('❌ Erro ao comprimir ou enviar: ' + err.message);
-                    }
+                            alert('✅ Ingrediente Criado! Não sumirá mais, pois está gravado no Banco de Dados.');
+                            document.getElementById('novo-ing-nome').value = ''; fileInput.value = ''; carregarIngredientesNaFabrica();
+                        } else { alert('❌ Erro no banco de dados. Tente novamente.'); }
+                    } catch (err) { alert('❌ Erro ao comprimir: ' + err.message); }
                     btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
                 };
-                img.onerror = function() {
-                    alert('❌ Arquivo de imagem inválido.');
-                    btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false;
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        // ===============================================
+        // MÁGICA 2: SUBSTITUIR IMAGEM (EDITAR EXISTENTES)
+        // ===============================================
+        async function substituirImagemIngrediente() {
+            const selectVal = document.getElementById('select-substituir-ing').value;
+            const fileInput = document.getElementById('foto-substituir');
+            if(!fileInput.files[0]) { alert('⚠️ Escolha a NOVA foto da sua galeria primeiro!'); return; }
+
+            const btn = document.getElementById('btn-sub-img');
+            btn.innerText = '⏳ Atualizando...'; btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 300; 
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    const base64Reduzida = canvas.toDataURL('image/webp', 0.8);
+
+                    try {
+                        let partes = selectVal.split('|');
+                        let tipo = partes[0]; let idOuNome = partes[1];
+
+                        if (tipo === 'file') {
+                            // Atualiza os clássicos substituindo a foto no servidor
+                            await fetch(API_URL + '/api/upload', { 
+                                method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify({ nomeArquivo: idOuNome, base64: base64Reduzida }) 
+                            });
+                        } else if (tipo === 'db') {
+                            // Atualiza os novos ingredientes no Banco de Dados
+                            await fetch(API_URL + '/api/ingredientes/' + idOuNome, { 
+                                method: 'PUT', headers: { 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify({ imagem: base64Reduzida }) 
+                            });
+                        }
+                        alert('✅ A foto deste ingrediente foi atualizada com sucesso!');
+                        fileInput.value = ''; carregarIngredientesNaFabrica(); 
+                    } catch (err) { alert('❌ Erro: ' + err.message); }
+                    btn.innerText = 'Atualizar Foto 🔄'; btn.disabled = false;
                 };
                 img.src = e.target.result;
             };
@@ -287,6 +378,9 @@
             btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false;
         }
 
+        // ===============================================
+        // OUTRAS FUNÇÕES BASICAS DO ADMIN
+        // ===============================================
         async function carregarPedidos() {
             const container = document.getElementById('lista-pedidos-container');
             container.innerHTML = 'Carregando...';
