@@ -150,10 +150,10 @@
     <div id="modalNotificacao" class="modal-overlay">
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
-            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado na cozinha?</p>
-            <p style="color: #e74c3c !important; font-size: 11px; margin-bottom: 15px; font-weight:bold;">Para ouvir a voz, mantenha a tela do rastreio ligada.</p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
-            <button class="btn-acao-modal btn-fechar" onclick="desligarNotificacao()">Desligar Som / Agora Não</button>
+            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o celular envie uma notificação com som quando o seu pedido for atualizado?</p>
+            <p style="color: #27ae60 !important; font-size: 11px; margin-bottom: 15px; font-weight:bold;">Isso permite que você saia do site ou bloqueie a tela, e o aviso chegará na mesma!</p>
+            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Permitir Notificações</button>
+            <button class="btn-acao-modal btn-fechar" onclick="desligarNotificacao()">Desligar / Agora Não</button>
         </div>
     </div>
 
@@ -196,7 +196,7 @@
         <div class="modal-card">
             <h2>Status do Pedido 🛵</h2>
             <p style="font-size: 11px; color: #d35400; font-weight: bold; margin-bottom: 10px; background: #fff3e0; padding: 5px; border-radius: 5px;">
-                💡 Dica: Mantenha esta tela aberta para ouvir a atualização de voz em tempo real!
+                💡 Dica: Mantenha esta tela aberta ou ative as notificações no topo da página para ser avisado.
             </p>
             <div class="timeline" id="linha-do-tempo">
                 <div class="passo" id="passo-1">✅ Pedido Criado e Enviado</div>
@@ -225,38 +225,15 @@
         const audiosPersonalizados = { preparo: "preparo.mp3", entrega: "entrega.mp3", concluido: "concluido.mp3" };
         let intervalRastreio = null; let idRastreioAtual = null; let statusAtual = 1;
         
-        // 🟢 VARIÁVEL DO ANTI-HIBERNAÇÃO
         let wakeLock = null;
 
-        // ===============================================
-        // MÁGICA DO ANTI-HIBERNAÇÃO (WAKE LOCK)
-        // ===============================================
-        async function ativarTelaViva() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Tela Viva ativada: O telemóvel não vai dormir!');
-                }
-            } catch (err) {
-                console.log('O telemóvel não suporta a Tela Viva.');
-            }
-        }
-
-        function desativarTelaViva() {
-            if (wakeLock !== null) {
-                wakeLock.release().then(() => { wakeLock = null; });
-            }
-        }
-
-        // Reconectar o Anti-Hibernação caso a pessoa minimize o app e volte
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                await ativarTelaViva();
-            }
-        });
+        async function ativarTelaViva() { try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {} }
+        function desativarTelaViva() { if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); } }
+        document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') { await ativarTelaViva(); } });
 
         // ===============================================
-
+        // MÁGICA DE NOTIFICAÇÃO NATIVA (GOOGLE CHROME/SAFARI)
+        // ===============================================
         function atualizarDesignBotaoSom() {
             const btn = document.getElementById('btn-toggle-som');
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
@@ -276,9 +253,25 @@
         }
 
         function pedirPermissaoNotificacao() {
-            localStorage.setItem('permissao_aviso_jj', 'sim'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo');
+            localStorage.setItem('permissao_aviso_jj', 'sim'); 
+            atualizarDesignBotaoSom(); 
+            document.getElementById('modalNotificacao').classList.remove('ativo');
+            
+            // PEDE A PERMISSÃO OFICIAL DO NAVEGADOR
+            if ("Notification" in window) {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        console.log("Notificações do sistema ativadas!");
+                    }
+                });
+            }
+
+            // DESTRANCA O ÁUDIO INTERNO POR GARANTIA
             const som = document.getElementById('somAlertaCliente');
-            som.volume = 0; som.play().then(() => { som.pause(); som.currentTime = 0; som.volume = 1; mostrarAvisoStatus("Avisos sonoros ativados! Para ouvir, deixe o acompanhamento do pedido aberto na tela.", "🎙️"); }).catch(e => console.log("Erro ao destrancar som", e));
+            som.volume = 0; som.play().then(() => { 
+                som.pause(); som.currentTime = 0; som.volume = 1; 
+                mostrarAvisoStatus("Notificações do sistema ativadas! Pode fechar o site que o celular vai avisar.", "📱"); 
+            }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
         function desligarNotificacao() { localStorage.setItem('permissao_aviso_jj', 'nao'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo'); }
@@ -291,10 +284,20 @@
             if(status == 2) { msg = "O seu pedido está sendo preparado na cozinha!"; icone = "🍔"; linkAudio = audiosPersonalizados.preparo; }
             if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; linkAudio = audiosPersonalizados.entrega; }
             if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
+            
             mostrarAvisoStatus(msg, icone);
             
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
+                // Tenta tocar o áudio interno
                 try { const som = document.getElementById('somAlertaCliente'); som.src = linkAudio; som.currentTime = 0; som.play().catch(e=>{}); } catch(e) {}
+                
+                // DISPARA A NOTIFICAÇÃO NATIVA (Aparece fora do site)
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("Atualização JJ Burguer " + icone, {
+                        body: msg,
+                        icon: "logo.png"
+                    });
+                }
             }
         }
 
@@ -372,10 +375,7 @@
 
         function iniciarBuscaAoVivo() {
             if(!idRastreioAtual) return;
-            
-            // Ativa o Anti-Hibernação ao entrar no rastreio
             ativarTelaViva();
-
             async function buscar() {
                 try {
                     const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json(); const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
