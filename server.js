@@ -48,47 +48,51 @@ app.post('/api/upload', (req, res) => {
     } catch (e) { res.status(500).json({ erro: "Erro" }); }
 });
 
-// === ROTAS DE INGREDIENTES ===
+// === INGREDIENTES ===
 app.get('/api/ingredientes', async (req, res) => {
     try { const result = await pool.query('SELECT * FROM ingredientes ORDER BY id ASC'); res.json(result.rows); } catch (err) {}
 });
 
 app.post('/api/ingredientes', async (req, res) => {
     try {
-        const { nome, imagem } = req.body;
-        try { await pool.query('INSERT INTO ingredientes (nome, imagem, preco, ordem) VALUES ($1, $2, 0, 5)', [nome, imagem]); } 
+        const { nome, imagem, preco } = req.body; let precoFormatado = parseFloat(preco) || 0;
+        try { await pool.query('INSERT INTO ingredientes (nome, imagem, preco, ordem) VALUES ($1, $2, $3, 5)', [nome, imagem, precoFormatado]); } 
         catch(e1) { await pool.query('INSERT INTO ingredientes (nome, imagem) VALUES ($1, $2)', [nome, imagem]); }
         res.json({ sucesso: true });
     } catch (err) { res.status(500).json({ sucesso: false, erro: err.message }); }
 });
 
-// MÁGICA: Permite editar a imagem de um ingrediente que já existe!
 app.put('/api/ingredientes/:id', async (req, res) => {
-    try {
-        await pool.query('UPDATE ingredientes SET imagem = $1 WHERE id = $2', [req.body.imagem, req.params.id]);
-        res.json({ sucesso: true });
-    } catch (err) { res.status(500).json({ sucesso: false }); }
+    try { await pool.query('UPDATE ingredientes SET imagem = $1 WHERE id = $2', [req.body.imagem, req.params.id]); res.json({ sucesso: true }); } catch (err) {}
 });
 
-// === ROTAS DO CARDÁPIO ===
+// === CARDÁPIO (MÁGICA DE EDIÇÃO AQUI) ===
 app.get('/api/cardapio', async (req, res) => {
     try { const result = await pool.query('SELECT * FROM cardapio ORDER BY id ASC'); res.json(result.rows); } catch (err) {}
 });
+
 app.post('/api/cardapio', async (req, res) => {
     try {
         const { nome, descricao, preco, tipo, composicao } = req.body;
-        await pool.query('INSERT INTO cardapio (nome, descricao, preco, tipo, composicao) VALUES ($1, $2, $3, $4, $5)', [nome, descricao, preco, tipo, JSON.stringify(composicao)]);
+        await pool.query('INSERT INTO cardapio (nome, descricao, preco, tipo, composicao) VALUES ($1, $2, $3, $4, $5)', [nome, descricao, preco, tipo, JSON.stringify(composicao || [])]);
         res.json({ sucesso: true });
-    } catch (err) { res.status(500).json({ erro: "Erro ao criar lanche" }); }
+    } catch (err) { res.status(500).json({ erro: "Erro ao criar item" }); }
 });
+
+// Atualizado para permitir a edição de todos os dados do lanche
 app.put('/api/cardapio/:id', async (req, res) => {
-    try { await pool.query('UPDATE cardapio SET preco = $1 WHERE id = $2', [req.body.preco, req.params.id]); res.json({ sucesso: true }); } catch (err) {}
+    try { 
+        const { nome, descricao, preco } = req.body;
+        await pool.query('UPDATE cardapio SET nome = $1, descricao = $2, preco = $3 WHERE id = $4', [nome, descricao, preco, req.params.id]); 
+        res.json({ sucesso: true }); 
+    } catch (err) { res.status(500).json({ sucesso: false }); }
 });
+
 app.delete('/api/cardapio/:id', async (req, res) => {
     try { await pool.query('DELETE FROM cardapio WHERE id = $1', [req.params.id]); res.json({ sucesso: true }); } catch (err) {}
 });
 
-// === ROTAS DE PEDIDOS E FINANÇAS ===
+// === PEDIDOS E FINANÇAS ===
 app.post('/api/pedidos', async (req, res) => {
     try {
         const { nome, telefone, itens, total, endereco } = req.body;
