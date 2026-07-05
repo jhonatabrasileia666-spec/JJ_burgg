@@ -20,7 +20,6 @@
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; }
         h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; }
 
-        /* NOVO: Botão de controlo de som no topo */
         #btn-toggle-som {
             position: absolute; top: 0; right: 0; background: #e74c3c; color: white; border: none; 
             padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 12px;
@@ -128,60 +127,12 @@
 
         <h2 class="titulo-secao">Nossos Clássicos</h2>
 
-        <div class="card-lanche">
-            <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
-            </div>
-            <h3 id="nome-classic">Classic Burger</h3><p id="desc-classic">Blend bovino 160g, queijo derretido e alface.</p>
-            <div class="card-footer">
-                <span class="preco-card" id="preco-classic">R$ 22,00</span>
-                <button class="btn-add" onclick="abrirPersonalizacao('Classic Burger')">Adicionar 🛒</button>
-            </div>
-        </div>
+        <!-- [O HTML DOS LANCHES E BEBIDAS AQUI FICA IGUAL - COMPRIMIDO POR ESPAÇO] -->
+        <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div><div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-classic">Classic Burger</h3><p id="desc-classic">Blend bovino 160g, queijo derretido e alface.</p><div class="card-footer"><span class="preco-card" id="preco-classic">R$ 22,00</span><button class="btn-add" onclick="abrirPersonalizacao('Classic Burger')">Adicionar 🛒</button></div></div>
+        <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div><div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-bacon">Bacon Master</h3><p id="desc-bacon">Blend 160g, queijo mussarela e muito bacon premium.</p><div class="card-footer"><span class="preco-card" id="preco-bacon">R$ 27,00</span><button class="btn-add" onclick="abrirPersonalizacao('Bacon Master')">Adicionar 🛒</button></div></div>
+        <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div><div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div><div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-monstrao">O Monstrão</h3><p id="desc-monstrao">Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p><div class="card-footer"><span class="preco-card" id="preco-monstrao">R$ 32,50</span><button class="btn-add" onclick="abrirPersonalizacao('O Monstrão')">Adicionar 🛒</button></div></div>
 
-        <div class="card-lanche">
-            <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div>
-                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
-            </div>
-            <h3 id="nome-bacon">Bacon Master</h3><p id="desc-bacon">Blend 160g, queijo mussarela e muito bacon premium.</p>
-            <div class="card-footer">
-                <span class="preco-card" id="preco-bacon">R$ 27,00</span>
-                <button class="btn-add" onclick="abrirPersonalizacao('Bacon Master')">Adicionar 🛒</button>
-            </div>
-        </div>
-
-        <div class="card-lanche">
-            <div class="vitrine-hamburguer">
-                <div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div>
-                <div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div>
-                <div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div>
-                <div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div>
-                <div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div>
-                <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
-                <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
-            </div>
-            <h3 id="nome-monstrao">O Monstrão</h3><p id="desc-monstrao">Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
-            <div class="card-footer">
-                <span class="preco-card" id="preco-monstrao">R$ 32,50</span>
-                <button class="btn-add" onclick="abrirPersonalizacao('O Monstrão')">Adicionar 🛒</button>
-            </div>
-        </div>
-
-        <!-- LISTA MÁGICA DE BEBIDAS -->
-        <div id="secao-bebidas">
-            <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
-            <div id="lista-bebidas-cliente">
-                <p style="color:#aaa; font-size:14px;">Buscando refrigerantes no congelador...</p>
-            </div>
-        </div>
+        <div id="secao-bebidas"><div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div><div id="lista-bebidas-cliente"><p style="color:#aaa; font-size:14px;">Buscando refrigerantes no congelador...</p></div></div>
     </div>
 
     <button id="btnRastreio" class="btn-flutuante" onclick="iniciarAnimacaoRastreio()">🛵 Acompanhar Pedido</button>
@@ -200,6 +151,7 @@
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
             <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado na cozinha?</p>
+            <p style="color: #e74c3c !important; font-size: 11px; margin-bottom: 15px; font-weight:bold;">Para ouvir a voz, mantenha a tela do rastreio ligada.</p>
             <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
             <button class="btn-acao-modal btn-fechar" onclick="desligarNotificacao()">Desligar Som / Agora Não</button>
         </div>
@@ -243,13 +195,16 @@
     <div id="modalRastreio" class="modal-overlay">
         <div class="modal-card">
             <h2>Status do Pedido 🛵</h2>
+            <p style="font-size: 11px; color: #d35400; font-weight: bold; margin-bottom: 10px; background: #fff3e0; padding: 5px; border-radius: 5px;">
+                💡 Dica: Mantenha esta tela aberta para ouvir a atualização de voz em tempo real!
+            </p>
             <div class="timeline" id="linha-do-tempo">
                 <div class="passo" id="passo-1">✅ Pedido Criado e Enviado</div>
                 <div class="passo" id="passo-2">⏳ Aguardando Confirmação</div>
                 <div class="passo" id="passo-3">🍔 Em Preparo na Cozinha</div>
                 <div class="passo" id="passo-4">🛵 Saiu para Entrega (ou Retirada)</div>
             </div>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharRastreio()">Voltar ao Cardápio</button>
+            <button class="btn-acao-modal btn-fechar" onclick="fecharRastreio()">Ocultar Tela</button>
         </div>
     </div>
 
@@ -269,10 +224,39 @@
 
         const audiosPersonalizados = { preparo: "preparo.mp3", entrega: "entrega.mp3", concluido: "concluido.mp3" };
         let intervalRastreio = null; let idRastreioAtual = null; let statusAtual = 1;
+        
+        // 🟢 VARIÁVEL DO ANTI-HIBERNAÇÃO
+        let wakeLock = null;
 
         // ===============================================
-        // MÁGICA DO BOTÃO DE SOM NO TOPO
+        // MÁGICA DO ANTI-HIBERNAÇÃO (WAKE LOCK)
         // ===============================================
+        async function ativarTelaViva() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Tela Viva ativada: O telemóvel não vai dormir!');
+                }
+            } catch (err) {
+                console.log('O telemóvel não suporta a Tela Viva.');
+            }
+        }
+
+        function desativarTelaViva() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+        }
+
+        // Reconectar o Anti-Hibernação caso a pessoa minimize o app e volte
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await ativarTelaViva();
+            }
+        });
+
+        // ===============================================
+
         function atualizarDesignBotaoSom() {
             const btn = document.getElementById('btn-toggle-som');
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
@@ -284,36 +268,20 @@
             }
         }
 
-        function abrirModalNotificacao() {
-            document.getElementById('modalNotificacao').classList.add('ativo');
-        }
+        function abrirModalNotificacao() { document.getElementById('modalNotificacao').classList.add('ativo'); }
 
         function verificarPermissaoNotificacao() {
             atualizarDesignBotaoSom();
-            if (!localStorage.getItem('permissao_aviso_jj')) { 
-                setTimeout(() => { document.getElementById('modalNotificacao').classList.add('ativo'); }, 2000); 
-            }
+            if (!localStorage.getItem('permissao_aviso_jj')) { setTimeout(() => { document.getElementById('modalNotificacao').classList.add('ativo'); }, 2000); }
         }
 
         function pedirPermissaoNotificacao() {
-            localStorage.setItem('permissao_aviso_jj', 'sim');
-            atualizarDesignBotaoSom();
-            document.getElementById('modalNotificacao').classList.remove('ativo');
-            
+            localStorage.setItem('permissao_aviso_jj', 'sim'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo');
             const som = document.getElementById('somAlertaCliente');
-            som.volume = 0; som.play().then(() => {
-                som.pause(); som.currentTime = 0; som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
-            }).catch(e => console.log("Erro ao destrancar som", e));
+            som.volume = 0; som.play().then(() => { som.pause(); som.currentTime = 0; som.volume = 1; mostrarAvisoStatus("Avisos sonoros ativados! Para ouvir, deixe o acompanhamento do pedido aberto na tela.", "🎙️"); }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
-        function desligarNotificacao() { 
-            localStorage.setItem('permissao_aviso_jj', 'nao'); 
-            atualizarDesignBotaoSom();
-            document.getElementById('modalNotificacao').classList.remove('ativo'); 
-        }
-
-        // ===============================================
+        function desligarNotificacao() { localStorage.setItem('permissao_aviso_jj', 'nao'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo'); }
 
         function mostrarAvisoStatus(msg, icone) { document.getElementById('textoAvisoStatus').innerText = msg; document.getElementById('iconeAvisoStatus').innerText = icone; document.getElementById('modalAvisoStatus').classList.add('ativo'); }
         function fecharAvisoStatus() { document.getElementById('modalAvisoStatus').classList.remove('ativo'); }
@@ -325,77 +293,29 @@
             if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
             mostrarAvisoStatus(msg, icone);
             
-            // Só toca som se a pessoa deixou a chavinha verde lá em cima!
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
                 try { const som = document.getElementById('somAlertaCliente'); som.src = linkAudio; som.currentTime = 0; som.play().catch(e=>{}); } catch(e) {}
             }
         }
 
-        function abrirPersonalizacao(nomeLanche) {
-            lancheSendoPersonalizado = nomeLanche; precoBaseSendoPersonalizado = precosDinamicos[nomeLanche] || 0; 
-            document.getElementById('tituloCustomLanche').innerText = nomeLanche; document.getElementById('txt-observacao').value = ""; 
-            document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false);
-            atualizarPrecoCustom(); document.getElementById('modalPersonalizar').classList.add('ativo');
-        }
-
-        function atualizarPrecoCustom() {
-            let total = precoBaseSendoPersonalizado; document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); });
-            document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`; document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`;
-        }
-
-        function confirmarPersonalizacao() {
-            let pTotal = precoBaseSendoPersonalizado; let extras = [];
-            document.querySelectorAll('.check-extra:checked').forEach(cb => { pTotal += parseFloat(cb.value); extras.push(cb.getAttribute('data-nome')); });
-            let obs = document.getElementById('txt-observacao').value.trim(); let nomeF = lancheSendoPersonalizado;
-            if (extras.length > 0) nomeF += ` (+ ${extras.join(', ')})`; 
-            adicionarItemCardapio(nomeF, pTotal, obs); fecharPersonalizacao();
-        }
-
+        function abrirPersonalizacao(nomeLanche) { lancheSendoPersonalizado = nomeLanche; precoBaseSendoPersonalizado = precosDinamicos[nomeLanche] || 0; document.getElementById('tituloCustomLanche').innerText = nomeLanche; document.getElementById('txt-observacao').value = ""; document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false); atualizarPrecoCustom(); document.getElementById('modalPersonalizar').classList.add('ativo'); }
+        function atualizarPrecoCustom() { let total = precoBaseSendoPersonalizado; document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); }); document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`; document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`; }
+        function confirmarPersonalizacao() { let pTotal = precoBaseSendoPersonalizado; let extras = []; document.querySelectorAll('.check-extra:checked').forEach(cb => { pTotal += parseFloat(cb.value); extras.push(cb.getAttribute('data-nome')); }); let obs = document.getElementById('txt-observacao').value.trim(); let nomeF = lancheSendoPersonalizado; if (extras.length > 0) nomeF += ` (+ ${extras.join(', ')})`; adicionarItemCardapio(nomeF, pTotal, obs); fecharPersonalizacao(); }
         function fecharPersonalizacao() { document.getElementById('modalPersonalizar').classList.remove('ativo'); }
 
         async function carregarPrecosDoBanco() {
             try {
-                const res = await fetch(API_URL + '/api/cardapio');
-                const cardapio = await res.json();
-                
-                const lanchesDinamicosContainer = document.getElementById('lanches-dinamicos-container');
-                lanchesDinamicosContainer.innerHTML = '';
-                
-                const listaBebidas = document.getElementById('lista-bebidas-cliente');
-                listaBebidas.innerHTML = '';
+                const res = await fetch(API_URL + '/api/cardapio'); const cardapio = await res.json();
+                const lanchesDinamicosContainer = document.getElementById('lanches-dinamicos-container'); lanchesDinamicosContainer.innerHTML = '';
+                const listaBebidas = document.getElementById('lista-bebidas-cliente'); listaBebidas.innerHTML = '';
 
                 cardapio.forEach(item => {
                     precosDinamicos[item.nome] = parseFloat(item.preco);
-                    
-                    if (item.tipo === 'bebida') {
-                        listaBebidas.innerHTML += `
-                            <div class="card-bebida">
-                                <div class="info-bebida">
-                                    <h3>${item.nome}</h3>
-                                    <p>${item.descricao || ''}</p>
-                                    <span class="preco-bebida">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span>
-                                </div>
-                                <button class="btn-add-frio" onclick="adicionarItemCardapio('${item.nome}', ${item.preco}, '')">Add 🛒</button>
-                            </div>
-                        `;
-                        return;
-                    }
+                    if (item.tipo === 'bebida') { listaBebidas.innerHTML += `<div class="card-bebida"><div class="info-bebida"><h3>${item.nome}</h3><p>${item.descricao || ''}</p><span class="preco-bebida">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span></div><button class="btn-add-frio" onclick="adicionarItemCardapio('${item.nome}', ${item.preco}, '')">Add 🛒</button></div>`; return; }
 
-                    if(item.nome === 'Classic Burger' || item.nome.includes('Classic')) {
-                        let elPreco = document.getElementById('preco-classic'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
-                        let elDesc = document.getElementById('desc-classic'); if(elDesc) elDesc.innerText = item.descricao || '';
-                        let elNome = document.getElementById('nome-classic'); if(elNome) elNome.innerText = item.nome;
-                    }
-                    if(item.nome === 'Bacon Master' || item.nome.includes('Bacon')) {
-                        let elPreco = document.getElementById('preco-bacon'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
-                        let elDesc = document.getElementById('desc-bacon'); if(elDesc) elDesc.innerText = item.descricao || '';
-                        let elNome = document.getElementById('nome-bacon'); if(elNome) elNome.innerText = item.nome;
-                    }
-                    if(item.nome === 'O Monstrão' || item.nome.includes('Monstrão')) {
-                        let elPreco = document.getElementById('preco-monstrao'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
-                        let elDesc = document.getElementById('desc-monstrao'); if(elDesc) elDesc.innerText = item.descricao || '';
-                        let elNome = document.getElementById('nome-monstrao'); if(elNome) elNome.innerText = item.nome;
-                    }
+                    if(item.nome === 'Classic Burger' || item.nome.includes('Classic')) { let elPreco = document.getElementById('preco-classic'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`; let elDesc = document.getElementById('desc-classic'); if(elDesc) elDesc.innerText = item.descricao || ''; let elNome = document.getElementById('nome-classic'); if(elNome) elNome.innerText = item.nome; }
+                    if(item.nome === 'Bacon Master' || item.nome.includes('Bacon')) { let elPreco = document.getElementById('preco-bacon'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`; let elDesc = document.getElementById('desc-bacon'); if(elDesc) elDesc.innerText = item.descricao || ''; let elNome = document.getElementById('nome-bacon'); if(elNome) elNome.innerText = item.nome; }
+                    if(item.nome === 'O Monstrão' || item.nome.includes('Monstrão')) { let elPreco = document.getElementById('preco-monstrao'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`; let elDesc = document.getElementById('desc-monstrao'); if(elDesc) elDesc.innerText = item.descricao || ''; let elNome = document.getElementById('nome-monstrao'); if(elNome) elNome.innerText = item.nome; }
 
                     if(item.tipo === 'dinamico' && item.composicao) {
                         let composicaoArray = typeof item.composicao === 'string' ? JSON.parse(item.composicao) : item.composicao;
@@ -405,73 +325,40 @@
                             let zIndex = composicaoArray.length - idx; let topY = parseInt(camada.top.replace('px', '')) || 0;
                             if(topY + 120 > alturaMaximaQuadro) alturaMaximaQuadro = topY + 140;
 
-                            let etiquetaHTML = "";
-                            if (camada.nome) { let nomeFormatado = camada.nome.toUpperCase(); if (idx % 2 === 0) { etiquetaHTML = `<div class="etiqueta-esq">${nomeFormatado}<div class="linha-curva"></div></div>`; } else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; } }
+                            let etiquetaHTML = ""; if (camada.nome) { let nomeFormatado = camada.nome.toUpperCase(); if (idx % 2 === 0) { etiquetaHTML = `<div class="etiqueta-esq">${nomeFormatado}<div class="linha-curva"></div></div>`; } else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; } }
                             let imgSrc = camada.img.startsWith('data:') ? camada.img : `${API_URL}/${camada.img}`;
-
                             pilhasHTML += `<div style="position: absolute; top: ${camada.top}; left: ${camada.left}; z-index: ${zIndex}; width: 140px; animation: respirar 3.5s ease-in-out infinite;">${etiquetaHTML}<img src="${imgSrc}" onerror="this.style.display='none'" style="width: 100%; display: block;"></div>`;
                         });
 
-                        lanchesDinamicosContainer.innerHTML += `
-                            <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
-                            <div class="card-lanche">
-                                <div class="vitrine-dinamica" style="height: ${alturaMaximaQuadro}px;">${pilhasHTML}</div>
-                                <h3>${item.nome}</h3><p>${item.descricao || ''}</p>
-                                <div class="card-footer"><span class="preco-card">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span><button class="btn-add" onclick="abrirPersonalizacao('${item.nome}')">Adicionar 🛒</button></div>
-                            </div>
-                        `;
+                        lanchesDinamicosContainer.innerHTML += `<h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2><div class="card-lanche"><div class="vitrine-dinamica" style="height: ${alturaMaximaQuadro}px;">${pilhasHTML}</div><h3>${item.nome}</h3><p>${item.descricao || ''}</p><div class="card-footer"><span class="preco-card">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span><button class="btn-add" onclick="abrirPersonalizacao('${item.nome}')">Adicionar 🛒</button></div></div>`;
                     }
                 });
-                
                 if(listaBebidas.innerHTML === '') { listaBebidas.innerHTML = '<p style="color:#777; font-size:14px; text-align:center;">O congelador está a ser reabastecido. Tente novamente mais tarde.</p>'; }
             } catch(e) {}
         }
 
         function adicionarItemCardapio(nome, preco, obs) { carrinho.push({ nome: nome, preco: preco, obs: obs }); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho)); atualizarCarrinhoUI(); }
         function removerItem(i) { carrinho.splice(i, 1); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho)); atualizarCarrinhoUI(); if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); } }
-
-        function atualizarCarrinhoUI() {
-            const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart');
-            if (carrinho.length > 0) btnCart.style.display = 'block'; else btnCart.style.display = 'none';
-            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += parseFloat(item.preco) || 0); valorCart.textContent = total.toFixed(2).replace('.', ',');
-        }
-
-        function abrirCarrinho() {
-            const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
-            listaHTML.innerHTML = ""; let total = 0;
-            carrinho.forEach((item, index) => { total += parseFloat(item.preco) || 0; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : ""; listaHTML.innerHTML += `<div class="item-carrinho"><div>1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`; });
-            subtotalModal.textContent = total.toFixed(2).replace('.', ','); modal.classList.add('ativo');
-        }
-
+        function atualizarCarrinhoUI() { const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart'); if (carrinho.length > 0) btnCart.style.display = 'block'; else btnCart.style.display = 'none'; qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += parseFloat(item.preco) || 0); valorCart.textContent = total.toFixed(2).replace('.', ','); }
+        function abrirCarrinho() { const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal'); listaHTML.innerHTML = ""; let total = 0; carrinho.forEach((item, index) => { total += parseFloat(item.preco) || 0; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : ""; listaHTML.innerHTML += `<div class="item-carrinho"><div>1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`; }); subtotalModal.textContent = total.toFixed(2).replace('.', ','); modal.classList.add('ativo'); }
         function fecharModalCarrinho() { document.getElementById('modalPedido').classList.remove('ativo'); }
         function mudarOpcaoEntrega() { document.getElementById('box-endereco').style.display = (document.getElementById('select-entrega').value === 'Retirada') ? 'none' : 'block'; }
 
-        function obterLocalizacao() {
-            const st = document.getElementById('status-gps'); st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...';
-            if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; }, (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }); }
-        }
+        function obterLocalizacao() { const st = document.getElementById('status-gps'); st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...'; if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; }, (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }); } }
 
         async function enviarPedidoFinal() {
             const nome = document.getElementById('txt-nome').value.trim(); const tel = document.getElementById('txt-telefone').value.trim(); const tipoEntrega = document.getElementById('select-entrega').value; const endereco = document.getElementById('txt-endereco').value.trim();
             if (carrinho.length === 0 || !nome || !tel) { alert('Preencha os dados.'); return; }
-            
             let subtotal = 0; let itensLimpos = carrinho.map(item => { let precoSeguro = parseFloat(item.preco) || 0; subtotal += precoSeguro; return { nome: String(item.nome || "Item"), preco: precoSeguro, obs: item.obs ? String(item.obs) : "" }; });
             let taxaEntrega = tipoEntrega === 'Entrega' ? 5.00 : 0.00; let totalFinal = subtotal + taxaEntrega;
-            
             let idPedidoGerado = "";
-            try {
-                const botao = document.querySelector('.btn-enviar-whats'); botao.innerHTML = '⏳ Salvando...'; botao.disabled = true;
-                const resposta = await fetch(API_URL + '/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, telefone: tel, itens: itensLimpos, total: parseFloat(totalFinal.toFixed(2)), endereco: tipoEntrega === 'Entrega' ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja" }) });
-                const dados = await resposta.json(); idPedidoGerado = dados.id_pedido; localStorage.setItem('meu_pedido_jj', idPedidoGerado); 
-            } catch(e) {}
+            try { const botao = document.querySelector('.btn-enviar-whats'); botao.innerHTML = '⏳ Salvando...'; botao.disabled = true; const resposta = await fetch(API_URL + '/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, telefone: tel, itens: itensLimpos, total: parseFloat(totalFinal.toFixed(2)), endereco: tipoEntrega === 'Entrega' ? (endereco + (linkMapaGoogle ? " | Mapa: " + linkMapaGoogle : "")) : "Retirada na Loja" }) }); const dados = await resposta.json(); idPedidoGerado = dados.id_pedido; localStorage.setItem('meu_pedido_jj', idPedidoGerado); } catch(e) {}
 
             let textoWhats = `*🍔 NOVO PEDIDO* \n*Cliente:* ${nome}\n*Telefone:* ${tel}\n*Método:* ${tipoEntrega}\n`;
             if(tipoEntrega === 'Entrega' && endereco) textoWhats += `*Endereço:* ${endereco}\n`;
-            textoWhats += `\n*🧾 O PEDIDO:*\n`;
-            itensLimpos.forEach(item => { textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; if(item.obs) textoWhats += `      *Obs:* ${item.obs}\n`; });
+            textoWhats += `\n*🧾 O PEDIDO:*\n`; itensLimpos.forEach(item => { textoWhats += ` - 1x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})\n`; if(item.obs) textoWhats += `      *Obs:* ${item.obs}\n`; });
             textoWhats += `\n*TOTAL:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
             if(idPedidoGerado) textoWhats += `\n\n*📍 Acompanhar ao vivo:*\nhttps://jj-burgg.vercel.app?rastreio=${idPedidoGerado}`;
-            
             window.open(`https://wa.me/5568992365649?text=${encodeURIComponent(textoWhats)}`, '_blank');
             setTimeout(() => { carrinho = []; localStorage.removeItem('carrinho_jj'); atualizarCarrinhoUI(); fecharModalCarrinho(); if(idPedidoGerado) { window.history.replaceState({}, document.title, window.location.pathname); window.location.href = `index.html?rastreio=${idPedidoGerado}`; } }, 1000);
         }
@@ -485,18 +372,22 @@
 
         function iniciarBuscaAoVivo() {
             if(!idRastreioAtual) return;
+            
+            // Ativa o Anti-Hibernação ao entrar no rastreio
+            ativarTelaViva();
+
             async function buscar() {
                 try {
                     const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json(); const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
                     if (meuPedido) { if(meuPedido.status > statusAtual) { statusAtual = meuPedido.status; tocarNotificacao(statusAtual); } atualizarStatusVisual(meuPedido.status); } 
-                    else { if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); } atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!"; localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio); setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000); }
+                    else { if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); } atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!"; localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio); desativarTelaViva(); setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000); }
                 } catch(e){}
             }
             buscar(); if(intervalRastreio) clearInterval(intervalRastreio); intervalRastreio = setInterval(buscar, 5000);
         }
 
         function iniciarAnimacaoRastreio() { document.getElementById('telaAnimacao').classList.add('ativo'); setTimeout(() => { document.getElementById('telaAnimacao').classList.remove('ativo'); document.getElementById('modalRastreio').classList.add('ativo'); iniciarBuscaAoVivo(); }, 3000); }
-        function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); if(intervalRastreio) clearInterval(intervalRastreio); }
+        function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); if(intervalRastreio) clearInterval(intervalRastreio); desativarTelaViva(); }
 
         window.addEventListener('load', () => {
             verificarPermissaoNotificacao(); carregarPrecosDoBanco(); atualizarCarrinhoUI(); 
