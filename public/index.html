@@ -16,9 +16,16 @@
         @keyframes nevada { 0% { transform: translate(0, -10px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-80px, 105vh) rotate(360deg); opacity: 0; } }
 
         .app-container { width: 100%; max-width: 450px; position: relative; z-index: 1; }
-        header { text-align: center; margin-bottom: 25px; }
+        header { text-align: center; margin-bottom: 25px; position: relative; }
         .logo-header { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #ff6b00; margin-bottom: 10px; background: white; }
         h1 { font-size: 30px; font-weight: 900; color: #d35400 !important; text-transform: uppercase; }
+
+        /* NOVO: Botão de controlo de som no topo */
+        #btn-toggle-som {
+            position: absolute; top: 0; right: 0; background: #e74c3c; color: white; border: none; 
+            padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s;
+        }
 
         .banner-montar { background-color: #f4d03f !important; padding: 30px 20px; border-radius: 20px; text-align: center; box-shadow: 0 8px 20px rgba(244, 208, 63, 0.4); margin-bottom: 30px; text-decoration: none; display: block; }
         .banner-montar h2 { color: #2c3e50 !important; font-size: 22px; margin-bottom: 10px; font-weight: 900; }
@@ -112,6 +119,7 @@
         <header>
             <img src="logo.png" alt="Logo da Hamburgueria" class="logo-header">
             <h1>JJ_BURGUER</h1>
+            <button id="btn-toggle-som" onclick="abrirModalNotificacao()">🔕 Som Off</button>
         </header>
 
         <a href="montar.html" class="banner-montar"><h2>Chef por um dia! 🍔</h2><p>Escolha ingredientes e monte do seu jeito.</p><div class="btn-banner">Montar Hambúrguer ➔</div></a>
@@ -167,6 +175,7 @@
             </div>
         </div>
 
+        <!-- LISTA MÁGICA DE BEBIDAS -->
         <div id="secao-bebidas">
             <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
             <div id="lista-bebidas-cliente">
@@ -190,9 +199,9 @@
     <div id="modalNotificacao" class="modal-overlay">
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
-            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado?</p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado por voz</button>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharModalNotificacao()">Agora não</button>
+            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o site emita um aviso sonoro quando o seu pedido for atualizado na cozinha?</p>
+            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
+            <button class="btn-acao-modal btn-fechar" onclick="desligarNotificacao()">Desligar Som / Agora Não</button>
         </div>
     </div>
 
@@ -261,15 +270,36 @@
         const audiosPersonalizados = { preparo: "preparo.mp3", entrega: "entrega.mp3", concluido: "concluido.mp3" };
         let intervalRastreio = null; let idRastreioAtual = null; let statusAtual = 1;
 
-        function mostrarAvisoStatus(msg, icone) { document.getElementById('textoAvisoStatus').innerText = msg; document.getElementById('iconeAvisoStatus').innerText = icone; document.getElementById('modalAvisoStatus').classList.add('ativo'); }
-        function fecharAvisoStatus() { document.getElementById('modalAvisoStatus').classList.remove('ativo'); }
+        // ===============================================
+        // MÁGICA DO BOTÃO DE SOM NO TOPO
+        // ===============================================
+        function atualizarDesignBotaoSom() {
+            const btn = document.getElementById('btn-toggle-som');
+            if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
+                btn.innerHTML = '🔔 Som Ligado';
+                btn.style.background = '#27ae60';
+            } else {
+                btn.innerHTML = '🔕 Som Desligado';
+                btn.style.background = '#e74c3c';
+            }
+        }
+
+        function abrirModalNotificacao() {
+            document.getElementById('modalNotificacao').classList.add('ativo');
+        }
 
         function verificarPermissaoNotificacao() {
-            if (!localStorage.getItem('permissao_aviso_jj')) { setTimeout(() => { document.getElementById('modalNotificacao').classList.add('ativo'); }, 2000); }
+            atualizarDesignBotaoSom();
+            if (!localStorage.getItem('permissao_aviso_jj')) { 
+                setTimeout(() => { document.getElementById('modalNotificacao').classList.add('ativo'); }, 2000); 
+            }
         }
 
         function pedirPermissaoNotificacao() {
-            fecharModalNotificacao(); localStorage.setItem('permissao_aviso_jj', 'sim');
+            localStorage.setItem('permissao_aviso_jj', 'sim');
+            atualizarDesignBotaoSom();
+            document.getElementById('modalNotificacao').classList.remove('ativo');
+            
             const som = document.getElementById('somAlertaCliente');
             som.volume = 0; som.play().then(() => {
                 som.pause(); som.currentTime = 0; som.volume = 1; 
@@ -277,7 +307,16 @@
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
-        function fecharModalNotificacao() { localStorage.setItem('permissao_aviso_jj', 'nao'); document.getElementById('modalNotificacao').classList.remove('ativo'); }
+        function desligarNotificacao() { 
+            localStorage.setItem('permissao_aviso_jj', 'nao'); 
+            atualizarDesignBotaoSom();
+            document.getElementById('modalNotificacao').classList.remove('ativo'); 
+        }
+
+        // ===============================================
+
+        function mostrarAvisoStatus(msg, icone) { document.getElementById('textoAvisoStatus').innerText = msg; document.getElementById('iconeAvisoStatus').innerText = icone; document.getElementById('modalAvisoStatus').classList.add('ativo'); }
+        function fecharAvisoStatus() { document.getElementById('modalAvisoStatus').classList.remove('ativo'); }
 
         function tocarNotificacao(status) {
             let msg = ""; let icone = "🔔"; let linkAudio = audiosPersonalizados.preparo; 
@@ -285,6 +324,8 @@
             if(status == 3) { msg = "Oba! O entregador saiu com o seu pedido!"; icone = "🛵"; linkAudio = audiosPersonalizados.entrega; }
             if(status == 4) { msg = "Pedido concluído e entregue! Bom apetite!"; icone = "✅"; linkAudio = audiosPersonalizados.concluido; }
             mostrarAvisoStatus(msg, icone);
+            
+            // Só toca som se a pessoa deixou a chavinha verde lá em cima!
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
                 try { const som = document.getElementById('somAlertaCliente'); som.src = linkAudio; som.currentTime = 0; som.play().catch(e=>{}); } catch(e) {}
             }
@@ -324,10 +365,8 @@
                 listaBebidas.innerHTML = '';
 
                 cardapio.forEach(item => {
-                    // Guarda o preço no dicionário global de forma dinâmica
                     precosDinamicos[item.nome] = parseFloat(item.preco);
                     
-                    // SE FOR BEBIDA, RENDERIZA NA ABA DE BEBIDAS!
                     if (item.tipo === 'bebida') {
                         listaBebidas.innerHTML += `
                             <div class="card-bebida">
@@ -339,10 +378,9 @@
                                 <button class="btn-add-frio" onclick="adicionarItemCardapio('${item.nome}', ${item.preco}, '')">Add 🛒</button>
                             </div>
                         `;
-                        return; // Passa para o próximo item do banco
+                        return;
                     }
 
-                    // LIGAÇÃO DOS CLÁSSICOS (Caso você tenha editado o nome ou preço deles no Painel Admin)
                     if(item.nome === 'Classic Burger' || item.nome.includes('Classic')) {
                         let elPreco = document.getElementById('preco-classic'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
                         let elDesc = document.getElementById('desc-classic'); if(elDesc) elDesc.innerText = item.descricao || '';
@@ -359,79 +397,49 @@
                         let elNome = document.getElementById('nome-monstrao'); if(elNome) elNome.innerText = item.nome;
                     }
 
-                    // RENDERIZA AS NOVIDADES DO CHEF CRIADAS NA FÁBRICA
                     if(item.tipo === 'dinamico' && item.composicao) {
                         let composicaoArray = typeof item.composicao === 'string' ? JSON.parse(item.composicao) : item.composicao;
-                        let pilhasHTML = '';
-                        let alturaMaximaQuadro = 300; 
+                        let pilhasHTML = ''; let alturaMaximaQuadro = 300; 
                         
                         [...composicaoArray].reverse().forEach((camada, idx) => {
-                            let zIndex = composicaoArray.length - idx; 
-                            let topY = parseInt(camada.top.replace('px', '')) || 0;
+                            let zIndex = composicaoArray.length - idx; let topY = parseInt(camada.top.replace('px', '')) || 0;
                             if(topY + 120 > alturaMaximaQuadro) alturaMaximaQuadro = topY + 140;
 
                             let etiquetaHTML = "";
-                            if (camada.nome) {
-                                let nomeFormatado = camada.nome.toUpperCase();
-                                if (idx % 2 === 0) { etiquetaHTML = `<div class="etiqueta-esq">${nomeFormatado}<div class="linha-curva"></div></div>`; } 
-                                else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; }
-                            }
+                            if (camada.nome) { let nomeFormatado = camada.nome.toUpperCase(); if (idx % 2 === 0) { etiquetaHTML = `<div class="etiqueta-esq">${nomeFormatado}<div class="linha-curva"></div></div>`; } else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; } }
                             let imgSrc = camada.img.startsWith('data:') ? camada.img : `${API_URL}/${camada.img}`;
 
-                            pilhasHTML += `
-                                <div style="position: absolute; top: ${camada.top}; left: ${camada.left}; z-index: ${zIndex}; width: 140px; animation: respirar 3.5s ease-in-out infinite;">
-                                    ${etiquetaHTML}
-                                    <img src="${imgSrc}" onerror="this.style.display='none'" style="width: 100%; display: block;">
-                                </div>
-                            `;
+                            pilhasHTML += `<div style="position: absolute; top: ${camada.top}; left: ${camada.left}; z-index: ${zIndex}; width: 140px; animation: respirar 3.5s ease-in-out infinite;">${etiquetaHTML}<img src="${imgSrc}" onerror="this.style.display='none'" style="width: 100%; display: block;"></div>`;
                         });
 
                         lanchesDinamicosContainer.innerHTML += `
                             <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
                             <div class="card-lanche">
-                                <div class="vitrine-dinamica" style="height: ${alturaMaximaQuadro}px;">
-                                    ${pilhasHTML}
-                                </div>
+                                <div class="vitrine-dinamica" style="height: ${alturaMaximaQuadro}px;">${pilhasHTML}</div>
                                 <h3>${item.nome}</h3><p>${item.descricao || ''}</p>
-                                <div class="card-footer">
-                                    <span class="preco-card">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span>
-                                    <button class="btn-add" onclick="abrirPersonalizacao('${item.nome}')">Adicionar 🛒</button>
-                                </div>
+                                <div class="card-footer"><span class="preco-card">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span><button class="btn-add" onclick="abrirPersonalizacao('${item.nome}')">Adicionar 🛒</button></div>
                             </div>
                         `;
                     }
                 });
                 
-                // Mensagem de segurança caso você não tenha cadastrado nenhuma bebida
-                if(listaBebidas.innerHTML === '') {
-                    listaBebidas.innerHTML = '<p style="color:#777; font-size:14px; text-align:center;">O congelador está a ser reabastecido. Tente novamente mais tarde.</p>';
-                }
+                if(listaBebidas.innerHTML === '') { listaBebidas.innerHTML = '<p style="color:#777; font-size:14px; text-align:center;">O congelador está a ser reabastecido. Tente novamente mais tarde.</p>'; }
             } catch(e) {}
         }
 
-        function adicionarItemCardapio(nome, preco, obs) { 
-            carrinho.push({ nome: nome, preco: preco, obs: obs }); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho)); atualizarCarrinhoUI(); 
-        }
-
-        function removerItem(i) { 
-            carrinho.splice(i, 1); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho));
-            atualizarCarrinhoUI(); if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); }
-        }
+        function adicionarItemCardapio(nome, preco, obs) { carrinho.push({ nome: nome, preco: preco, obs: obs }); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho)); atualizarCarrinhoUI(); }
+        function removerItem(i) { carrinho.splice(i, 1); localStorage.setItem('carrinho_jj', JSON.stringify(carrinho)); atualizarCarrinhoUI(); if(carrinho.length === 0) { fecharModalCarrinho(); } else { abrirCarrinho(); } }
 
         function atualizarCarrinhoUI() {
             const btnCart = document.getElementById('btnCarrinho'); const qtdCart = document.getElementById('qtdCart'); const valorCart = document.getElementById('valorCart');
             if (carrinho.length > 0) btnCart.style.display = 'block'; else btnCart.style.display = 'none';
-            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += parseFloat(item.preco) || 0);
-            valorCart.textContent = total.toFixed(2).replace('.', ',');
+            qtdCart.textContent = carrinho.length; let total = 0; carrinho.forEach(item => total += parseFloat(item.preco) || 0); valorCart.textContent = total.toFixed(2).replace('.', ',');
         }
 
         function abrirCarrinho() {
             const modal = document.getElementById('modalPedido'); const listaHTML = document.getElementById('listaItensHTML'); const subtotalModal = document.getElementById('subtotalModal');
             listaHTML.innerHTML = ""; let total = 0;
-            carrinho.forEach((item, index) => {
-                total += parseFloat(item.preco) || 0; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : "";
-                listaHTML.innerHTML += `<div class="item-carrinho"><div>1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`;
-            });
+            carrinho.forEach((item, index) => { total += parseFloat(item.preco) || 0; let detalheObs = item.obs ? `<span class="obs-item">Obs: ${item.obs}</span>` : ""; listaHTML.innerHTML += `<div class="item-carrinho"><div>1x ${item.nome} ${detalheObs}</div><div style="display:flex; align-items:center;">R$ ${parseFloat(item.preco || 0).toFixed(2).replace('.', ',')} <button class="btn-remover" onclick="removerItem(${index})">X</button></div></div>`; });
             subtotalModal.textContent = total.toFixed(2).replace('.', ','); modal.classList.add('ativo');
         }
 
@@ -440,12 +448,7 @@
 
         function obterLocalizacao() {
             const st = document.getElementById('status-gps'); st.style.display = 'block'; st.style.color = '#e67e22'; st.textContent = '⏳ Buscando...';
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; },
-                    (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }
-                );
-            }
+            if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { linkMapaGoogle = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; st.style.color = '#27ae60'; st.textContent = '✅ GPS capturado!'; }, (err) => { st.style.color = '#e74c3c'; st.textContent = '❌ Erro. Digite manualmente.'; }, { enableHighAccuracy: true }); }
         }
 
         async function enviarPedidoFinal() {
@@ -474,8 +477,7 @@
         }
 
         function atualizarStatusVisual(statusPedido) {
-            document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo'));
-            document.getElementById('passo-1').classList.add('ativo');
+            document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo')); document.getElementById('passo-1').classList.add('ativo');
             if (statusPedido >= 1) { document.getElementById('passo-2').classList.add('ativo'); document.getElementById('passo-2').innerText = "✅ Pedido Confirmado"; } else { document.getElementById('passo-2').innerText = "⏳ Aguardando Confirmação"; }
             if (statusPedido >= 2) { document.getElementById('passo-3').classList.add('ativo'); }
             if (statusPedido >= 3) { document.getElementById('passo-4').classList.add('ativo'); }
@@ -485,57 +487,28 @@
             if(!idRastreioAtual) return;
             async function buscar() {
                 try {
-                    const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json();
-                    const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
-                    if (meuPedido) {
-                        if(meuPedido.status > statusAtual) { statusAtual = meuPedido.status; tocarNotificacao(statusAtual); }
-                        atualizarStatusVisual(meuPedido.status);
-                    } else {
-                        if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); }
-                        atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!";
-                        localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio);
-                        setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000);
-                    }
+                    const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json(); const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
+                    if (meuPedido) { if(meuPedido.status > statusAtual) { statusAtual = meuPedido.status; tocarNotificacao(statusAtual); } atualizarStatusVisual(meuPedido.status); } 
+                    else { if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); } atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!"; localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio); setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000); }
                 } catch(e){}
             }
             buscar(); if(intervalRastreio) clearInterval(intervalRastreio); intervalRastreio = setInterval(buscar, 5000);
         }
 
-        function iniciarAnimacaoRastreio() { 
-            document.getElementById('telaAnimacao').classList.add('ativo'); 
-            setTimeout(() => { document.getElementById('telaAnimacao').classList.remove('ativo'); document.getElementById('modalRastreio').classList.add('ativo'); iniciarBuscaAoVivo(); }, 3000); 
-        }
+        function iniciarAnimacaoRastreio() { document.getElementById('telaAnimacao').classList.add('ativo'); setTimeout(() => { document.getElementById('telaAnimacao').classList.remove('ativo'); document.getElementById('modalRastreio').classList.add('ativo'); iniciarBuscaAoVivo(); }, 3000); }
         function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); if(intervalRastreio) clearInterval(intervalRastreio); }
 
         window.addEventListener('load', () => {
             verificarPermissaoNotificacao(); carregarPrecosDoBanco(); atualizarCarrinhoUI(); 
-            const parametrosURL = new URLSearchParams(window.location.search);
-            let urlRastreio = parametrosURL.get('rastreio'); let localRastreio = localStorage.getItem('meu_pedido_jj');
+            const parametrosURL = new URLSearchParams(window.location.search); let urlRastreio = parametrosURL.get('rastreio'); let localRastreio = localStorage.getItem('meu_pedido_jj');
             
-            if(urlRastreio && urlRastreio !== 'true') {
-                idRastreioAtual = urlRastreio; localStorage.setItem('meu_pedido_jj', idRastreioAtual);
-                document.getElementById('btnRastreio').style.display = 'block'; 
-                window.history.replaceState({}, document.title, window.location.pathname);
-                iniciarAnimacaoRastreio();
-            } else if (localRastreio) {
-                idRastreioAtual = localRastreio; document.getElementById('btnRastreio').style.display = 'block';
-                fetch(API_URL + '/api/pedidos').then(res => res.json()).then(pedidos => {
-                    const achou = pedidos.find(p => p.id == idRastreioAtual);
-                    if(!achou) { localStorage.removeItem('meu_pedido_jj'); document.getElementById('btnRastreio').style.display = 'none'; }
-                }).catch(()=>{});
-            }
+            if(urlRastreio && urlRastreio !== 'true') { idRastreioAtual = urlRastreio; localStorage.setItem('meu_pedido_jj', idRastreioAtual); document.getElementById('btnRastreio').style.display = 'block'; window.history.replaceState({}, document.title, window.location.pathname); iniciarAnimacaoRastreio(); } 
+            else if (localRastreio) { idRastreioAtual = localRastreio; document.getElementById('btnRastreio').style.display = 'block'; fetch(API_URL + '/api/pedidos').then(res => res.json()).then(pedidos => { const achou = pedidos.find(p => p.id == idRastreioAtual); if(!achou) { localStorage.removeItem('meu_pedido_jj'); document.getElementById('btnRastreio').style.display = 'none'; } }).catch(()=>{}); }
         });
 
         const secaoBebidas = document.getElementById('secao-bebidas'); const overlayFrio = document.getElementById('clima-frio-overlay'); const tituloContainer = document.getElementById('container-titulo-bebidas'); const containerNeve = document.getElementById('container-neve'); let intervaloNeve;
-        function criarFloco() { 
-            const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); 
-        }
-        const observador = new IntersectionObserver((entradas) => { 
-            entradas.forEach(entrada => { 
-                if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); if(tituloContainer) tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } 
-                else { overlayFrio.classList.remove('ativo'); if(tituloContainer) tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; } 
-            }); 
-        }, { threshold: 0.1 }); 
+        function criarFloco() { const floco = document.createElement('div'); floco.classList.add('floco'); floco.innerText = '❄'; floco.style.left = (Math.random() * 150 - 25) + 'vw'; floco.style.fontSize = (Math.random() * 15 + 10) + 'px'; floco.style.animationDuration = (Math.random() * 2 + 2.5) + 's'; floco.style.opacity = Math.random() * 0.8 + 0.2; containerNeve.appendChild(floco); setTimeout(() => { floco.remove(); }, 5000); }
+        const observador = new IntersectionObserver((entradas) => { entradas.forEach(entrada => { if (entrada.isIntersecting) { overlayFrio.classList.add('ativo'); if(tituloContainer) tituloContainer.classList.add('congelado'); if (!intervaloNeve) { intervaloNeve = setInterval(criarFloco, 80); } } else { overlayFrio.classList.remove('ativo'); if(tituloContainer) tituloContainer.classList.remove('congelado'); clearInterval(intervaloNeve); intervaloNeve = null; } }); }, { threshold: 0.1 }); 
         if(secaoBebidas) observador.observe(secaoBebidas);
     </script>
 </body>
