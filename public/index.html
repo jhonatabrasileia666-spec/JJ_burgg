@@ -37,13 +37,11 @@
         .mini-topo { margin-bottom: -6px; z-index: 12; } .mini-base { margin-top: -6px; z-index: 1; }
         .z-pepino { z-index: 8; } .z-queijo { z-index: 7; } .z-alface { z-index: 6; } .z-bacon { z-index: 5; } .z-carne { z-index: 4; }
         
-        /* AJUSTE MÁGICO DAS ETIQUETAS: Margens menores para não cortar nas bordas do telemóvel */
         .etiqueta-esq, .etiqueta-dir { position: absolute; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: #d35400 !important; text-transform: uppercase; display: flex; align-items: center; z-index: 20; white-space: nowrap; }
-        .etiqueta-esq { right: 50%; margin-right: 55px; } .etiqueta-dir { left: 50%; margin-left: 55px; }
-        .linha-curva { width: 15px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 3px; position: relative; top: -4px; }
+        .etiqueta-esq { right: 50%; margin-right: 70px; } .etiqueta-dir { left: 50%; margin-left: 70px; }
+        .linha-curva { width: 25px; height: 10px; border-bottom: 2px dotted rgba(211, 84, 0, 0.7); border-radius: 50%; margin: 0 4px; position: relative; top: -4px; }
         
-        /* AJUSTE MÁGICO DA FÁBRICA: Fundo amarelo expansível e sem cortar conteúdo fora dele */
-        .vitrine-dinamica { position: relative; width: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; border-radius: 20px; overflow: visible !important; }
+        .vitrine-dinamica { position: relative; width: 300px; height: 300px; background-color: #f4d03f !important; margin: 0 auto 20px auto; border-radius: 20px; }
 
         .card-lanche h3 { color: #333 !important; font-size: 22px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
         .card-lanche p { color: #777 !important; font-size: 14px; line-height: 1.4; }
@@ -130,7 +128,7 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>Classic Burger</h3><p>Blend bovino 160g, queijo derretido e alface.</p>
+            <h3 id="nome-classic">Classic Burger</h3><p id="desc-classic">Blend bovino 160g, queijo derretido e alface.</p>
             <div class="card-footer">
                 <span class="preco-card" id="preco-classic">R$ 22,00</span>
                 <button class="btn-add" onclick="abrirPersonalizacao('Classic Burger')">Adicionar 🛒</button>
@@ -145,7 +143,7 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>Bacon Master</h3><p>Blend 160g, queijo mussarela e muito bacon premium.</p>
+            <h3 id="nome-bacon">Bacon Master</h3><p id="desc-bacon">Blend 160g, queijo mussarela e muito bacon premium.</p>
             <div class="card-footer">
                 <span class="preco-card" id="preco-bacon">R$ 27,00</span>
                 <button class="btn-add" onclick="abrirPersonalizacao('Bacon Master')">Adicionar 🛒</button>
@@ -162,7 +160,7 @@
                 <div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div>
                 <div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div>
             </div>
-            <h3>O Monstrão</h3><p>Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
+            <h3 id="nome-monstrao">O Monstrão</h3><p id="desc-monstrao">Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p>
             <div class="card-footer">
                 <span class="preco-card" id="preco-monstrao">R$ 32,50</span>
                 <button class="btn-add" onclick="abrirPersonalizacao('O Monstrão')">Adicionar 🛒</button>
@@ -171,9 +169,8 @@
 
         <div id="secao-bebidas">
             <div id="container-titulo-bebidas"><h2 id="titulo-bebidas" class="titulo-secao titulo-frio">Bebidas ❄️</h2></div>
-            <div class="card-bebida">
-                <div class="info-bebida"><h3>Coca-Cola (Lata)</h3><p>Estupidamente gelada.</p><span class="preco-bebida" id="preco-coca">R$ 6,00</span></div>
-                <button class="btn-add-frio" onclick="adicionarItemCardapio('Coca-Cola (Lata)', precosDinamicos['Coca-Cola (Lata)'], '')">Add 🛒</button>
+            <div id="lista-bebidas-cliente">
+                <p style="color:#aaa; font-size:14px;">Buscando refrigerantes no congelador...</p>
             </div>
         </div>
     </div>
@@ -254,7 +251,7 @@
 
     <script>
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
-        let precosDinamicos = { 'Classic Burger': 22.00, 'Bacon Master': 27.00, 'O Monstrão': 32.50, 'Coca-Cola (Lata)': 6.00 };
+        let precosDinamicos = {};
         let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
         let linkMapaGoogle = ""; 
 
@@ -276,7 +273,7 @@
             const som = document.getElementById('somAlertaCliente');
             som.volume = 0; som.play().then(() => {
                 som.pause(); som.currentTime = 0; som.volume = 1; 
-                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui.", "🎙️");
+                mostrarAvisoStatus("Avisos sonoros ativados! Você será notificado por aqui com as nossas mensagens de voz.", "🎙️");
             }).catch(e => console.log("Erro ao destrancar som", e));
         }
 
@@ -319,32 +316,59 @@
             try {
                 const res = await fetch(API_URL + '/api/cardapio');
                 const cardapio = await res.json();
+                
                 const lanchesDinamicosContainer = document.getElementById('lanches-dinamicos-container');
                 lanchesDinamicosContainer.innerHTML = '';
+                
+                const listaBebidas = document.getElementById('lista-bebidas-cliente');
+                listaBebidas.innerHTML = '';
 
                 cardapio.forEach(item => {
+                    // Guarda o preço no dicionário global de forma dinâmica
                     precosDinamicos[item.nome] = parseFloat(item.preco);
                     
-                    if(item.nome === 'Classic Burger') document.getElementById('preco-classic').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
-                    if(item.nome === 'Bacon Master') document.getElementById('preco-bacon').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
-                    if(item.nome === 'O Monstrão') document.getElementById('preco-monstrao').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
-                    if(item.nome === 'Coca-Cola (Lata)') document.getElementById('preco-coca').innerText = `R$ ${precosDinamicos[item.nome].toFixed(2).replace('.', ',')}`;
+                    // SE FOR BEBIDA, RENDERIZA NA ABA DE BEBIDAS!
+                    if (item.tipo === 'bebida') {
+                        listaBebidas.innerHTML += `
+                            <div class="card-bebida">
+                                <div class="info-bebida">
+                                    <h3>${item.nome}</h3>
+                                    <p>${item.descricao || ''}</p>
+                                    <span class="preco-bebida">R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</span>
+                                </div>
+                                <button class="btn-add-frio" onclick="adicionarItemCardapio('${item.nome}', ${item.preco}, '')">Add 🛒</button>
+                            </div>
+                        `;
+                        return; // Passa para o próximo item do banco
+                    }
 
+                    // LIGAÇÃO DOS CLÁSSICOS (Caso você tenha editado o nome ou preço deles no Painel Admin)
+                    if(item.nome === 'Classic Burger' || item.nome.includes('Classic')) {
+                        let elPreco = document.getElementById('preco-classic'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
+                        let elDesc = document.getElementById('desc-classic'); if(elDesc) elDesc.innerText = item.descricao || '';
+                        let elNome = document.getElementById('nome-classic'); if(elNome) elNome.innerText = item.nome;
+                    }
+                    if(item.nome === 'Bacon Master' || item.nome.includes('Bacon')) {
+                        let elPreco = document.getElementById('preco-bacon'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
+                        let elDesc = document.getElementById('desc-bacon'); if(elDesc) elDesc.innerText = item.descricao || '';
+                        let elNome = document.getElementById('nome-bacon'); if(elNome) elNome.innerText = item.nome;
+                    }
+                    if(item.nome === 'O Monstrão' || item.nome.includes('Monstrão')) {
+                        let elPreco = document.getElementById('preco-monstrao'); if(elPreco) elPreco.innerText = `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
+                        let elDesc = document.getElementById('desc-monstrao'); if(elDesc) elDesc.innerText = item.descricao || '';
+                        let elNome = document.getElementById('nome-monstrao'); if(elNome) elNome.innerText = item.nome;
+                    }
+
+                    // RENDERIZA AS NOVIDADES DO CHEF CRIADAS NA FÁBRICA
                     if(item.tipo === 'dinamico' && item.composicao) {
                         let composicaoArray = typeof item.composicao === 'string' ? JSON.parse(item.composicao) : item.composicao;
                         let pilhasHTML = '';
-                        
-                        // MÁGICA 1: Calcula a altura para a caixa amarela se esticar sem cortar nada!
                         let alturaMaximaQuadro = 300; 
                         
                         [...composicaoArray].reverse().forEach((camada, idx) => {
                             let zIndex = composicaoArray.length - idx; 
-                            
-                            // Calcula se a imagem passou do quadro de 300px
                             let topY = parseInt(camada.top.replace('px', '')) || 0;
-                            if(topY + 120 > alturaMaximaQuadro) {
-                                alturaMaximaQuadro = topY + 140; // Dá uma margem de segurança no fundo
-                            }
+                            if(topY + 120 > alturaMaximaQuadro) alturaMaximaQuadro = topY + 140;
 
                             let etiquetaHTML = "";
                             if (camada.nome) {
@@ -352,7 +376,6 @@
                                 if (idx % 2 === 0) { etiquetaHTML = `<div class="etiqueta-esq">${nomeFormatado}<div class="linha-curva"></div></div>`; } 
                                 else { etiquetaHTML = `<div class="etiqueta-dir"><div class="linha-curva"></div>${nomeFormatado}</div>`; }
                             }
-
                             let imgSrc = camada.img.startsWith('data:') ? camada.img : `${API_URL}/${camada.img}`;
 
                             pilhasHTML += `
@@ -363,7 +386,6 @@
                             `;
                         });
 
-                        // Aplica a altura calculada na vitrine (height: ${alturaMaximaQuadro}px;)
                         lanchesDinamicosContainer.innerHTML += `
                             <h2 class="titulo-secao" style="color: #27ae60 !important; border-bottom-color: #27ae60;">Novidade do Chef ⭐</h2>
                             <div class="card-lanche">
@@ -379,6 +401,11 @@
                         `;
                     }
                 });
+                
+                // Mensagem de segurança caso você não tenha cadastrado nenhuma bebida
+                if(listaBebidas.innerHTML === '') {
+                    listaBebidas.innerHTML = '<p style="color:#777; font-size:14px; text-align:center;">O congelador está a ser reabastecido. Tente novamente mais tarde.</p>';
+                }
             } catch(e) {}
         }
 
