@@ -38,7 +38,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
         .modal-overlay.ativo { display: flex; }
 
-        /* CSS DA IMPRESSORA TÉRMICA */
+        /* CSS DA IMPRESSORA */
         #cupom-impressao { display: none; }
         @media print {
             body * { visibility: hidden; } 
@@ -56,10 +56,6 @@
 </head>
 <body>
 
-    <!-- O AUDIO DO ALARME -->
-    <audio id="somNovoPedidoAdmin" src="preparo.mp3" preload="auto"></audio>
-
-    <!-- MOLDE DA IMPRESSORA -->
     <div id="cupom-impressao"></div>
 
     <header><h1>JJ Burguer Admin</h1></header>
@@ -67,25 +63,19 @@
     <div class="container">
         
         <div id="tela-login" class="tela ativo">
-            <div class="card" style="text-align: center; margin-top: 40px;"><h2>🔐 Acesso</h2><input type="password" id="input-senha" placeholder="Senha..."><button class="btn-salvar" onclick="fazerLogin()">Entrar no PDV 🚀</button></div>
+            <div class="card" style="text-align: center; margin-top: 40px;"><h2>🔐 Acesso</h2><input type="password" id="input-senha" placeholder="Senha..."><button class="btn-salvar" onclick="fazerLogin()">Entrar</button></div>
         </div>
 
         <div id="tela-pedidos" class="tela">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="color: #2c3e50; margin: 0;">🛵 Pedidos</h2>
                 <div style="background: #27ae60; color: white; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;">
-                    Alarme & Auto-Print 🖨️
+                    Auto-Print Ativo 🖨️
                 </div>
             </div>
-            
-            <p style="font-size:12px; color:#555; text-align:center; background:#fff; padding:10px; border-radius:8px; border: 1px solid #ddd;">
-                <strong>NOVO:</strong> Quando o alarme tocar, basta deslizar o dedo na tela para abrir a impressora automaticamente!
-            </p>
-
             <div id="lista-pedidos-container"></div>
         </div>
 
-        <!-- ABA DO CARDÁPIO -->
         <div id="tela-cardapio" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 15px;">🍔 Gerir Cardápio</h2>
             <div class="card" style="background: #e8f8f5; border: 1px solid #1abc9c;">
@@ -101,7 +91,6 @@
             <div id="lista-cardapio-bebidas"></div>
         </div>
 
-        <!-- ABA DO CAIXA -->
         <div id="tela-financeiro" class="tela">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="color: #2c3e50; margin: 0;">📊 Caixa</h2>
@@ -122,7 +111,6 @@
             <div id="lista-gastos"></div>
         </div>
 
-        <!-- ABA DA FÁBRICA -->
         <div id="tela-fabrica" class="tela">
             <h2 style="color: #2c3e50; margin-bottom: 5px;">🏭 Fábrica de Lanches</h2>
             <div id="visor-fabrica"></div>
@@ -178,29 +166,17 @@
         let maiorIdConhecido = 0;
         let primeiroCarregamento = true;
 
-        // 🟢 A FILA SECRETA DE IMPRESSÃO
         let filaDeImpressao = [];
 
-        // 🟢 O "HACK" DO TOQUE NA TELA
         document.addEventListener('touchstart', function() {
             if (filaDeImpressao.length > 0) {
-                // Tira o primeiro pedido da fila
                 let pedidoParaImprimir = filaDeImpressao.shift(); 
-                
-                // Abre a janela de impressão automaticamente!
                 imprimirCupom(pedidoParaImprimir); 
             }
         }, { passive: true });
 
         function fazerLogin() {
             if(document.getElementById('input-senha').value === 'jj123') { 
-                
-                // Destranca o áudio
-                const somAdmin = document.getElementById('somNovoPedidoAdmin');
-                somAdmin.volume = 0; somAdmin.play().then(() => {
-                    somAdmin.pause(); somAdmin.currentTime = 0; somAdmin.volume = 1;
-                }).catch(e => console.log("O telemóvel bloqueou o som", e));
-
                 document.getElementById('tela-login').classList.remove('ativo');
                 document.getElementById('tela-pedidos').classList.add('ativo');
                 document.getElementById('menu-inferior').style.display = 'flex';
@@ -211,7 +187,6 @@
 
                 carregarPedidos(); carregarCardapio(); carregarFinanceiro();
                 setInterval(carregarPedidos, 10000); 
-                
             } else { alert("❌ Senha incorreta!"); }
         }
 
@@ -225,56 +200,36 @@
             if(aba === 'financeiro') carregarFinanceiro();
         }
 
-        // ===============================================
-        // MÁGICA DA IMPRESSÃO COM AVISO DE TESTE
-        // ===============================================
         function imprimirCupom(pedido) {
-            let itensHTML = '';
-            let listaItens = pedido.itens;
+            let itensHTML = ''; let listaItens = pedido.itens;
             if(typeof listaItens === 'string') { try { listaItens = JSON.parse(listaItens); } catch(e) {} }
-            
-            if(Array.isArray(listaItens)) { 
-                listaItens.forEach(i => { 
-                    itensHTML += `<div>1x ${i.nome} - R$ ${parseFloat(i.preco || 0).toFixed(2).replace('.',',')}</div>`; 
-                    if(i.obs && i.obs.trim() !== '') { 
-                        itensHTML += `<div style="font-size: 12px; margin-bottom:5px;"> * OBS: ${i.obs}</div>`; 
-                    }
-                }); 
-            }
-
+            if(Array.isArray(listaItens)) { listaItens.forEach(i => { itensHTML += `<div>1x ${i.nome} - R$ ${parseFloat(i.preco || 0).toFixed(2).replace('.',',')}</div>`; if(i.obs && i.obs.trim() !== '') { itensHTML += `<div style="font-size: 12px; margin-bottom:5px;"> * OBS: ${i.obs}</div>`; } }); }
             let dataFormatada = new Date(pedido.criado_em).toLocaleString('pt-BR');
 
             let htmlImpressao = `
                 <div class="texto-centro texto-negrito" style="font-size: 20px;">JJ BURGUER</div>
                 <div class="texto-centro" style="margin-bottom: 10px;">O melhor da cidade!</div>
-                
                 <div class="linha-cupom"></div>
                 <div><span class="texto-negrito">Pedido:</span> #${pedido.id}</div>
                 <div><span class="texto-negrito">Data:</span> ${dataFormatada}</div>
                 <div><span class="texto-negrito">Cliente:</span> ${pedido.cliente_nome}</div>
                 <div><span class="texto-negrito">Telefone:</span> ${pedido.cliente_telefone || 'N/A'}</div>
-                
                 <div class="linha-cupom"></div>
                 <div class="texto-negrito" style="margin-bottom: 5px;">ITENS DO PEDIDO:</div>
                 ${itensHTML}
-                
                 <div class="linha-cupom"></div>
                 <div class="texto-negrito" style="font-size: 18px;">TOTAL: R$ ${parseFloat(pedido.total).toFixed(2).replace('.', ',')}</div>
-                
                 <div class="linha-cupom"></div>
                 <div class="texto-negrito">ENTREGA:</div>
                 <div>${pedido.endereco || 'Retirada na Loja'}</div>
-                
                 <div class="linha-cupom"></div>
                 <div class="texto-centro" style="margin-top: 15px;">Obrigado pela preferência!</div>
                 <div class="texto-centro">Volte sempre!</div>
             `;
-
             document.getElementById('cupom-impressao').innerHTML = htmlImpressao;
             
-            // AVISO DE TESTE ANTES DE ABRIR A IMPRESSORA/PDF
-            alert("✅ [TESTE DE SUCESSO] O sistema detetou o seu toque e mandou o pedido #" + pedido.id + " para a impressora!");
-            
+            // AVISO DE TESTE (pode apagar depois que tiver a impressora)
+            alert("✅ O sistema mandou o pedido #" + pedido.id + " para a impressora!");
             window.print();
         }
 
@@ -283,29 +238,20 @@
             if(primeiroCarregamento) container.innerHTML = '<p style="text-align:center;">Carregando pedidos...</p>';
             
             try {
-                const res = await fetch(API_URL + '/api/pedidos');
-                const pedidos = await res.json();
-                
+                const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json();
                 if(primeiroCarregamento) container.innerHTML = '';
                 
                 if(pedidos.length === 0) { 
                     if(primeiroCarregamento) container.innerHTML = '<p style="text-align:center; color:#777; font-weight:bold;">Nenhum pedido pendente.</p>'; 
-                    primeiroCarregamento = false;
-                    return; 
+                    primeiroCarregamento = false; return; 
                 }
 
                 let novoHTML = '';
-                let tocouAlarme = false;
-
                 pedidos.forEach(p => {
                     let ehPedidoNovo = false;
 
-                    // O ALARME E A FILA DE IMPRESSÃO
                     if (!primeiroCarregamento && p.id > maiorIdConhecido) {
-                        tocouAlarme = true;
                         ehPedidoNovo = true;
-                        
-                        // COLOCA O PEDIDO NA FILA SECRETA
                         filaDeImpressao.push(p);
                     }
                     if (p.id > maiorIdConhecido) { maiorIdConhecido = p.id; }
@@ -329,10 +275,6 @@
                         </div>
                     `;
                 });
-
-                if(tocouAlarme) {
-                    try { const som = document.getElementById('somNovoPedidoAdmin'); som.currentTime = 0; som.play(); } catch(e) {}
-                }
 
                 container.innerHTML = novoHTML;
                 primeiroCarregamento = false;
@@ -364,7 +306,7 @@
         async function carregarIngredientesNaFabrica() { const grid = document.getElementById('grid-ingredientes-fabrica'); const selectSub = document.getElementById('select-substituir-ing'); let htmlBotoes = `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Topo', 'pao_topo.png')"><img src="${API_URL}/pao_topo.png?v=1" width="25"> Pão Topo</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pão Base', 'pao_base.png')"><img src="${API_URL}/pao_base.png?v=1" width="25"> Pão Base</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Carne', 'carne.png')"><img src="${API_URL}/carne.png?v=1" width="25"> Carne</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Bacon', 'bacon.png')"><img src="${API_URL}/bacon.png?v=1" width="25"> Bacon</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Queijo', 'queijo.png')"><img src="${API_URL}/queijo.png?v=1" width="25"> Queijo</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Alface', 'alface.png')"><img src="${API_URL}/alface.png?v=1" width="25"> Alface</button><button class="btn-ing-fabrica" onclick="adicionarNaFabrica('Pepino', 'pepino.png')"><img src="${API_URL}/pepino.png?v=1" width="25"> Pepino</button>`; let htmlOpcoesSubstituir = `<option value="file|pao_topo.png">Pão Topo (Clássico)</option><option value="file|pao_base.png">Pão Base (Clássico)</option><option value="file|carne.png">Carne (Clássico)</option><option value="file|bacon.png">Bacon (Clássico)</option><option value="file|queijo.png">Queijo (Clássico)</option><option value="file|alface.png">Alface (Clássico)</option><option value="file|pepino.png">Pepino (Clássico)</option>`; try { const res = await fetch(API_URL + '/api/ingredientes?t=' + Date.now()); const ingredientes = await res.json(); if(Array.isArray(ingredientes)) { ingredientes.forEach(ing => { let imgSrc = ing.imagem.startsWith('data:') ? ing.imagem : `${API_URL}/${ing.imagem}`; htmlBotoes += `<button class="btn-ing-fabrica" onclick="adicionarNaFabrica('${ing.nome}', '${ing.imagem}')"><img src="${imgSrc}" onerror="this.style.display='none'" width="25"> ${ing.nome}</button>`; htmlOpcoesSubstituir += `<option value="db|${ing.id}">${ing.nome} (Criado por ti)</option>`; }); } } catch(e) {} grid.innerHTML = htmlBotoes; selectSub.innerHTML = htmlOpcoesSubstituir; }
         async function criarIngrediente() { const nome = document.getElementById('novo-ing-nome').value.trim(); const preco = document.getElementById('novo-ing-preco').value.trim(); const fileInput = document.getElementById('novo-ing-foto'); if(!nome || !fileInput.files[0]) { alert('⚠️ Preencha nome e escolha a foto!'); return; } const btn = document.getElementById('btn-criar-ing'); btn.innerText = '⏳ Comprimindo e Salvando...'; btn.disabled = true; const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = async function() { try { const canvas = document.createElement('canvas'); const MAX_SIZE = 300; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); const base64Reduzida = canvas.toDataURL('image/webp', 0.7); const respostaDb = await fetch(API_URL + '/api/ingredientes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, imagem: base64Reduzida, preco: preco || 0 }) }); if(respostaDb.ok) { alert('✅ Ingrediente Criado! Já está gravado no Banco de Dados.'); document.getElementById('novo-ing-nome').value = ''; document.getElementById('novo-ing-preco').value = ''; fileInput.value = ''; carregarIngredientesNaFabrica(); } else { alert('❌ Erro no banco de dados.'); } } catch (err) { alert('❌ Erro: ' + err.message); } btn.innerText = 'Salvar Novo Ingrediente'; btn.disabled = false; }; img.src = e.target.result; }; reader.readAsDataURL(fileInput.files[0]); }
         async function substituirImagemIngrediente() { const selectVal = document.getElementById('select-substituir-ing').value; const fileInput = document.getElementById('foto-substituir'); if(!fileInput.files[0]) { alert('⚠️ Escolha a NOVA foto da galeria primeiro!'); return; } const btn = document.getElementById('btn-sub-img'); btn.innerText = '⏳ Atualizando...'; btn.disabled = true; const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = async function() { const canvas = document.createElement('canvas'); const MAX_SIZE = 300; let width = img.width; let height = img.height; if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); const base64Reduzida = canvas.toDataURL('image/webp', 0.8); try { let partes = selectVal.split('|'); let tipo = partes[0]; let idOuNome = partes[1]; if (tipo === 'file') { await fetch(API_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nomeArquivo: idOuNome, base64: base64Reduzida }) }); } else if (tipo === 'db') { await fetch(API_URL + '/api/ingredientes/' + idOuNome, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imagem: base64Reduzida }) }); } alert('✅ A foto deste ingrediente foi atualizada com sucesso!'); fileInput.value = ''; carregarIngredientesNaFabrica(); } catch (err) { alert('❌ Erro: ' + err.message); } btn.innerText = 'Atualizar Foto 🔄'; btn.disabled = false; }; img.src = e.target.result; }; reader.readAsDataURL(fileInput.files[0]); }
-        async function lancarLancheNoCardapio() { const nome = document.getElementById('novo-lanche-nome').value; const desc = document.getElementById('novo-lanche-desc').value; const preco = parseFloat(document.getElementById('novo-lanche-preco').value); if(!nome || isNaN(preco)) { alert("Preencha Nome e Preço!"); return; } if(lancheAtual.length === 0) { alert("⚠️ O lanche está vazio!"); return; } const btn = document.getElementById('btn-lancar-lanche'); btn.innerText = '⏳ Lançando...'; btn.disabled = true; try { await fetch(API_URL + '/api/cardapio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual }) }); alert('🚀 Lanche Lançado com Sucesso! Volte na página principal para ver.'); document.getElementById('novo-lanche-nome').value = ''; document.getElementById('novo-lanche-desc').value = ''; document.getElementById('novo-lanche-preco').value = ''; limparFabrica(); carregarCardapio(); } catch(e) { alert("Erro"); } btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false; }
+        async function lancarLancheNoCardapio() { const nome = document.getElementById('novo-lanche-nome').value; const desc = document.getElementById('novo-lanche-desc').value; const preco = parseFloat(document.getElementById('novo-lanche-preco').value); if(!nome || isNaN(preco)) { alert("Preencha Nome e Preço!"); return; } if(lancheAtual.length === 0) { alert("⚠️ O lanche está vazio!"); return; } const btn = document.getElementById('btn-lancar-lanche'); btn.innerText = '⏳ Lançando...'; btn.disabled = true; try { await fetch(API_URL + '/api/cardapio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: nome, descricao: desc, preco: preco, tipo: 'dinamico', composicao: lancheAtual }) }); alert('🚀 Lanche Lançado com Sucesso!'); document.getElementById('novo-lanche-nome').value = ''; document.getElementById('novo-lanche-desc').value = ''; document.getElementById('novo-lanche-preco').value = ''; limparFabrica(); carregarCardapio(); } catch(e) { alert("Erro"); } btn.innerText = '🚀 Lançar no Site Principal'; btn.disabled = false; }
         
         // ===============================================
         // FINANCEIRO
