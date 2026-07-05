@@ -127,7 +127,7 @@
 
         <h2 class="titulo-secao">Nossos Clássicos</h2>
 
-        <!-- [O HTML DOS LANCHES E BEBIDAS AQUI FICA IGUAL - COMPRIMIDO POR ESPAÇO] -->
+        <!-- [LANCHES E BEBIDAS COMPRIMIDOS] -->
         <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div><div class="mini-camada z-alface"><div class="etiqueta-dir"><div class="linha-curva"></div>ALFACE</div><img src="alface.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-classic">Classic Burger</h3><p id="desc-classic">Blend bovino 160g, queijo derretido e alface.</p><div class="card-footer"><span class="preco-card" id="preco-classic">R$ 22,00</span><button class="btn-add" onclick="abrirPersonalizacao('Classic Burger')">Adicionar 🛒</button></div></div>
         <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-esq">QUEIJO<div class="linha-curva"></div></div><img src="queijo.png"></div><div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-bacon">Bacon Master</h3><p id="desc-bacon">Blend 160g, queijo mussarela e muito bacon premium.</p><div class="card-footer"><span class="preco-card" id="preco-bacon">R$ 27,00</span><button class="btn-add" onclick="abrirPersonalizacao('Bacon Master')">Adicionar 🛒</button></div></div>
         <div class="card-lanche"><div class="vitrine-hamburguer"><div class="mini-camada mini-topo"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_topo.png"></div><div class="mini-camada z-pepino"><div class="etiqueta-esq">PEPINO<div class="linha-curva"></div></div><img src="pepino.png"></div><div class="mini-camada z-queijo"><div class="etiqueta-dir"><div class="linha-curva"></div>QUEIJO</div><img src="queijo.png"></div><div class="mini-camada z-alface"><div class="etiqueta-esq">ALFACE<div class="linha-curva"></div></div><img src="alface.png"></div><div class="mini-camada z-bacon"><div class="etiqueta-dir"><div class="linha-curva"></div>BACON</div><img src="bacon.png"></div><div class="mini-camada z-carne"><div class="etiqueta-esq">CARNE<div class="linha-curva"></div></div><img src="carne.png"></div><div class="mini-camada mini-base"><div class="etiqueta-dir"><div class="linha-curva"></div>PÃO</div><img src="pao_base.png"></div></div><h3 id="nome-monstrao">O Monstrão</h3><p id="desc-monstrao">Para quem quer tudo! Blend de carne, bacon, queijo, pepino e alface.</p><div class="card-footer"><span class="preco-card" id="preco-monstrao">R$ 32,50</span><button class="btn-add" onclick="abrirPersonalizacao('O Monstrão')">Adicionar 🛒</button></div></div>
@@ -150,54 +150,19 @@
     <div id="modalNotificacao" class="modal-overlay">
         <div class="modal-card" style="text-align: center;">
             <h2 style="color: #d35400 !important; border-bottom: none; margin-bottom: 5px;">🔔 Avisos do Pedido</h2>
-            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o celular envie uma notificação com som quando o seu pedido for atualizado?</p>
-            <p style="color: #27ae60 !important; font-size: 11px; margin-bottom: 15px; font-weight:bold;">Isso permite que você saia do site ou bloqueie a tela, e o aviso chegará na mesma!</p>
-            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Permitir Notificações</button>
+            <p style="color: #555 !important; font-size: 14px; margin-bottom: 20px;">Deseja que o celular envie um aviso sonoro quando o seu pedido for atualizado na cozinha?</p>
+            <button class="btn-acao-modal btn-confirmar" style="background-color: #27ae60 !important;" onclick="pedirPermissaoNotificacao()">Sim, quero ser avisado</button>
             <button class="btn-acao-modal btn-fechar" onclick="desligarNotificacao()">Desligar / Agora Não</button>
         </div>
     </div>
 
-    <div id="modalPersonalizar" class="modal-overlay">
-        <div class="modal-card">
-            <div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div>
-            <p style="font-weight: bold; margin-bottom: 10px; color: #555;">Deseja adicionar algum extra?</p>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label><span class="preco-extra">+ R$ 4,00</span></div>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label><span class="preco-extra">+ R$ 3,50</span></div>
-            <div class="item-extra"><label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label><span class="preco-extra">+ R$ 8,00</span></div>
-            <div class="campo-grupo" style="margin-top: 15px;"><label>Alguma observação?</label><textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles..."></textarea></div>
-            
-            <button id="btnConfirmarCustom" class="btn-acao-modal btn-confirmar" onclick="confirmarPersonalizacao()">Adicionar ao Carrinho</button>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharPersonalizacao()">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modalPedido" class="modal-overlay">
-        <div class="modal-card">
-            <h2>Seu Pedido 🛒</h2>
-            <div class="lista-itens" id="listaItensHTML"></div>
-            <p class="subtotal-texto">Subtotal: R$ <span id="subtotalModal">0,00</span></p>
-            
-            <div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div>
-            <div class="campo-grupo"><label>Seu Telefone:</label><input type="number" id="txt-telefone" placeholder="DDD + Número"></div>
-            <div class="campo-grupo"><label>Como deseja receber?</label><select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select></div>
-            
-            <div class="campo-grupo" id="box-endereco">
-                <label>Endereço de Entrega (Referência):</label><input type="text" id="txt-endereco" placeholder="Ex: Rua das Flores, 123">
-                <button class="btn-gps" onclick="obterLocalizacao()">📍 Pegar minha localização exata (GPS)</button>
-                <small id="status-gps" style="display:none; color: #27ae60; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small>
-            </div>
-            
-            <button class="btn-acao-modal btn-enviar-whats" onclick="enviarPedidoFinal()">Concluir via WhatsApp 💬</button>
-            <button class="btn-acao-modal btn-fechar" onclick="fecharModalCarrinho()">Continuar Comprando</button>
-        </div>
-    </div>
-
+    <!-- [MODAIS RESTANTES COMPRIMIDOS] -->
+    <div id="modalPersonalizar" class="modal-overlay"><div class="modal-card"><div class="header-personaliza"><h2 id="tituloCustomLanche">Lanche</h2><span class="preco-base-modal" id="precoBaseCustom">R$ 0,00</span></div><p style="font-weight: bold; margin-bottom: 10px; color: #555;">Deseja adicionar algum extra?</p><div class="item-extra"><label><input type="checkbox" class="check-extra" value="4.00" data-nome="Bacon" onchange="atualizarPrecoCustom()"> Bacon Crocante</label><span class="preco-extra">+ R$ 4,00</span></div><div class="item-extra"><label><input type="checkbox" class="check-extra" value="3.50" data-nome="Cheddar" onchange="atualizarPrecoCustom()"> Cheddar Cremoso</label><span class="preco-extra">+ R$ 3,50</span></div><div class="item-extra"><label><input type="checkbox" class="check-extra" value="8.00" data-nome="Carne" onchange="atualizarPrecoCustom()"> Carne Extra (160g)</label><span class="preco-extra">+ R$ 8,00</span></div><div class="campo-grupo" style="margin-top: 15px;"><label>Alguma observação?</label><textarea id="txt-observacao" rows="2" placeholder="Ex: Tirar o picles..."></textarea></div><button id="btnConfirmarCustom" class="btn-acao-modal btn-confirmar" onclick="confirmarPersonalizacao()">Adicionar ao Carrinho</button><button class="btn-acao-modal btn-fechar" onclick="fecharPersonalizacao()">Cancelar</button></div></div>
+    <div id="modalPedido" class="modal-overlay"><div class="modal-card"><h2>Seu Pedido 🛒</h2><div class="lista-itens" id="listaItensHTML"></div><p class="subtotal-texto">Subtotal: R$ <span id="subtotalModal">0,00</span></p><div class="campo-grupo"><label>Seu Nome:</label><input type="text" id="txt-nome" placeholder="Digite seu nome completo"></div><div class="campo-grupo"><label>Seu Telefone:</label><input type="number" id="txt-telefone" placeholder="DDD + Número"></div><div class="campo-grupo"><label>Como deseja receber?</label><select id="select-entrega" onchange="mudarOpcaoEntrega()"><option value="Entrega">Delivery (Entrega em Casa)</option><option value="Retirada">Retirar na Hamburgueria</option></select></div><div class="campo-grupo" id="box-endereco"><label>Endereço de Entrega (Referência):</label><input type="text" id="txt-endereco" placeholder="Ex: Rua das Flores, 123"><button class="btn-gps" onclick="obterLocalizacao()">📍 Pegar minha localização exata (GPS)</button><small id="status-gps" style="display:none; color: #27ae60; font-weight: bold; margin-top: 5px;">✅ Localização capturada!</small></div><button class="btn-acao-modal btn-enviar-whats" onclick="enviarPedidoFinal()">Concluir via WhatsApp 💬</button><button class="btn-acao-modal btn-fechar" onclick="fecharModalCarrinho()">Continuar Comprando</button></div></div>
+    
     <div id="modalRastreio" class="modal-overlay">
         <div class="modal-card">
             <h2>Status do Pedido 🛵</h2>
-            <p style="font-size: 11px; color: #d35400; font-weight: bold; margin-bottom: 10px; background: #fff3e0; padding: 5px; border-radius: 5px;">
-                💡 Dica: Mantenha esta tela aberta ou ative as notificações no topo da página para ser avisado.
-            </p>
             <div class="timeline" id="linha-do-tempo">
                 <div class="passo" id="passo-1">✅ Pedido Criado e Enviado</div>
                 <div class="passo" id="passo-2">⏳ Aguardando Confirmação</div>
@@ -208,40 +173,29 @@
         </div>
     </div>
 
-    <div id="telaAnimacao" class="tela-animacao">
-        <div class="animacao-carrinho"><img src="logo.png" id="img-mascote" class="logo-empurrando" alt="Mascote"><div class="icone-carrinho">🛒</div></div>
-        <div class="texto-buscando">Buscando seu pedido...</div>
-    </div>
+    <div id="telaAnimacao" class="tela-animacao"><div class="animacao-carrinho"><img src="logo.png" id="img-mascote" class="logo-empurrando" alt="Mascote"><div class="icone-carrinho">🛒</div></div><div class="texto-buscando">Buscando seu pedido...</div></div>
 
     <script>
+        // Tenta registrar um Service Worker invisível (Prepara o telemóvel Android para não bloquear nada)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('Opcional: sw.js não encontrado.'));
+        }
+
         const API_URL = "https://jjburgg-jjburg.up.railway.app";
-        let precosDinamicos = {};
-        let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; 
-        let linkMapaGoogle = ""; 
-
-        let lancheSendoPersonalizado = ""; 
-        let precoBaseSendoPersonalizado = 0;
-
+        let precosDinamicos = {}; let carrinho = JSON.parse(localStorage.getItem('carrinho_jj')) || []; let linkMapaGoogle = ""; 
+        let lancheSendoPersonalizado = ""; let precoBaseSendoPersonalizado = 0;
         const audiosPersonalizados = { preparo: "preparo.mp3", entrega: "entrega.mp3", concluido: "concluido.mp3" };
         let intervalRastreio = null; let idRastreioAtual = null; let statusAtual = 1;
-        
-        let wakeLock = null;
-
-        async function ativarTelaViva() { try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {} }
-        function desativarTelaViva() { if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); } }
-        document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') { await ativarTelaViva(); } });
 
         // ===============================================
-        // MÁGICA DE NOTIFICAÇÃO NATIVA (GOOGLE CHROME/SAFARI)
+        // MÁGICA DO ÁUDIO E NOTIFICAÇÃO (CORRIGIDA)
         // ===============================================
         function atualizarDesignBotaoSom() {
             const btn = document.getElementById('btn-toggle-som');
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
-                btn.innerHTML = '🔔 Som Ligado';
-                btn.style.background = '#27ae60';
+                btn.innerHTML = '🔔 Som Ligado'; btn.style.background = '#27ae60';
             } else {
-                btn.innerHTML = '🔕 Som Desligado';
-                btn.style.background = '#e74c3c';
+                btn.innerHTML = '🔕 Som Desligado'; btn.style.background = '#e74c3c';
             }
         }
 
@@ -253,25 +207,17 @@
         }
 
         function pedirPermissaoNotificacao() {
-            localStorage.setItem('permissao_aviso_jj', 'sim'); 
-            atualizarDesignBotaoSom(); 
-            document.getElementById('modalNotificacao').classList.remove('ativo');
+            localStorage.setItem('permissao_aviso_jj', 'sim'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo');
             
-            // PEDE A PERMISSÃO OFICIAL DO NAVEGADOR
-            if ("Notification" in window) {
-                Notification.requestPermission().then(function (permission) {
-                    if (permission === "granted") {
-                        console.log("Notificações do sistema ativadas!");
-                    }
-                });
-            }
+            // Pede permissão de Notificação Oficial do Sistema
+            if ("Notification" in window) { Notification.requestPermission(); }
 
-            // DESTRANCA O ÁUDIO INTERNO POR GARANTIA
+            // Destranca o Áudio Oficialmente
             const som = document.getElementById('somAlertaCliente');
             som.volume = 0; som.play().then(() => { 
                 som.pause(); som.currentTime = 0; som.volume = 1; 
-                mostrarAvisoStatus("Notificações do sistema ativadas! Pode fechar o site que o celular vai avisar.", "📱"); 
-            }).catch(e => console.log("Erro ao destrancar som", e));
+                mostrarAvisoStatus("Som ativado! Se você minimizar o site, continuaremos verificando em segundo plano.", "📱"); 
+            }).catch(e => console.log("O navegador bloqueou o áudio", e));
         }
 
         function desligarNotificacao() { localStorage.setItem('permissao_aviso_jj', 'nao'); atualizarDesignBotaoSom(); document.getElementById('modalNotificacao').classList.remove('ativo'); }
@@ -288,19 +234,31 @@
             mostrarAvisoStatus(msg, icone);
             
             if(localStorage.getItem('permissao_aviso_jj') === 'sim') {
-                // Tenta tocar o áudio interno
-                try { const som = document.getElementById('somAlertaCliente'); som.src = linkAudio; som.currentTime = 0; som.play().catch(e=>{}); } catch(e) {}
+                // 1. FORÇA O ÁUDIO A TOCAR PRIMEIRO (Para garantir que não falha)
+                try { 
+                    const som = document.getElementById('somAlertaCliente'); 
+                    som.src = linkAudio; som.currentTime = 0; 
+                    som.play().catch(e => console.log(e)); 
+                } catch(e) {}
                 
-                // DISPARA A NOTIFICAÇÃO NATIVA (Aparece fora do site)
+                // 2. TENTA A NOTIFICAÇÃO DE TEXTO DO SISTEMA EM MODO SEGURO
                 if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification("Atualização JJ Burguer " + icone, {
-                        body: msg,
-                        icon: "logo.png"
-                    });
+                    try {
+                        new Notification("JJ Burguer " + icone, { body: msg, icon: "logo.png" });
+                    } catch(erroNoAndroid) {
+                        // Se for um Android chato, ele tenta pelo ServiceWorker, se não conseguir, não quebra nada!
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.getRegistration().then(function(reg) {
+                                if(reg) reg.showNotification("JJ Burguer " + icone, { body: msg, icon: "logo.png" });
+                            }).catch(e=>{});
+                        }
+                    }
                 }
             }
         }
 
+        // ===============================================
+        
         function abrirPersonalizacao(nomeLanche) { lancheSendoPersonalizado = nomeLanche; precoBaseSendoPersonalizado = precosDinamicos[nomeLanche] || 0; document.getElementById('tituloCustomLanche').innerText = nomeLanche; document.getElementById('txt-observacao').value = ""; document.querySelectorAll('.check-extra').forEach(cb => cb.checked = false); atualizarPrecoCustom(); document.getElementById('modalPersonalizar').classList.add('ativo'); }
         function atualizarPrecoCustom() { let total = precoBaseSendoPersonalizado; document.querySelectorAll('.check-extra:checked').forEach(cb => { total += parseFloat(cb.value); }); document.getElementById('precoBaseCustom').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`; document.getElementById('btnConfirmarCustom').innerText = `Adicionar - R$ ${total.toFixed(2).replace('.', ',')}`; }
         function confirmarPersonalizacao() { let pTotal = precoBaseSendoPersonalizado; let extras = []; document.querySelectorAll('.check-extra:checked').forEach(cb => { pTotal += parseFloat(cb.value); extras.push(cb.getAttribute('data-nome')); }); let obs = document.getElementById('txt-observacao').value.trim(); let nomeF = lancheSendoPersonalizado; if (extras.length > 0) nomeF += ` (+ ${extras.join(', ')})`; adicionarItemCardapio(nomeF, pTotal, obs); fecharPersonalizacao(); }
@@ -375,19 +333,18 @@
 
         function iniciarBuscaAoVivo() {
             if(!idRastreioAtual) return;
-            ativarTelaViva();
             async function buscar() {
                 try {
                     const res = await fetch(API_URL + '/api/pedidos'); const pedidos = await res.json(); const meuPedido = pedidos.find(p => p.id == idRastreioAtual); 
                     if (meuPedido) { if(meuPedido.status > statusAtual) { statusAtual = meuPedido.status; tocarNotificacao(statusAtual); } atualizarStatusVisual(meuPedido.status); } 
-                    else { if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); } atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!"; localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio); desativarTelaViva(); setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000); }
+                    else { if (statusAtual < 4) { statusAtual = 4; tocarNotificacao(4); } atualizarStatusVisual(4); document.getElementById('passo-4').innerText = "✅ Pedido Entregue! Bom apetite!"; localStorage.removeItem('meu_pedido_jj'); if(intervalRastreio) clearInterval(intervalRastreio); setTimeout(() => { document.getElementById('btnRastreio').style.display = 'none'; fecharRastreio(); }, 5000); }
                 } catch(e){}
             }
             buscar(); if(intervalRastreio) clearInterval(intervalRastreio); intervalRastreio = setInterval(buscar, 5000);
         }
 
         function iniciarAnimacaoRastreio() { document.getElementById('telaAnimacao').classList.add('ativo'); setTimeout(() => { document.getElementById('telaAnimacao').classList.remove('ativo'); document.getElementById('modalRastreio').classList.add('ativo'); iniciarBuscaAoVivo(); }, 3000); }
-        function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); if(intervalRastreio) clearInterval(intervalRastreio); desativarTelaViva(); }
+        function fecharRastreio() { document.getElementById('modalRastreio').classList.remove('ativo'); if(intervalRastreio) clearInterval(intervalRastreio); }
 
         window.addEventListener('load', () => {
             verificarPermissaoNotificacao(); carregarPrecosDoBanco(); atualizarCarrinhoUI(); 
